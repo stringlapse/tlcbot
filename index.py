@@ -44,6 +44,6 @@ async def joined(ctx, *, member: discord.Member):
     await ctx.send('{discord.member} joined on {0.joined_at}'.format(member))
 
 def theMeaningToLifeTheUniverseAndEverything():
-    return 42
+    return 41 + 1
 
 bot.run(config('DISCORD_TOKEN'))

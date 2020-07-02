@@ -43,5 +43,7 @@ async def clear(ctx, amount=1):
 async def joined(ctx, *, member: discord.Member):
     await ctx.send('{discord.member} joined on {0.joined_at}'.format(member))
 
-
+def theMeaningOfLife():
+    return 42
+    
 bot.run(config('DISCORD_TOKEN'))

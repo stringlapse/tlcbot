@@ -43,7 +43,28 @@ async def clear(ctx, amount=1):
 async def joined(ctx, *, member: discord.Member):
     await ctx.send('{discord.member} joined on {0.joined_at}'.format(member))
 
-def theMeaningToLifeTheUniverseAndEverything():
-    return 41 + 1
+@bot.command()
+@commands.has_role("devs")
+# replace 'devs' with whatever the admin role for TLC is
+async def mute(ctx, member: discord.Member):
+    role = discord.utils.get(member.guild.roles, name = 'muted')
+    await member.add_roles(role)
+    embed=discord.Embed(title="User Muted!", description="**{0}** was muted by **{1}**!".format(member, ctx.message.author), color=0x228B22)
+    await ctx.send(embed=embed)
+
+@bot.command()
+@commands.has_role("devs")
+# replace 'devs' with whatever the admin role for TLC is
+async def unmute(ctx, member: discord.Member):
+    role = discord.utils.get(member.guild.roles, name = 'muted')
+    if role in member.roles:
+        await member.remove_roles(role)
+        embed=discord.Embed(title="User Unmuted!", description="**{0}** was unmuted by **{1}**!".format(member, ctx.message.author), color=0x228B22)
+        await ctx.send(embed=embed)
+    else:
+        await ctx.send("**{0}** is not currently muted".format(member))
+
+
+
 
 bot.run(config('DISCORD_TOKEN'))

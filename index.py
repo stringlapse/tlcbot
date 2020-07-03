@@ -35,21 +35,16 @@ async def _8ball(ctx, *, question):
                 'Yes, but only if you inlucde a friend.']
     await ctx.send(f'Q: {question}\nA: {random.choice(responses)}')
 
-# @bot.command()
-# async def clear(ctx, amount=1):
-#     await ctx.channel.purge(limit = amount)
-
 @bot.command()
 async def joined(ctx, *, member: discord.Member):
-    await ctx.send('{discord.member} joined on {0.joined_at}'.format(member))
+    await ctx.send(f'{discord.member} joined on {member.joined_at}')
 
 @bot.command()
 @commands.has_role("devs")
 # replace 'devs' with whatever the admin role for TLC is
 async def clear(ctx, amount=1):
     await ctx.channel.purge(limit=amount+1)
-    embed=discord.Embed(title="**{0}** messages cleared!".format(amount), color=0x228B22)
+    embed=discord.Embed(title=f'{amount} messages cleared!', color=0x228B22)
     await ctx.send(embed=embed)
-
 
 bot.run(config('DISCORD_TOKEN'))

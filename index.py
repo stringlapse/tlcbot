@@ -41,7 +41,7 @@ async def clear(ctx, amount=1):
 
 @bot.command()
 async def joined(ctx, *, member: discord.Member):
-    await ctx.send('{discord.member} joined on {0.joined_at}'.format(member))
+    await ctx.send(f'{discord.member} joined on {member.joined_at}')
 
 @bot.command()
 @commands.has_role("devs")

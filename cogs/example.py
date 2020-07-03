@@ -7,7 +7,7 @@ class Example(commands.Cog):
     def __init__(self, client):
         self.client = client
 
-    # Events
+    # Events: make sure to pass in 'self' 
     @commands.Cog.listener()
     async def on_ready(self):
         print("Bot is online.")
@@ -43,5 +43,6 @@ class Example(commands.Cog):
     async def joined(ctx, *, member: discord.Member):
         await ctx.send('{discord.member} joined on {0.joined_at}'.format(member))
 
+# Required for the cog to be read by the bot
 def setup(client):
     client.add_cog(Example(client))

@@ -49,7 +49,7 @@ async def joined(ctx, *, member: discord.Member):
 async def mute(ctx, member: discord.Member):
     role = discord.utils.get(member.guild.roles, name = 'muted')
     await member.add_roles(role)
-    embed=discord.Embed(title="User Muted!", description="**{0}** was muted by **{1}**!".format(member, ctx.message.author), color=0x228B22)
+    embed=discord.Embed(title="User Muted!", description=f'**{member}** was muted by **{ctx.message.author}**!', color=0x228B22)
     await ctx.send(embed=embed)
 
 @bot.command()
@@ -57,12 +57,15 @@ async def mute(ctx, member: discord.Member):
 # replace 'devs' with whatever the admin role for TLC is
 async def unmute(ctx, member: discord.Member):
     role = discord.utils.get(member.guild.roles, name = 'muted')
-    if role in member.roles:
+    if member is None:
+        ctx.send("Name not specified")
+    
+    elif role in member.roles:
         await member.remove_roles(role)
-        embed=discord.Embed(title="User Unmuted!", description="**{0}** was unmuted by **{1}**!".format(member, ctx.message.author), color=0x228B22)
+        embed=discord.Embed(title="User Unmuted!", description=f'**{member}** was unmuted by **{ctx.message.author}**!', color=0x228B22)
         await ctx.send(embed=embed)
     else:
-        await ctx.send("**{0}** is not currently muted".format(member))
+        await ctx.send(f'**{member}** is not currently muted')
 
 
 

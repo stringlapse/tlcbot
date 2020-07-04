@@ -22,6 +22,7 @@ class Database(commands.Cog):
         balance text
             )
         ''')
+    
         print("Database created")
     
     @commands.command()
@@ -31,13 +32,13 @@ class Database(commands.Cog):
         c.execute(f"SELECT user_id FROM econ WHERE guild_id = '{ctx.author.guild.id}' AND user_id = '{ctx.author.id}'")
         noUser = c.fetchone() is None
         if noUser:
-            val = (ctx.author.guild.id, ctx.author.id, 500)
+            val = (ctx.author.guild.id, ctx.author.id, 5)
             c.execute("INSERT INTO econ(guild_id, user_id ,balance) VALUES(?,?,?)", val)
             conn.commit()
         c.execute(f"SELECT user_id, balance FROM econ WHERE guild_id = '{ctx.author.guild.id}' AND user_id = '{ctx.author.id}'")
         result = c.fetchone()
         bal = int(result[1])
-        embed=embedsText(f'{ctx.message.author}\'s balance', f'${bal}!')
+        embed=embedsText(f'{ctx.message.author}\'s balance', f'{bal} :cookie:!')
         await ctx.send(embed=embed)
     
     @commands.command()
@@ -46,13 +47,13 @@ class Database(commands.Cog):
         c = conn.cursor()
         c.execute(f"SELECT user_id FROM econ WHERE guild_id = '{ctx.author.guild.id}' AND user_id = '{ctx.author.id}'")
         if c.fetchone() is None:
-            val = (ctx.author.guild.id, ctx.author.id, 500)
+            val = (ctx.author.guild.id, ctx.author.id, 5)
             c.execute("INSERT INTO econ(guild_id, user_id ,balance) VALUES(?,?,?)", val)
             conn.commit()
-        # this check should honestly be put into a function but when I tried that the code took too long to execute
+        # this check should honestly be put into its own function but when I tried that the code took too long to execute
         c.execute(f"SELECT user_id FROM econ WHERE guild_id = '{member.guild.id}' AND user_id = '{member.id}'")
         if c.fetchone() is None:
-            val = (member.guild.id, member.guild.id, 500)
+            val = (member.guild.id, member.guild.id, 5)
             c.execute("INSERT INTO econ(guild_id, user_id ,balance) VALUES(?,?,?)", val)
             conn.commit()
         c.execute(f"SELECT user_id, balance FROM econ WHERE guild_id = '{ctx.author.guild.id}' AND user_id = '{ctx.author.id}'")
@@ -69,13 +70,9 @@ class Database(commands.Cog):
             val = (balAfterTransaction, ctx.author.guild.id, ctx.author.id)
             c.execute("UPDATE econ SET balance = ? WHERE guild_id = ? and user_id = ?", val)
             conn.commit()
-            embed=embedsText(f'Sent ${amount} to {member}','')
+            embed=embedsText(f'Sent {amount} :cookie: to {member}','')
             await ctx.send(embed=embed)
         
-        
-
-
-
 # Required for the cog to be read by the bot
 def setup(client):
     client.add_cog(Database(client))

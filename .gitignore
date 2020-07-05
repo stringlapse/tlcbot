@@ -2,3 +2,7 @@
 *.pyc
 __pycache__
 example.db
+*.stackdump
+imageRecieved.jpg
+tempSVG.svg
+imageSend.png

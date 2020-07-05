@@ -16,7 +16,7 @@ class Colors(commands.Cog):
     
     # Takes the dominant color of the image in a link and sends the color
     @commands.command()
-    async def color(self, ctx, arg1, numColors=1:int):
+    async def color(self, ctx, arg1, numColors=1):
         message = await ctx.send(f"{ctx.message.author.mention} detecting color... might take a few seconds")
         opener = urllib.request.URLopener()
         self.convertsIMGRecieved(arg1, opener)
@@ -73,11 +73,11 @@ class Colors(commands.Cog):
         dominant_rgb = self.grabsDominantColor()
         
         # gets photo of that color in svg
-        jsonurl = urlopen("http://www.thecolorapi.com/scheme?rgb=rgb({0},{1},{2})&count=5".format(dominant_rgb[0],dominant_rgb[1],dominant_rgb[2]))
+        jsonurl = urlopen("http://www.thecolorapi.com/scheme?rgb=rgb({0},{1},{2})&count=3".format(dominant_rgb[0],dominant_rgb[1],dominant_rgb[2]))
         text = json.loads(jsonurl.read())
         colors = []
         hexes = []
-        for i in range(0,5):
+        for i in range(0,3):
             name = text["colors"][i]["name"]["value"]
             hexVal = text["colors"][i]["name"]["closest_named_hex"]
             colors.append(name)

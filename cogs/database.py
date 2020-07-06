@@ -5,6 +5,8 @@ import discord
 from discord.ext import commands
 import sqlite3
 from index import embedsText
+import re
+from discord.ext.commands import MemberConverter
 
 class Database(commands.Cog):
     def __init__(self, client):
@@ -17,61 +19,87 @@ class Database(commands.Cog):
         c = conn.cursor()
         c.execute('''
         CREATE TABLE IF NOT EXISTS econ(
-        guild_id text,
         user_id text,
         balance text
             )
         ''')
     
         print("Database created")
+
+    # awards cookie when someone bumped disboard
+    @commands.Cog.listener()
+    async def on_message(self, message):
+        if message.author.id == 728026870154526731:
+            if self.check_all_message("Bump done :thumbsup:", message):
+                m = re.search(r'<@!?(\d+)>', message.embeds[0].description)
+                tag = m.group(0)
+                member = tag
+                removeChars = ["<",">","@"]
+                for i in removeChars:
+                    member = member.replace(i,"")
+                conn = sqlite3.connect('example.db')
+                c = conn.cursor()
+                c.execute(f"SELECT user_id FROM econ WHERE user_id = '{member}'")
+                if c.fetchone() is None:
+                    val = (member, 5)
+                    c.execute("INSERT INTO econ(user_id ,balance) VALUES(?,?)", val)
+                    conn.commit()
+                c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{member}'")
+                memberBal = int(c.fetchone()[1]) + 1
+                val = (memberBal, member)
+                c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
+                conn.commit()
+                embed=embedsText(f'Thanks for bumping. Have a :cookie:!','')
+                channel = message.channel
+                await channel.send(embed=embed)
+         
+    # simulates disboard's bump message
+    @commands.command()
+    async def bumpYes(self, ctx):
+        embed = discord.Embed(title="DISBOARD: The Public Server List", 
+                            url="https://disboard.org/",
+                            description=f"{ctx.author.mention}\nBump done :thumbsup:\nCheck it on DISBOARD: https://disboard.org/")
+
+        embed.set_image(url="https://disboard.org/images/bot-command-image-bump.png")
+        await ctx.send(embed=embed)
     
+    # simulates disboard's bump fail message
+    @commands.command()
+    async def bumpNo(self, ctx):
+        embed = discord.Embed(title="DISBOARD: The Public Server List", 
+                            url="https://disboard.org/",
+                            description=f"{ctx.author.mention}, Please wait another 97 minutes until the server can be bumped")
+
+        embed.set_thumbnail(url="https://disboard.org/images/bot-command-image-thumbnail-error.png")
+        await ctx.send(embed=embed)
+
     @commands.command()
     async def balance(self, ctx):
         conn = sqlite3.connect('example.db')
         c = conn.cursor()
-        c.execute(f"SELECT user_id FROM econ WHERE guild_id = '{ctx.author.guild.id}' AND user_id = '{ctx.author.id}'")
+        c.execute(f"SELECT user_id FROM econ WHERE user_id = '{ctx.author.id}'")
         noUser = c.fetchone() is None
         if noUser:
-            val = (ctx.author.guild.id, ctx.author.id, 5)
-            c.execute("INSERT INTO econ(guild_id, user_id ,balance) VALUES(?,?,?)", val)
+            val = (ctx.author.id, 5)
+            c.execute("INSERT INTO econ(user_id ,balance) VALUES(?,?)", val)
             conn.commit()
-        c.execute(f"SELECT user_id, balance FROM econ WHERE guild_id = '{ctx.author.guild.id}' AND user_id = '{ctx.author.id}'")
+        c.execute(f"SELECT user_id, balance FROM econ WHERE  user_id = '{ctx.author.id}'")
         result = c.fetchone()
         bal = int(result[1])
-        embed=embedsText(f'{ctx.message.author}\'s balance', f'{bal} :cookie:!')
+        embed=embedsText(f'{ctx.message.author}\'s balance: {bal} :cookie:','')
         await ctx.send(embed=embed)
     
-    @commands.command()
-    async def pay(self,ctx, member: discord.Member, amount: int):
-        conn = sqlite3.connect('example.db')
-        c = conn.cursor()
-        c.execute(f"SELECT user_id FROM econ WHERE guild_id = '{ctx.author.guild.id}' AND user_id = '{ctx.author.id}'")
-        if c.fetchone() is None:
-            val = (ctx.author.guild.id, ctx.author.id, 5)
-            c.execute("INSERT INTO econ(guild_id, user_id ,balance) VALUES(?,?,?)", val)
-            conn.commit()
-        # this check should honestly be put into its own function but when I tried that the code took too long to execute
-        c.execute(f"SELECT user_id FROM econ WHERE guild_id = '{member.guild.id}' AND user_id = '{member.id}'")
-        if c.fetchone() is None:
-            val = (member.guild.id, member.guild.id, 5)
-            c.execute("INSERT INTO econ(guild_id, user_id ,balance) VALUES(?,?,?)", val)
-            conn.commit()
-        c.execute(f"SELECT user_id, balance FROM econ WHERE guild_id = '{ctx.author.guild.id}' AND user_id = '{ctx.author.id}'")
-        result = c.fetchone()
-        balAfterTransaction = int(result[1]) - amount
-        if balAfterTransaction < 0:
-            await ctx.send("Insufficent funds")
-        else:
-            c.execute(f"SELECT user_id, balance FROM econ WHERE guild_id = '{member.guild.id}' AND user_id = '{member.id}'")
-            memberBal = int(c.fetchone()[1]) + amount
-            val = (memberBal, member.guild.id, member.id)
-            c.execute("UPDATE econ SET balance = ? WHERE guild_id = ? and user_id = ?", val)
-            conn.commit()
-            val = (balAfterTransaction, ctx.author.guild.id, ctx.author.id)
-            c.execute("UPDATE econ SET balance = ? WHERE guild_id = ? and user_id = ?", val)
-            conn.commit()
-            embed=embedsText(f'Sent {amount} :cookie: to {member}','')
-            await ctx.send(embed=embed)
+    def check_all_message(self,check_for, message):
+        if check_for in message.content:
+            return True
+        for e in message.embeds:
+            if any(item and check_for in item for item in (e.title, e.footer, e.description)):
+                return True
+            if e.fields:
+                for field in e.fields:
+                    if check_for in field.name or check_for in field.value:
+                        return True
+        return False 
         
 # Required for the cog to be read by the bot
 def setup(client):

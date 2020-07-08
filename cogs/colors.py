@@ -16,30 +16,43 @@ class Colors(commands.Cog):
     
     # Takes the dominant color of the image in a link and sends the color
     @commands.command()
-    async def color(self, ctx, arg1, numColors=1):
+    async def colorPhoto(self, ctx, arg1, num:int=3):
+        if num > 6:
+            return await ctx.send(f"{ctx.message.author.mention} woah slow down there. I can only show between three to six colors")
+        if num < 3:
+            return await ctx.send(f"{ctx.message.author.mention} too little colors. Please pick a number between three and six.")
         message = await ctx.send(f"{ctx.message.author.mention} detecting color... might take a few seconds")
         opener = urllib.request.URLopener()
         self.convertsIMGRecieved(arg1, opener)
-        
-        
-        # gets photo of that color in svg
-        jsonurl = urlopen("http://www.thecolorapi.com/id?rgb=rgb({0},{1},{2})".format(dominant_rgb[0],dominant_rgb[1],dominant_rgb[2]))
-        text = json.loads(jsonurl.read())
-        hexVal = text["hex"]["value"]
-        name = text["name"]["value"]
-        filename, headers = opener.retrieve(text["image"]["bare"], 'images/tempSVG.svg')
 
-        # converts photo into usable format and sends
+        # gets photo of the colors in svg
+        palette = self.grabsPalette(num)
+        colors = []
+        hexes = []
+        svgText = '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="200">'
+        increment = 200/(num)
+        curY = 0
+        
+        for rgb in palette:
+            jsonurl = urlopen("http://www.thecolorapi.com/id?rgb=rgb({0},{1},{2})".format(rgb[0],rgb[1],rgb[2]))
+            text = json.loads(jsonurl.read())
+            hexVal = text["hex"]["value"]
+            hexes.append(f'{hexVal}') 
+            colors.append(text["name"]["value"])
+            svgText = svgText + "<rect fill=\"" + str(hexVal) + "\" x=\"0\" y=\"" + str(curY) + "\" width=\"100\" height=\"" + str(increment) + "\"></rect>"
+            curY = curY + increment
+        tempSVG = open('images/tempSVG.svg','w')
+        tempSVG.write(svgText + "</svg>")
+        tempSVG.close()
         f = self.convertsSVG()
-
-        embed=embedsText(f' {name}','') 
+        embed=embedsText(f' {", ".join(colors)}','')
         embed.set_image(url="attachment://imageSend.png")
-        embed.set_footer(text=f' {hexVal}')
-        await message.delete()
+        embed.set_footer(text=f' {", ".join(hexes)}')
         await ctx.send(file=f, embed=embed)
     
+    
     @commands.command()
-    async def complement(self, ctx, arg1):
+    async def complementPhoto(self, ctx, arg1):
         message = await ctx.send(f"{ctx.message.author.mention} detecting color... might take a few seconds")
         opener = urllib.request.URLopener()
         self.convertsIMGRecieved(arg1, opener)
@@ -66,7 +79,7 @@ class Colors(commands.Cog):
         await ctx.send(file=f, embed=embed)
 
     @commands.command()
-    async def scheme(self, ctx, arg1):
+    async def schemePhoto(self, ctx, arg1):
         message = await ctx.send(f"{ctx.message.author.mention} detecting color... might take a few seconds")
         opener = urllib.request.URLopener()
         self.convertsIMGRecieved(arg1, opener)
@@ -104,6 +117,10 @@ class Colors(commands.Cog):
     def grabsDominantColor(self):
         color_thief = ColorThief('images/imageRecieved.jpg')
         return color_thief.get_color(quality=1)
+    
+    def grabsPalette(self, num):
+        color_thief = ColorThief('images/imageRecieved.jpg')
+        return color_thief.get_palette(color_count=num)
 
     # converts photo into usable format
     def convertsSVG(self):

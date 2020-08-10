@@ -24,6 +24,7 @@ smRole = 'social media'
 class SocialMedia(commands.Cog):
     def __init__(self, client):
         self.client = client
+    
 
     # Events: make sure to pass in 'self' 
     @commands.Cog.listener()
@@ -51,29 +52,30 @@ class SocialMedia(commands.Cog):
                         await bot_msg.add_reaction('❌')
     
     @commands.Cog.listener()
-    async def on_reaction_add(self,reaction,user):
-        if reaction.message.channel.id == modChannel and user.id != botID:
+    async def on_raw_reaction_add(self,payload):
+        if payload.channel_id == modChannel and payload.user_id != botID:
+            channel =  self.client.get_channel(modChannel)
             conn = sqlite3.connect('example.db')
             c = conn.cursor()
-            c.execute(f"SELECT * FROM shared_art WHERE bot_message_id = {reaction.message.id}")
-            result = c.fetchone() 
+            c.execute("SELECT * FROM shared_art WHERE bot_message_id = ?", (str(payload.message_id),))
+            result = c.fetchone()
 
             if result is not None:
-                channel = self.client.get_channel(modChannel)
                 bot_msg = await channel.fetch_message(result[0])
                 url = result[2]
-                if str(reaction.emoji) == "❌":
+                if str(payload.emoji) == "❌":
                     await bot_msg.delete()
-                elif str(reaction.emoji) == "🐦":
-                    await bot_msg.remove_reaction('🐦',user)
+                    c.execute("DELETE FROM shared_art WHERE bot_message_id =?", (str(result[0]),))
+                elif str(payload.emoji) == "🐦":
+                    await bot_msg.remove_reaction('🐦',payload.member)
                     await channel.send("this would work if twitter ACTUALLY ACCEPTED OUR APPLICATION")
-                elif str(reaction.emoji) == "📷":
-                    await bot_msg.remove_reaction('📷',user)
+                elif str(payload.emoji) == "📷":
+                    await bot_msg.remove_reaction('📷',payload.member)
                     if int(result[4]) == 1:
                         return await channel.send("this picture has already been posted to instagram")
 
                     def check(message):
-                        return message.author.id == user.id
+                        return message.author.id == payload.user_id
 
                     response = 'n'
                     description = None 
@@ -87,11 +89,12 @@ class SocialMedia(commands.Cog):
 
                     val = (1, result[0])
                     c.execute("UPDATE shared_art SET instagram = ? WHERE bot_message_id = ?", val)
-                    conn.commit()
-                    conn.close()
 
                     await self.postInstagram(url, description, channel)    
                     await channel.send("Posted to instagram :)") 
+                    
+                conn.commit()
+                conn.close()
                     
 
 

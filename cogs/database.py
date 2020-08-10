@@ -33,11 +33,10 @@ class Database(commands.Cog):
         instagram text
             )
         ''')
-
+        
         conn.commit()
         conn.close()
-
-        print("Databases created")
+        print("database ready")
     
     @commands.command()
     async def balance(self, ctx):

@@ -19,7 +19,9 @@ shareArtChannel = int(config('SHARE_ART_CHANNEL'))
 modChannel = int(config('MOD_SOCIAL_ART_GALLERY'))
 botID = int(config('BOT_ID'))
 smRole = 'social media'
+supported_sm = ["twitter","instagram"]
 
+bot = commands.Bot(command_prefix=config('PREFIX'))
 
 class SocialMedia(commands.Cog):
     def __init__(self, client):
@@ -159,8 +161,77 @@ class SocialMedia(commands.Cog):
         await bot_msg.delete()
         c.execute("DELETE FROM shared_art WHERE bot_message_id =?", (str(result[0]),))
 
+    @bot.command()
+    async def set(self,ctx, platform, name):
+        if platform.lower() not in supported_sm:
+            await ctx.send(f"Only twitter and instagram are supported.\nUsage: {config('PREFIX')}set twitter @TLC_Discord")
+            return
+        if not name or len(name) == 0:
+            await ctx.send(f"Please state your name on the platform. \nUsage: {config('PREFIX')}set twitter @TLC_Discord")
+            return
+        name = normalize(platform,name)
+        author = ctx.message.author.id
+
+        conn = sqlite3.connect('example.db')
+        c = conn.cursor()
+        val = (author,platform,name)
+        c.execute("INSERT OR IGNORE INTO users(user_id,twitter,instagram) VALUES(?,?,?)", (author, '',''))
+        c.execute(f"UPDATE users SET {platform}=? WHERE user_id=?",(name,author))
+        conn.commit()
+        conn.close()
+
+        await ctx.send(f"Set your {platform} name to {name}.")
+
+    # this doesnt do shit yet
+    @bot.command() 
+    async def unlink(self,ctx, platform):
+        if platform.lower() not in supported_sm:
+            await ctx.send(f"Only twitter and instagram are supported.\nUsage: {config('PREFIX')}unlink twitter")
+            return
+        author = ctx.message.author.id
         
-    
+        conn = sqlite3.connect('example.db')
+        c = conn.cursor()
+        c.execute(f"UPDATE users SET {platform}=? WHERE user_id=?",("",author))
+        conn.commit()
+        conn.close()
+        await ctx.send("Removed your " + platform + " data.")
+    @bot.command()
+    async def socialmedia(self,ctx,user=None):
+
+        if user == None:
+            userid = ctx.message.author.id
+        else:
+            userid = user[3:-1]
+
+        user = self.client.get_user(int(userid))
+        conn = sqlite3.connect('example.db')
+        c = conn.cursor()
+
+        c.execute("SELECT * from users WHERE user_id=?", (userid,))
+        result = c.fetchone()
+        if result == None:
+            result = ("","","") # just a workaround for now
+
+        embed = discord.Embed(title=f"Social Media for {user}")
+        embed.set_thumbnail(url=user.avatar_url)
+        if len(result[1]):
+            embed.add_field(name='Twitter',value=result[1],inline=False)
+        if len(result[2]):
+            embed.add_field(name='Instagram',value=result[2],inline=False)
+
+        #        await ctx.send(str(result))
+        await ctx.send(embed=embed)
+        conn.commit()
+        conn.close()    
+
+    # twitter and instagram both use the same name format, but in case we add more names, the social media platform 
+def normalize(platform,name):
+        if name.startswith("@"):
+           return name
+        else:
+           return "@" + name
+           
 # Required for the cog to be read by the bot
 def setup(client):
     client.add_cog(SocialMedia(client))

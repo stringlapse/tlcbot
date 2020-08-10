@@ -33,6 +33,15 @@ class Database(commands.Cog):
         instagram text
             )
         ''')
+
+        c.execute('''
+        CREATE TABLE IF NOT EXISTS users(
+        user_id text,
+        twitter text,
+        instagram text,
+        UNIQUE(user_id)
+            )
+        ''')    
         
         conn.commit()
         conn.close()

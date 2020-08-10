@@ -64,37 +64,52 @@ class SocialMedia(commands.Cog):
                 bot_msg = await channel.fetch_message(result[0])
                 url = result[2]
                 if str(payload.emoji) == "❌":
-                    await bot_msg.delete()
-                    c.execute("DELETE FROM shared_art WHERE bot_message_id =?", (str(result[0]),))
-                elif str(payload.emoji) == "🐦":
-                    await bot_msg.remove_reaction('🐦',payload.member)
-                    await channel.send("this would work if twitter ACTUALLY ACCEPTED OUR APPLICATION")
-                elif str(payload.emoji) == "📷":
-                    await bot_msg.remove_reaction('📷',payload.member)
-                    if int(result[4]) == 1:
-                        return await channel.send("this picture has already been posted to instagram")
+                    await self.deleteMessage(bot_msg, result, c)
+                elif str(payload.emoji) == "🐦" or str(payload.emoji) == "📷":
+                    try:
+                        instagram = bool(str(payload.emoji) == "📷")
+                        twitter = bool(str(payload.emoji) == "🐦")
 
-                    def check(message):
-                        return message.author.id == payload.user_id
+                        if twitter:
+                            await bot_msg.remove_reaction('🐦',payload.member)
+                            if int(result[3]) == 1:
+                                return await channel.send("This picture has already been posted")
+                        else: 
+                            await bot_msg.remove_reaction('📷',payload.member)
+                            if int(result[4]) == 1:
+                                return await channel.send("This picture has already been posted")
 
-                    response = 'n'
-                    description = None 
-                    while response is not 'y':
-                        await channel.send("Type the description you would like to post")
-                        description = await self.client.wait_for('message', check=check, timeout=60.0)
-                        description = description.content
-                        await channel.send(f"Posting \"{description}\"\nIs that ok? ``y/n``")
-                        response = await self.client.wait_for('message', check=check, timeout=60.0)
-                        response = response.content
+                        def check(message):
+                            return message.author.id == payload.user_id
 
-                    val = (1, result[0])
-                    c.execute("UPDATE shared_art SET instagram = ? WHERE bot_message_id = ?", val)
+                        response = 'n'
+                        description = None 
+                        while response is not 'y':
+                            await channel.send("Type the description you would like to post")
+                            description = await self.client.wait_for('message', check=check, timeout=60.0)
+                            description = description.content
+                            await channel.send(f"Posting \"{description}\"\nIs that ok? ``y/n``")
+                            response = await self.client.wait_for('message', check=check, timeout=60.0)
+                            response = response.content
 
-                    await self.postInstagram(url, description, channel)    
-                    await channel.send("Posted to instagram :)") 
-                    
-                conn.commit()
-                conn.close()
+                        val = (1, result[0])
+                        if instagram:
+                            c.execute("UPDATE shared_art SET instagram = ? WHERE bot_message_id = ?", val)
+                            await self.postInstagram(url, description, channel)    
+                        else: 
+                            c.execute("UPDATE shared_art SET twitter = ? WHERE bot_message_id = ?", val)
+                            await channel.send("Posted to twitter... Well not actually but you get the point")
+                    except Exception as e:
+                        print(e)
+                    finally:
+                        conn.commit()
+                        c.execute("SELECT * FROM shared_art WHERE bot_message_id = ?", (str(payload.message_id),))
+                        result2 = c.fetchone()
+                        if(int(result2[3]) == 1 and int(result2[4]) == 1):
+                            await self.deleteMessage(bot_msg, result2, c)
+
+            conn.commit()
+            conn.close()
                     
 
 
@@ -115,6 +130,7 @@ class SocialMedia(commands.Cog):
     # Sends to Instagram from message url
     async def postInstagram(self,url, description, channel):
         try:
+            msg = await channel.send("Beginning to post to instagram. May take a couple of minutes.") 
             opener = urllib.request.URLopener()
             opener.addheader('User-Agent', 'whatever')
             photo = 'images/post.jpg'
@@ -127,9 +143,15 @@ class SocialMedia(commands.Cog):
             prepare_and_fix_photo(photo)
             bot.upload_photo(photo, 
                     caption = description)
-        
         except Exception as e:
             print(e)
+        finally:
+            await msg.edit(content="Posted! Check instagram to see if everything went well.") 
+    
+    async def deleteMessage(self, bot_msg, result, c):
+        await bot_msg.delete()
+        c.execute("DELETE FROM shared_art WHERE bot_message_id =?", (str(result[0]),))
+
         
     
 # Required for the cog to be read by the bot

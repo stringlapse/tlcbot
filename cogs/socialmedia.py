@@ -83,14 +83,21 @@ class SocialMedia(commands.Cog):
                             return message.author.id == payload.user_id
 
                         response = 'n'
-                        description = None 
+                        description = None
+                        
                         while response is not 'y':
-                            await channel.send("Type the description you would like to post")
+                            await channel.send("Type the description you would like to post <@" + str(payload.user_id) + ">")
                             description = await self.client.wait_for('message', check=check, timeout=60.0)
                             description = description.content
                             await channel.send(f"Posting \"{description}\"\nIs that ok? ``y/n``")
                             response = await self.client.wait_for('message', check=check, timeout=60.0)
                             response = response.content
+
+                            while response is not 'y' and response is not 'n':
+                                await channel.send("Fuck you, say 'y' or 'n'")
+                                response = await self.client.wait_for('message', check=check, timeout=60.0)
+                                response = response.content
+
 
                         val = (1, result[0])
                         if instagram:

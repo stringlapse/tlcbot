@@ -39,6 +39,10 @@ class Database(commands.Cog):
         user_id text,
         twitter text,
         instagram text,
+        youtube text,
+        deviantart text,
+        personal_website text,
+        commission_sheet text,
         UNIQUE(user_id)
             )
         ''')    

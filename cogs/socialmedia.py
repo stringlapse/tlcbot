@@ -19,7 +19,7 @@ shareArtChannel = int(config('SHARE_ART_CHANNEL'))
 modChannel = int(config('MOD_SOCIAL_ART_GALLERY'))
 botID = int(config('BOT_ID'))
 smRole = 'social media'
-supported_sm = ["twitter","instagram"]
+supported_sm = ["twitter","instagram","deviantart","youtube","personal_website"]
 
 bot = commands.Bot(command_prefix=config('PREFIX'))
 
@@ -164,10 +164,11 @@ class SocialMedia(commands.Cog):
     @bot.command()
     async def set(self,ctx, platform, name):
         if platform.lower() not in supported_sm:
-            await ctx.send(f"Only twitter and instagram are supported.\nUsage: {config('PREFIX')}set twitter @TLC_Discord")
+            platforms = ", ".join(supported_sm)
+            await ctx.send(f"Platform not yet supported. Choose between ``{platforms}``.\nUsage: {config('PREFIX')}set twitter @TLC_Discord")
             return
         if not name or len(name) == 0:
-            await ctx.send(f"Please state your name on the platform. \nUsage: {config('PREFIX')}set twitter @TLC_Discord")
+            await ctx.send(f"Please state your name on the platform.\nUsage: {config('PREFIX')}set twitter @TLC_Discord")
             return
         name = normalize(platform,name)
         author = ctx.message.author.id
@@ -175,7 +176,7 @@ class SocialMedia(commands.Cog):
         conn = sqlite3.connect('example.db')
         c = conn.cursor()
         val = (author,platform,name)
-        c.execute("INSERT OR IGNORE INTO users(user_id,twitter,instagram) VALUES(?,?,?)", (author, '',''))
+        c.execute("INSERT OR IGNORE INTO users(user_id,twitter,instagram,personal_website,commission_sheet,youtube,deviantart) VALUES(?,?,?,?,?,?,?)", (author, '','','','','',''))
         c.execute(f"UPDATE users SET {platform}=? WHERE user_id=?",(name,author))
         conn.commit()
         conn.close()
@@ -196,9 +197,10 @@ class SocialMedia(commands.Cog):
         conn.commit()
         conn.close()
         await ctx.send("Removed your " + platform + " data.")
+
+
     @bot.command()
     async def socialmedia(self,ctx,user=None):
-
         if user == None:
             userid = ctx.message.author.id
         else:
@@ -211,7 +213,7 @@ class SocialMedia(commands.Cog):
         c.execute("SELECT * from users WHERE user_id=?", (userid,))
         result = c.fetchone()
         if result == None:
-            result = ("","","") # just a workaround for now
+            result = ("","","","","","") # just a workaround for now
 
 
         embed = embedsText(f"Social Media for {user}",'')
@@ -221,6 +223,12 @@ class SocialMedia(commands.Cog):
             embed.add_field(name='<:twitter:742641227622776903> Twitter',value=f"[{result[1]}](http://twitter.com/{result[1][1:]})",inline=False)
         if len(result[2]):
             embed.add_field(name='<:instagram:742641054033117184> Instagram',value=f"[{result[2]}](http://instagram.com/{result[2][1:]})",inline=False)
+        if len(result[3]):
+            embed.add_field(name='<:youtube:742653485098467399> Youtube',value=f"[{result[3]}](http://youtube.com/c/{result[3][1:]})",inline=False)
+        if len(result[4]):
+            embed.add_field(name='<:deviantart:742653657228640306> DeviantArt',value=f"[{result[4]}](https://www.deviantart.com/{result[4][1:]})",inline=False)
+        if len(result[5]):
+            embed.add_field(name='💻 Website',value=f"[{result[5]}]({result[5]})",inline=False)
 
         if len(embed.fields) == 0:
             embed.description = "This user has no social media linked yet."
@@ -233,8 +241,12 @@ class SocialMedia(commands.Cog):
 def normalize(platform,name):
         if name.startswith("@"):
            return name
+        elif platform == "personal_website":
+            if "https://" not in name:
+                return "https://" + name
+            return name
         else:
-           return "@" + name
+            return "@" + name
            
 # Required for the cog to be read by the bot
 def setup(client):

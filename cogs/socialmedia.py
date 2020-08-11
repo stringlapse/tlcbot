@@ -14,11 +14,14 @@ from index import embedsText
 from decouple import config
 from crop import prepare_and_fix_photo
 from urllib.request import urlopen
+from discord.utils import get
 
 shareArtChannel = int(config('SHARE_ART_CHANNEL'))
 modChannel = int(config('MOD_SOCIAL_ART_GALLERY'))
 botID = int(config('BOT_ID'))
 smRole = 'social media'
+
+
 supported_sm = ["twitter","instagram","deviantart","youtube","personal_website"]
 
 bot = commands.Bot(command_prefix=config('PREFIX'))
@@ -70,11 +73,8 @@ class SocialMedia(commands.Cog):
                 elif str(payload.emoji) == "🐦" or str(payload.emoji) == "📷":
                     instagram = bool(str(payload.emoji) == "📷")
                     twitter = bool(str(payload.emoji) == "🐦")
-                    optedIn = False
-
-                    for role in payload.member.roles:
-                        if role.name == 'social media':
-                            optedIn = True
+                    check_role = get(bot_msg.guild.roles, name=smRole)
+                    optedIn = check_role in payload.member.roles
 
                     if twitter:
                         await bot_msg.remove_reaction('🐦',payload.member)

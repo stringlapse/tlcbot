@@ -119,6 +119,25 @@ class SocialMedia(commands.Cog):
 
             conn.commit()
             conn.close()
+    
+    # DM's user once they add social media role
+    @commands.Cog.listener()
+    async def on_member_update(self,before,after):
+        if len(before.roles) < len(after.roles):
+            new_role = next(role for role in after.roles if role not in before.roles)
+            if new_role.name in (smRole):
+                channel = await after.create_dm()
+                platforms = ", ".join(supported_sm)
+                text = (
+                    f"By adding the {smRole} role you have opted in for having any of your artwork shared on TLC's social media."
+                    f" You may opt out simply by removing the role in the role manager channel\n\nIf you would like to have your social media tagged if your" 
+                    f" work gets reposted, type the following command in the server ``!set [platform] [name]``. We currently support ``{platforms}``."
+                    f" Only do this is you are comfortable with other members knowing your social media, as they will be able to see your account(s) by doing"
+                    f" ``!socialmedia`` {after.mention}"
+                )
+                await channel.send(text)
+
+
                     
 
 

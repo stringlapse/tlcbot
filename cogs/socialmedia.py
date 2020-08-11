@@ -68,19 +68,27 @@ class SocialMedia(commands.Cog):
                 if str(payload.emoji) == "❌":
                     await self.deleteMessage(bot_msg, result, c)
                 elif str(payload.emoji) == "🐦" or str(payload.emoji) == "📷":
+                    instagram = bool(str(payload.emoji) == "📷")
+                    twitter = bool(str(payload.emoji) == "🐦")
+                    optedIn = False
+
+                    for role in payload.member.roles:
+                        if role.name == 'social media':
+                            optedIn = True
+
+                    if twitter:
+                        await bot_msg.remove_reaction('🐦',payload.member)
+                        if int(result[3]) == 1 and optedIn:
+                            return await channel.send("This picture has already been posted")
+                    else: 
+                        await bot_msg.remove_reaction('📷',payload.member)
+                        if int(result[4]) == 1 and optedIn:
+                            return await channel.send("This picture has already been posted")
+
+                    if not optedIn:
+                        return await channel.send(f"User {payload.member} has opted out of TLC social media")
+
                     try:
-                        instagram = bool(str(payload.emoji) == "📷")
-                        twitter = bool(str(payload.emoji) == "🐦")
-
-                        if twitter:
-                            await bot_msg.remove_reaction('🐦',payload.member)
-                            if int(result[3]) == 1:
-                                return await channel.send("This picture has already been posted")
-                        else: 
-                            await bot_msg.remove_reaction('📷',payload.member)
-                            if int(result[4]) == 1:
-                                return await channel.send("This picture has already been posted")
-
                         def check(message):
                             return message.author.id == payload.user_id
 

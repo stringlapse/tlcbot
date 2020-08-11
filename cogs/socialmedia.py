@@ -129,18 +129,26 @@ class SocialMedia(commands.Cog):
                 channel = await after.create_dm()
                 platforms = ", ".join(supported_sm)
                 text = (
-                    f"By adding the {smRole} role you have opted in for having any of your artwork shared on TLC's social media."
-                    f" You may opt out simply by removing the role in the role manager channel\n\nIf you would like to have your social media tagged if your" 
+                    f"By adding the {smRole} role you have opted in for having any of your artwork posted on the server (particularly in the finished art channel) shared"
+                    f" on TLC's social media. You may opt out simply by removing the role in the role manager channel\n\nIf you would like to have your social media tagged if your" 
                     f" work gets reposted, type the following command in the server ``!set [platform] [name]``. We currently support ``{platforms}``."
                     f" Only do this is you are comfortable with other members knowing your social media, as they will be able to see your account(s) by doing"
                     f" ``!socialmedia`` {after.mention}"
                 )
                 await channel.send(text)
 
-
-                    
-
-
+        elif len(before.roles) > len(after.roles):
+            channel = await after.create_dm()
+            old_role = next(role for role in before.roles if role not in after.roles)
+            if old_role.name in (smRole):
+                channel = await after.create_dm()
+                platforms = ", ".join(supported_sm)
+                text = (
+                    f"You just removed the {smRole} role. By doing this none of your posts in the server will be reposted on TLC's social media; you have opted out. Keep in mind"
+                    f" that if you previously linked social media using the ``!set`` command users will still be able to see them with ``!socialmedia`` {after.mention}"
+                    f" if you would NOT like this to be the case, unlink any social media with ``!unlink [platform]``"
+                )
+                await channel.send(text)
 
     # Sends to Twitter from message url
     @commands.command()

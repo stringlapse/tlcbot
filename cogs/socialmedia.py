@@ -216,9 +216,9 @@ class SocialMedia(commands.Cog):
         embed = discord.Embed(title=f"Social Media for {user}")
         embed.set_thumbnail(url=user.avatar_url)
         if len(result[1]):
-            embed.add_field(name='Twitter',value=result[1],inline=False)
+            embed.add_field(name='<:twitter:742641227622776903> Twitter',value=f"[{result[1]}](http://twitter.com/{result[1][1:]})",inline=False)
         if len(result[2]):
-            embed.add_field(name='Instagram',value=result[2],inline=False)
+            embed.add_field(name='<:instagram:742641054033117184> Instagram',value=f"[{result[2]}](http://instagram.com/{result[2][1:]})",inline=False)
 
         #        await ctx.send(str(result))
         await ctx.send(embed=embed)

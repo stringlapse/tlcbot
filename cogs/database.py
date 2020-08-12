@@ -74,19 +74,24 @@ class Database(commands.Cog):
         await ctx.send(embed=embed)
 
     @commands.command()
-    async def balance(self, ctx):
+    async def balance(self, ctx, member:discord.Member=None):
+        memberID = ctx.author.id
+        name = ctx.author
+        if member is not None:
+            memberID = member.id
+            name = member
         conn = sqlite3.connect('example.db')
         c = conn.cursor()
-        c.execute(f"SELECT user_id FROM econ WHERE user_id = '{ctx.author.id}'")
+        c.execute(f"SELECT user_id FROM econ WHERE user_id = '{memberID}'")
         noUser = c.fetchone() is None
         if noUser:
-            val = (ctx.author.id, 5)
+            val = (memberID, 0)
             c.execute("INSERT INTO econ(user_id ,balance) VALUES(?,?)", val)
             conn.commit()
-        c.execute(f"SELECT user_id, balance FROM econ WHERE  user_id = '{ctx.author.id}'")
+        c.execute(f"SELECT user_id, balance FROM econ WHERE  user_id = '{memberID}'")
         result = c.fetchone()
         bal = int(result[1])
-        embed=embedsText(f'{ctx.message.author}\'s balance: {bal} :cookie:','')
+        embed=embedsText(f'{name}\'s balance: {bal} :cookie:','')
         await ctx.send(embed=embed)
     
     def check_all_message(self,check_for, message):

@@ -13,7 +13,7 @@ class Moderation(commands.Cog):
 
     @commands.command()
     @commands.has_role(admin_role)
-    async def mute(self,ctx, member: discord.Member):
+    async def mute(self,ctx):
         role = discord.utils.get(member.guild.roles, name = 'muted')
         await member.add_roles(role)
         embed=embedsText('User Muted!', f'**{member}** was muted by **{ctx.message.author}**!')
@@ -45,7 +45,10 @@ class Moderation(commands.Cog):
         val = (memberBal, member.id)
         c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
         conn.commit()
-        embed=embedsText(f'Gave {member} :cookie:',f'Reason: {" ".join(args)}')
+        reason = "None"
+        if len(args) > 0:
+            reason = " ".join(args)
+        embed=embedsText(f'Gave {member} :cookie:',f'Reason: {reason}')
         await ctx.send(embed=embed)
 
 def setup(client):

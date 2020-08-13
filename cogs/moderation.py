@@ -37,7 +37,7 @@ class Moderation(commands.Cog):
         c = conn.cursor()
         c.execute(f"SELECT user_id FROM econ WHERE user_id = '{member.id}'")
         if c.fetchone() is None:
-            val = (member.user.id, 5)
+            val = (member.id, 0)
             c.execute("INSERT INTO econ(user_id ,balance) VALUES(?,?)", val)
             conn.commit()
         c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{member.id}'")

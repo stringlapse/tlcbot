@@ -73,6 +73,7 @@ class Database(commands.Cog):
         embed.set_thumbnail(url="https://disboard.org/images/bot-command-image-thumbnail-error.png")
         await ctx.send(embed=embed)
 
+    # allows user to check their own or another user's balance
     @commands.command()
     async def balance(self, ctx, member:discord.Member=None):
         memberID = ctx.author.id
@@ -88,12 +89,31 @@ class Database(commands.Cog):
             val = (memberID, 0)
             c.execute("INSERT INTO econ(user_id ,balance) VALUES(?,?)", val)
             conn.commit()
-        c.execute(f"SELECT user_id, balance FROM econ WHERE  user_id = '{memberID}'")
+        c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{memberID}'")
         result = c.fetchone()
         bal = int(result[1])
         embed=embedsText(f'{name}\'s balance: {bal} :cookie:','')
         await ctx.send(embed=embed)
-    
+
+    @commands.command()
+    async def leaderboard(self, ctx):
+        conn = sqlite3.connect('example.db')
+        c = conn.cursor()
+        i = 1
+        string = ''
+        for row in c.execute("SELECT * FROM econ ORDER BY balance DESC"):
+            balance = int(row[1])
+            if balance > 0:
+                user = await self.client.fetch_user(int(row[0])) 
+                string += f'\n#{i}: {user}\t{balance} :cookie:'
+                i += 1
+            if i > 10:
+                break
+        embed=embedsText('TLC Leaderboard', f'{string}')                                                              
+        await ctx.send(embed=embed)
+        
+        
+   
     def check_all_message(self,check_for, message):
         if check_for in message.content:
             return True

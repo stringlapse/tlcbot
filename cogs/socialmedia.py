@@ -10,6 +10,7 @@ import re
 import sqlite3
 import asyncio
 import urllib.request
+import tweepy
 from instabot import Bot
 from index import embedsText
 from decouple import config
@@ -100,6 +101,13 @@ class SocialMedia(commands.Cog):
                             await channel.send("Type the description you would like to post <@" + str(payload.user_id) + ">")
                             description = await self.client.wait_for('message', check=check, timeout=60.0)
                             description = description.content
+
+                            if twitter:
+                                while len(description) > 280:
+                                    await channel.send(f"<@{str(payload.user_id)}> This tweet ``{description}`` exceeds the 280 character max. Type one with less characters")
+                                    description = await self.client.wait_for('message', check=check, timeout=60.0)
+                                    description = description.content 
+
                             await channel.send(f"Posting \"{description}\"\nIs that ok? ``y/n``")
                             response = await self.client.wait_for('message', check=check, timeout=60.0)
                             response = response.content
@@ -116,7 +124,7 @@ class SocialMedia(commands.Cog):
                             await self.postInstagram(url, description, channel)    
                         else: 
                             c.execute("UPDATE shared_art SET twitter = ? WHERE bot_message_id = ?", val)
-                            await channel.send("Posted to twitter... Well not actually but you get the point")
+                            await self.postTwitter(url, description, channel)
                     except asyncio.TimeoutError:
                         await channel.send("<@" + str(payload.user_id) + "> Took to long to respond. Try again.")
                     finally:
@@ -160,17 +168,25 @@ class SocialMedia(commands.Cog):
                 await channel.send(text)
 
     # Sends to Twitter from message url
-    @commands.command()
-    async def postTwitter(self,ctx,url):
+    async def postTwitter(self,url, description, channel):
         try:
-            m = re.findall('\d[0-9]+',url)
-            channelID = int(m[1])
-            msgID = int(m[2])
-            msg  = await self.client.get_channel(channelID).fetch_message(msgID)
-            await ctx.send(msg.attachments[0].url) 
+            msg = await channel.send("Beginning to post to twitter. May take a couple of minutes.") 
+            auth = tweepy.OAuthHandler(config('TWITTER_CONSUMER_KEY'), config('TWITTER_CONSUMER_SECRET')) 
+            auth.set_access_token(config('TWITTER_ACCESS_TOKEN'), config('TWITER_ACCESS_SECRET'))
+            api = tweepy.API(auth)
+
+            opener = urllib.request.URLopener()
+            opener.addheader('User-Agent', 'whatever')
+            photo = 'images/post.jpg'
+            filename, headers = opener.retrieve(url, photo)
+
+            status = api.update_with_media(photo, description)  
+            api.update_status(status = description)
         except Exception as e:
             print(e)
-            await ctx.send('Could not post. You suck')
+            await channel.send('Could not post. You suck')
+        finally:
+            await msg.edit(content="Posted! Check twitter to see if everything went well.") 
 
     # Sends to Instagram from message url
     async def postInstagram(self,url, description, channel):

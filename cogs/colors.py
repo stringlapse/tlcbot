@@ -60,7 +60,7 @@ class Colors(commands.Cog):
         tempSVG = open('images/tempSVG.svg','w')
         tempSVG.write(svgText + "</svg>")
         tempSVG.close()
-        # f = self.convertsSVG()
+        f = self.convertsSVG()
         embed=embedsText(f' {", ".join(colors)}','')
         embed.set_image(url="attachment://imageSend.png")
         embed.set_footer(text=f' {", ".join(hexes)}')

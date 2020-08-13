@@ -8,6 +8,7 @@ from discord.ext import commands
 import datetime
 import re
 import sqlite3
+import asyncio
 import urllib.request
 from instabot import Bot
 from index import embedsText
@@ -116,8 +117,8 @@ class SocialMedia(commands.Cog):
                         else: 
                             c.execute("UPDATE shared_art SET twitter = ? WHERE bot_message_id = ?", val)
                             await channel.send("Posted to twitter... Well not actually but you get the point")
-                    except Exception as e:
-                        print(e)
+                    except asyncio.TimeoutError:
+                        await channel.send("<@" + str(payload.user_id) + "> Took to long to respond. Try again.")
                     finally:
                         conn.commit()
                         c.execute("SELECT * FROM shared_art WHERE bot_message_id = ?", (str(payload.message_id),))

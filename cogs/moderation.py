@@ -3,6 +3,7 @@
 import discord
 from discord.ext import commands
 from index import embedsText
+import sqlite3
 
 class Moderation(commands.Cog):
     admin_role = "devs"
@@ -12,7 +13,7 @@ class Moderation(commands.Cog):
 
     @commands.command()
     @commands.has_role(admin_role)
-    async def mute(self,ctx, member: discord.Member):
+    async def mute(self,ctx):
         role = discord.utils.get(member.guild.roles, name = 'muted')
         await member.add_roles(role)
         embed=embedsText('User Muted!', f'**{member}** was muted by **{ctx.message.author}**!')
@@ -28,6 +29,27 @@ class Moderation(commands.Cog):
             await ctx.send(embed=embed)
         else:
             await ctx.send(f'**{member}** is not currently muted')
+    
+    @commands.command()
+    @commands.has_role(admin_role)
+    async def giveCookie(self,ctx, member: discord.Member, *args):
+        conn = sqlite3.connect('example.db')
+        c = conn.cursor()
+        c.execute(f"SELECT user_id FROM econ WHERE user_id = '{member.id}'")
+        if c.fetchone() is None:
+            val = (member.id, 0)
+            c.execute("INSERT INTO econ(user_id ,balance) VALUES(?,?)", val)
+            conn.commit()
+        c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{member.id}'")
+        memberBal = int(c.fetchone()[1]) + 1
+        val = (memberBal, member.id)
+        c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
+        conn.commit()
+        reason = "None"
+        if len(args) > 0:
+            reason = " ".join(args)
+        embed=embedsText(f'Gave {member} :cookie:',f'Reason: {reason}')
+        await ctx.send(embed=embed)
 
 def setup(client):
     client.add_cog(Moderation(client))

@@ -1,8 +1,9 @@
 .env
 *.pyc
 __pycache__
-example.db
+*.db
+*.log
+*.txt
+config/microwavedinnerfortwo_uuid_and_cookie.json
+images/
 *.stackdump
-imageRecieved.jpg
-tempSVG.svg
-imageSend.png

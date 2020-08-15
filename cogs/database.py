@@ -24,9 +24,6 @@ class Database(commands.Cog):
             )
         ''')
     
-        print("Database created")
-
-
         c.execute('''
         CREATE TABLE IF NOT EXISTS shared_art(
         bot_message_id text,
@@ -47,7 +44,18 @@ class Database(commands.Cog):
         personal_website text,
         UNIQUE(user_id)
             )
-        ''')    
+        ''')
+
+        
+        c.execute('''
+        CREATE TABLE IF NOT EXISTS commission(
+        user_id text,
+        commission_sheets text,
+        tags text,
+        bio text
+        UNIQUE(user_id)
+            )
+        ''')     
         
         conn.commit()
         conn.close()

@@ -23,6 +23,14 @@ async def shutdown(ctx):
     print(f"{str(ctx.message.author)} (id {str(ctx.message.author.id)}) requested a shutdown")
     await bot.close()
 
+@bot.command()
+@commands.has_role(admin_role)
+async def restart(ctx):
+    await ctx.send("Restarting bot...")
+    print(f"{str(ctx.message.author)} (id {str(ctx.message.author.id)}) requested a restart")
+    await bot.close()
+    os.execl("/bin/bash", "/bin/bash", "./run.sh")
+
 def embedsText(title, description):
     if title == '':
         return discord.Embed(description=description, color=0x228B22)

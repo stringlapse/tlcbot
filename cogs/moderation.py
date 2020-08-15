@@ -3,10 +3,10 @@
 import discord
 from discord.ext import commands
 from index import embedsText
+from index import admin_role
 import sqlite3
 
 class Moderation(commands.Cog):
-    admin_role = "devs"
 
     def __init__(self, client):
         self.client = client

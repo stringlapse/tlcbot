@@ -5,6 +5,7 @@ from discord.ext import commands
 from decouple import config
 
 bot = commands.Bot(command_prefix = config('PREFIX'))
+bot.remove_command('help') # Remove default help command so we can implement our own
 
 admin_role = "devs"
 

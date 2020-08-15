@@ -29,7 +29,14 @@ class Moderation(commands.Cog):
             await ctx.send(embed=embed)
         else:
             await ctx.send(f'**{member}** is not currently muted')
-    
+
+    @commands.command()
+    @commands.has_role(admin_role)
+    async def clear(self, ctx, amount=1):
+        await ctx.channel.purge(limit=amount+1)
+        embed=embedsText(f'{amount} messages cleared!', '')
+        await ctx.send(embed=embed)
+
     @commands.command()
     @commands.has_role(admin_role)
     async def giveCookie(self,ctx, member: discord.Member, *args):

@@ -45,7 +45,6 @@ class Database(commands.Cog):
         youtube text,
         deviantart text,
         personal_website text,
-        commission_sheet text,
         UNIQUE(user_id)
             )
         ''')    

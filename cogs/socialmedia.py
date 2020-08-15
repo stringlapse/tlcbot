@@ -42,7 +42,6 @@ class SocialMedia(commands.Cog):
                     for i in range(0, len(message.attachments)):
                         url = message.attachments[i].url
                         embed = embedsText(f"New image from #share-your-art", f'**Source**\n[Jump!]({message.jump_url})')
-                        embed.set_thumbnail(url=message.author.avatar_url)
                         embed.set_image(url=url)
                         footerText = f"{message.author.nick} ({message.author}) on {datetime.datetime.now().date()}"
                         
@@ -197,7 +196,6 @@ class SocialMedia(commands.Cog):
             filename, headers = opener.retrieve(url, photo)
 
             status = api.update_with_media(photo, description)  
-            api.update_status(status = description)
         except Exception as e:
             print(e)
             await channel.send('Could not post. You suck')

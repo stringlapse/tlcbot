@@ -43,12 +43,28 @@ class SocialMedia(commands.Cog):
                         url = message.attachments[i].url
                         embed = embedsText("New image from #share-your-art",'')
                         embed.set_image(url=url)
-                        embed.set_footer(text=f"{message.author} on {datetime.datetime.now().date()}")
+                        footerText = f"{message.author.nick} ({message.author}) on {datetime.datetime.now().date()}"
+                        
+                        conn = sqlite3.connect('example.db')
+                        c = conn.cursor()
+                        c.execute("SELECT * from users WHERE user_id=?", (message.author.id,))
+                        result = c.fetchone()
+                        if result is not None:
+                            if len(result[1]):
+                                footerText += f"\nTwitter: {result[1]}"
+                            if len(result[2]):
+                                footerText += f"\nInstagram: {result[2]}"
+                            if len(result[3]):
+                                footerText += f"\nYoutube: {result[3]}"
+                            if len(result[4]):
+                                footerText += f"\nDeviantArt: {result[4]}"
+                            if len(result[5]):
+                                footerText += f"\nPersonal Website: {result[5]}"
+
+                        embed.set_footer(text=footerText)
                         bot_msg = await self.client.get_channel(modChannel).send(embed=embed)
 
                         # stores message information into database ()
-                        conn = sqlite3.connect('example.db')
-                        c = conn.cursor()
                         val = (bot_msg.id, message.id, url, 0, 0)
                         c.execute("INSERT INTO shared_art(bot_message_id,original_message_id,image_url,twitter,instagram) VALUES(?,?,?,?,?)", val)
                         conn.commit()

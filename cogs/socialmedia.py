@@ -41,7 +41,8 @@ class SocialMedia(commands.Cog):
                 if role.name == 'social media' and len(message.attachments) > 0:
                     for i in range(0, len(message.attachments)):
                         url = message.attachments[i].url
-                        embed = embedsText("New image from #share-your-art",'')
+                        embed = embedsText(f"New image from #share-your-art", f'**Source**\n[Jump!]({message.jump_url})')
+                        embed.set_thumbnail(url=message.author.avatar_url)
                         embed.set_image(url=url)
                         footerText = f"{message.author.nick} ({message.author}) on {datetime.datetime.now().date()}"
                         
@@ -63,10 +64,9 @@ class SocialMedia(commands.Cog):
 
                         embed.set_footer(text=footerText)
                         bot_msg = await self.client.get_channel(modChannel).send(embed=embed)
-
                         # stores message information into database ()
                         val = (bot_msg.id, message.id, url, 0, 0)
-                        c.execute("INSERT INTO shared_art(bot_message_id,original_message_id,image_url,twitter,instagram) VALUES(?,?,?,?,?)", val)
+                        c.execute("INSERT INTO shared_art(bot_message_id,original_message_id, image_url,twitter,instagram) VALUES(?,?,?,?,?)", val)
                         conn.commit()
                         conn.close()
 

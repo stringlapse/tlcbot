@@ -40,6 +40,8 @@ class Moderation(commands.Cog):
     @commands.command()
     @commands.has_role(admin_role)
     async def giveCookie(self,ctx, member: discord.Member, *args):
+        if member == ctx.message.author:
+            return await ctx.send("You can't give yourself a cookie silly")
         conn = sqlite3.connect('example.db')
         c = conn.cursor()
         c.execute(f"SELECT user_id FROM econ WHERE user_id = '{member.id}'")

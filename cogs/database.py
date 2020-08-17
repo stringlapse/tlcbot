@@ -3,6 +3,8 @@
 
 import discord
 from discord.ext import commands
+from index import admin_role
+from decouple import config
 import sqlite3
 import re
 from index import embedsText
@@ -57,7 +59,7 @@ class Database(commands.Cog):
     # awards cookie when someone bumped disboard
     @commands.Cog.listener()
     async def on_message(self, message):
-        if message.author.id == 728026870154526731:
+        if message.author.id == int(config('DISBOARD_ID')):
             if self.check_all_message("Bump done :thumbsup:", message):
                 m = re.search(r'<@!?(\d+)>', message.embeds[0].description)
                 tag = m.group(0)
@@ -77,12 +79,12 @@ class Database(commands.Cog):
                 val = (memberBal, member)
                 c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
                 conn.commit()
-                embed=embedsText(f'Thanks for bumping. Have a :cookie:!','')
                 channel = message.channel
-                await channel.send(embed=embed)
+                await channel.send(f"Thanks for bumping {tag} have a :cookie:")
          
     # simulates disboard's bump message
     @commands.command()
+    @commands.has_role(admin_role)
     async def bumpYes(self, ctx):
         embed = discord.Embed(title="DISBOARD: The Public Server List", 
                             url="https://disboard.org/",
@@ -93,6 +95,7 @@ class Database(commands.Cog):
     
     # simulates disboard's bump fail message
     @commands.command()
+    @commands.has_role(admin_role)
     async def bumpNo(self, ctx):
         embed = discord.Embed(title="DISBOARD: The Public Server List", 
                             url="https://disboard.org/",
@@ -102,7 +105,7 @@ class Database(commands.Cog):
         await ctx.send(embed=embed)
 
     # allows user to check their own or another user's balance
-    @commands.command()
+    @commands.command(pass_context = True , aliases=['cookie', 'cookies'])
     async def balance(self, ctx, member:discord.Member=None):
         memberID = ctx.author.id
         name = ctx.author

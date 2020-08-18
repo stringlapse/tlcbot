@@ -12,6 +12,9 @@ class Help(commands.Cog):
     # Commands
     @commands.command()
     async def help(self, ctx, page="1"):
+        # ["command", "simple description", "detailed description"]
+        # If you aren't writing a detailed description leave an empty string.
+        # This list is manually alphabetized. Put your new command where it belongs in order.
         helpContent = [
         ["aa", "AA", "aa detailed description"],
         ["bb", "BB", "bb detailed description"],
@@ -68,6 +71,9 @@ class Help(commands.Cog):
     @commands.command()
     @commands.has_role(admin_role)
     async def modhelp(self, ctx, page="1"):
+        # ["command", "simple description", "detailed description"]
+        # If you aren't writing a detailed description leave an empty string.
+        # This list is manually alphabetized. Put your new command where it belongs in order.
         modHelpContent = [
         ["aa", "AA","generic filler content"],
         ["bb", "BB","generic filler content"],

@@ -1,4 +1,13 @@
-# An example of how a Cog should be properly instantiated
+# ============================================================
+# There are two lists of help data, try to avoid putting your
+# command in the wrong one. Standard help is first, mod help
+# is second. The format is
+# ["command", "simple description", "detailed description"]
+# If you aren't writing a detailed description leave an empty
+# string. These lists are manually alphabetized because it's
+# probably faster not to reorder the list every time someone
+# uses the help command. Put your command where it belongs in
+# the list alphabetically.
 
 import discord
 from discord.ext import commands
@@ -13,8 +22,6 @@ class Help(commands.Cog):
     @commands.command()
     async def help(self, ctx, page="1"):
         # ["command", "simple description", "detailed description"]
-        # If you aren't writing a detailed description leave an empty string.
-        # This list is manually alphabetized. Put your new command where it belongs in order.
         helpContent = [
         ["aa", "AA", "aa detailed description"],
         ["bb", "BB", "bb detailed description"],
@@ -72,8 +79,6 @@ class Help(commands.Cog):
     @commands.has_role(admin_role)
     async def modhelp(self, ctx, page="1"):
         # ["command", "simple description", "detailed description"]
-        # If you aren't writing a detailed description leave an empty string.
-        # This list is manually alphabetized. Put your new command where it belongs in order.
         modHelpContent = [
         ["aa", "AA","generic filler content"],
         ["bb", "BB","generic filler content"],

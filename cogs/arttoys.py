@@ -7,6 +7,7 @@ from decouple import config
 from index import embedsText
 from PIL import Image, ImageDraw, ImageFont
 import random
+from random import randrange
 from io import BytesIO
 
 #for i in range(1,100):
@@ -33,8 +34,8 @@ class ArtToys(commands.Cog):
     async def prompt(self,ctx):
         user = self.client.get_user(ctx.message.author.id)
         embed = embedsText(await self.gen(),'')
-        embed.set_author (name="Art prompt for " + str(user),icon_url=user.avatar_url)
-        embed.set_footer(text="react with 🔁 to reroll.")
+        embed.set_author (name="Art prompt for " + str(user).split("#")[0],icon_url=user.avatar_url)
+        embed.set_footer(text="🔁 to reroll.")
         msg = await ctx.send(embed=embed)
         await msg.add_reaction('🔁')
 
@@ -46,10 +47,10 @@ class ArtToys(commands.Cog):
             channel = self.client.get_channel(ctx.channel_id)
             msg = await channel.fetch_message(ctx.message_id)
             user = self.client.get_user(ctx.user_id)
-            if(msg.author.id == botID and msg.embeds[0] and msg.embeds[0].author.name == "Art prompt for " + str(user)):
+            if(msg.author.id == botID and msg.embeds[0] and msg.embeds[0].author.name == "Art prompt for " + str(user).split("#")[0]):
                 embed = embedsText(await self.gen(),'')
-                embed.set_author (name="Art prompt for " + str(user),icon_url=user.avatar_url)
-                embed.set_footer(text="react with 🔁 to reroll.")
+                embed.set_author (name="Art prompt for " + str(user).split("#")[0],icon_url=user.avatar_url)
+                embed.set_footer(text="🔁 to reroll.")
                 await msg.edit(embed=embed)
                 await msg.remove_reaction("🔁",user)
                 #print("reaction on message made by bot")
@@ -61,33 +62,39 @@ class ArtToys(commands.Cog):
         img = Image.new('RGB', (1000, 1000), color = (255, 255, 255))
         d = ImageDraw.Draw(img)
         fnt = ImageFont.truetype('/usr/share/fonts/truetype/freefont/FreeSansBold.ttf', 26)
-
+        tlclogo = Image.open("tlc_logo.png")
         random.shuffle(self.bingo)
+        _, h = d.textsize("qh")
         elements = self.bingo[:25]
         for i in range(0,5):
-            d.line((0,i*200,1000,i*200),fill=(0,0,0))
-            d.line((i*200,0,i*200,1000),fill=(0,0,0))
+            d.line((0,i*200,1000,i*200),fill=(0,0,0),width=5)
+            d.line((i*200,0,i*200,1000),fill=(0,0,0),width=5)
             for j in range(0,5):
                 if i != 2 or j != 2:
                     text = elements[i*5+j]
-                    w, h = d.textsize(text,font=fnt)
-                    d.text((i*200 + (200-w)/2,j*200+(200-h)/2), text, fill=(0,0,0),font=fnt)
-                else:
-                    text = "TLC BINGO"
-                    w, h = d.textsize(text,font=fnt)
-                    print(i)
-                    print(i*200 + (200-w)/2)
-                    print(j)
-                    print(j*200 + (200-h)/2)
-                    d.text((i*200+(200-w)/2,j*200+(200-h)/2),"TLC BINGO",fill=(255,0,0),font=fnt)
+                    w, _ = d.textsize(text,font=fnt)
+                    d.text((i*200 + (200-w)/2,j*200+(200-h)/2), text, fill=(randrange(0,150),randrange(0,150),randrange(0,150)),font=fnt)
+                # else:
+                #     text = "TLC BINGO"
+                #     w, h = d.textsize(text,font=fnt)
+                #     print(i)
+                #     print(i*200 + (200-w)/2)
+                #     print(j)
+                #     print(j*200 + (200-h)/2)
+                #     d.text((i*200+(200-w)/2,j*200+(200-h)/2),"TLC BINGO",fill=(255,0,0),font=fnt)
         #print(type(img))
-        
+        img.paste(tlclogo,(402,402),tlclogo)
         img.save("test.png")
         buffer = BytesIO()
         img.save(buffer,"png")
         buffer.seek(0)
         file = discord.File(filename="tlcbingo.png", fp=buffer)
-        await ctx.send(file=file)
+        embed = embedsText("Art Bingo!","Draw an image that would score a bingo on the following sheet")
+        #user = self.client.get_user(ctx.message.author.id)
+        #embed.set_author(name=str(user),icon_url=user.avatar_url)
+        
+        #embed.set_image(url=buffer)
+        await ctx.send(file=file) #ctx.send(embed=embed)
         
 
 # Required for the cog to be read by the bot

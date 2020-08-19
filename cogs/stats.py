@@ -2,15 +2,16 @@
 
 import discord
 import sqlite3
-import aiocron
 import asyncio
-from discord.ext import commands
+import traceback
+from discord.ext import tasks, commands
 from datetime import date
 from decouple import config
 
 class Stats(commands.Cog):
     def __init__(self, client):
         self.client = client
+        self.updateDay.start()
     
     # Creates the day and member stat counter channels if not in the server. Updates them if they are.
     @commands.Cog.listener()
@@ -49,7 +50,6 @@ class Stats(commands.Cog):
         else:
             channel = guild.get_channel(int(result[0]))
             await channel.edit(name=daysText)
-
         conn.commit()
         conn.close()   
             
@@ -91,9 +91,12 @@ class Stats(commands.Cog):
         if result is not None:
             await self.updateCount(result, member.guild)
     
-    # Cron job to update the day stat every midnight
-    @aiocron.crontab('0 0 * * *')
+    # Cron job (well it's a discord task) to update the day stat every hour. I avoided doing every 24 hours
+    # Because if you start the bot at two in the afternoon the day counter wont really switch until that time
+    # All this code does is continually check if the day has changed and if so it updates the date accordingly.
+    @tasks.loop(hours=1.0)
     async def updateDay(self):
+        guild = self.client.get_guild(int(config('GUILD_ID')))
         print("cron cron")
         delta = countsDays()
         daysText = f'Days Open: {delta}'
@@ -105,6 +108,11 @@ class Stats(commands.Cog):
             channel = guild.get_channel(int(result[0]))
         await channel.edit(name=daysText)
     
+    # Code necessary for the task 
+    @updateDay.before_loop
+    async def updateDay_before(self):
+        await self.client.wait_until_ready()
+    
     # Function to recalculate the number of members and "update" the channels
     # as oppose to adding and subtracting of someone joins or leaves, which may
     # lead to innacuracies 
@@ -115,6 +123,7 @@ class Stats(commands.Cog):
         if result is not None:
             channel = guild.get_channel(int(result[0]))
             await channel.edit(name=memberText)
+    
         
 # Required for the cog to be read by the bot
 def setup(client):
@@ -123,5 +132,8 @@ def setup(client):
 # Returns how many days it has been since the server's opening
 def countsDays():
     return (date.today() - date(2019,8,22)).days
+
+
+
 
 

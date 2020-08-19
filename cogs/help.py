@@ -80,8 +80,8 @@ class Help(commands.Cog):
     async def modhelp(self, ctx, page="1"):
         # ["command", "simple description", "detailed description"]
         modHelpContent = [
-        ["aa", "AA","generic filler content"],
-        ["bb", "BB","generic filler content"],
+        ["restart", "⚠ Restarts the bot","This should be safe for any mod to use but please ask someone on the bot team before using it"],
+        ["shutdown", "⚠ Shuts the bot down","Do not use this unless absolutely necessary. The bot will not restart on its own."],
         ["cc", "CC","generic filler content"],
         ["dd", "DD","generic filler content"],
         ["ee", "EE","generic filler content"],

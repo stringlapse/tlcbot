@@ -5,6 +5,9 @@ import discord
 from discord.ext import commands
 from decouple import config
 from index import embedsText
+from PIL import Image, ImageDraw, ImageFont
+import random
+from io import BytesIO
 
 #for i in range(1,100):
 #    prompt()
@@ -16,7 +19,9 @@ class ArtToys(commands.Cog):
     def __init__(self, client):
         self.client = client
         self.grammar = CFG.fromstring(open("default_grammar.cfg").read())
+        self.bingo = open("bingo.cfg").read().split("\n")
         self.all_prompts = list(generate(self.grammar))
+        print(str(len(self.bingo)) + " bingo elements loaded")
         print(str(len(self.all_prompts)) + " prompts loaded")
 
     async def gen(self):
@@ -50,6 +55,40 @@ class ArtToys(commands.Cog):
                 #print("reaction on message made by bot")
                 #print(msg)
             pass
+
+    @bot.command()
+    async def bingo(self,ctx):
+        img = Image.new('RGB', (1000, 1000), color = (255, 255, 255))
+        d = ImageDraw.Draw(img)
+        fnt = ImageFont.truetype('/usr/share/fonts/truetype/freefont/FreeSansBold.ttf', 26)
+
+        random.shuffle(self.bingo)
+        elements = self.bingo[:25]
+        for i in range(0,5):
+            d.line((0,i*200,1000,i*200),fill=(0,0,0))
+            d.line((i*200,0,i*200,1000),fill=(0,0,0))
+            for j in range(0,5):
+                if i != 2 or j != 2:
+                    text = elements[i*5+j]
+                    w, h = d.textsize(text,font=fnt)
+                    d.text((i*200 + (200-w)/2,j*200+(200-h)/2), text, fill=(0,0,0),font=fnt)
+                else:
+                    text = "TLC BINGO"
+                    w, h = d.textsize(text,font=fnt)
+                    print(i)
+                    print(i*200 + (200-w)/2)
+                    print(j)
+                    print(j*200 + (200-h)/2)
+                    d.text((i*200+(200-w)/2,j*200+(200-h)/2),"TLC BINGO",fill=(255,0,0),font=fnt)
+        #print(type(img))
+        
+        img.save("test.png")
+        buffer = BytesIO()
+        img.save(buffer,"png")
+        buffer.seek(0)
+        file = discord.File(filename="tlcbingo.png", fp=buffer)
+        await ctx.send(file=file)
+        
 
 # Required for the cog to be read by the bot
 def setup(client):

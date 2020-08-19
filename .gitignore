@@ -9,3 +9,4 @@ images/
 *.stackdump
 .pylintrc
 example.db
+*~

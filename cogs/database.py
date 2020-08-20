@@ -47,7 +47,14 @@ class Database(commands.Cog):
         personal_website text,
         UNIQUE(user_id)
             )
-        ''')    
+        ''')   
+
+        c.execute('''
+        CREATE TABLE IF NOT EXISTS starboard(
+        message_id text,
+        bot_message_id text
+            )
+        ''')
         
         conn.commit()
         conn.close()

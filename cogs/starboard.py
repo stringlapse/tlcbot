@@ -24,7 +24,7 @@ class Starboard(commands.Cog):
                 c = conn.cursor()
                 c.execute('SELECT * FROM starboard WHERE message_id = ?',(reaction.message.id,))
                 result = c.fetchone()
-                message = f'{reaction.emoji}**{count}**{reaction.message.channel.mention}'
+                message = f'{reaction.emoji} **{count}** {reaction.message.channel.mention}'
                 if result is None:
                     embed = discord.Embed(description=reaction.message.content,color=0x228B22)
                     embed.set_author(name=user.name,icon_url=user.avatar_url)
@@ -41,6 +41,12 @@ class Starboard(commands.Cog):
                     c.execute('INSERT INTO starboard(message_id,bot_message_id) VALUES(?,?)',(reaction.message.id,sent_msg.id))
                     conn.commit()
                 else:
+                    emoji = '⭐'
+                    if count >= 5:
+                        emoji = '🌟'
+                    if count >= 10:
+                        emoji = '💫'
+                    message = f'{emoji} **{count}** {reaction.message.channel.mention}'
                     bot_msg = await starboard.fetch_message(int(result[1]))
                     await bot_msg.edit(content=message)
     

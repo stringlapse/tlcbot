@@ -23,20 +23,9 @@ class Help(commands.Cog):
     async def help(self, ctx, page="1"):
         # ["command", "simple description", "detailed description"]
         helpContent = [
-        ["aa", "AA", "aa detailed description"],
-        ["bb", "BB", "bb detailed description"],
-        ["cc", "CC", "cc detailed description"],
-        ["dd", "DD", "dd detailed description"],
-        ["ee", "EE", "ee detailed description"],
-        ["ff", "FF", "ff detailed description"],
-        ["gg", "GG", "gg detailed description"],
-        ["hh", "HH", "hh detailed description"],
-        ["ii", "II", "ii detailed description"],
-        ["jj", "JJ", "jj detailed description"],
-        ["kk", "KK", "kk detailed description"],
-        ["ll", "LL", "ll detailed description"],
-        ["mm", "MM", ""],
-        ["cookies", "Shows how many cookies the user has", "Cookies are a valuable resource for TLC, you can get them by:\n - bumping the server with disboard or discord.me\n - giving detailed and helpful critiques to others\n - uplifting the community by having pleasant conversations with others\n\n🍪 Stock up on them so we can start a rewards program!"]]
+        ["bingo", "Generates a random art prompt bingo card", "Draw something that uses the things in all 5 squares in any line. Diagonal lines count, TLC is a free space. Don't forget to shout bingo and share your drawing when you're done!"],
+        ["cookies", "Shows how many cookies the user has", "Cookies are a valuable resource for TLC, you can get them by:\n - bumping the server with disboard or discord.me\n - giving detailed and helpful critiques to others\n - uplifting the community by having pleasant conversations with others\n\n🍪 Stock up on them so we can start a rewards program!"],
+        ["prompt", "Generates a random art prompt", ""]]
 
         helpPages = (len(helpContent)//5)+1
 
@@ -81,41 +70,7 @@ class Help(commands.Cog):
         # ["command", "simple description", "detailed description"]
         modHelpContent = [
         ["restart", "⚠ Restarts the bot","This should be safe for any mod to use but please ask someone on the bot team before using it"],
-        ["shutdown", "⚠ Shuts the bot down","Do not use this unless absolutely necessary. The bot will not restart on its own."],
-        ["cc", "CC","generic filler content"],
-        ["dd", "DD","generic filler content"],
-        ["ee", "EE","generic filler content"],
-        ["ff", "FF","generic filler content"],
-        ["gg", "GG","generic filler content"],
-        ["hh", "HH","generic filler content"],
-        ["ii", "II","generic filler content"],
-        ["jj", "JJ","generic filler content"],
-        ["kk", "KK","generic filler content"],
-        ["ll", "LL","generic filler content"],
-        ["aa", "AA","generic filler content"],
-        ["bb", "BB","generic filler content"],
-        ["cc", "CC","generic filler content"],
-        ["dd", "DD","generic filler content"],
-        ["ee", "EE","generic filler content"],
-        ["ff", "FF","generic filler content"],
-        ["gg", "GG","generic filler content"],
-        ["hh", "HH","generic filler content"],
-        ["ii", "II","generic filler content"],
-        ["jj", "JJ","generic filler content"],
-        ["kk", "KK","generic filler content"],
-        ["ll", "LL","generic filler content"],
-        ["aa", "AA","generic filler content"],
-        ["bb", "BB","generic filler content"],
-        ["cc", "CC","generic filler content"],
-        ["dd", "DD","generic filler content"],
-        ["ee", "EE","generic filler content"],
-        ["ff", "FF","generic filler content"],
-        ["gg", "GG","generic filler content"],
-        ["hh", "HH","generic filler content"],
-        ["ii", "II","generic filler content"],
-        ["jj", "JJ","generic filler content"],
-        ["kk", "KK","generic filler content"],
-        ["ll", "LL",""]]
+        ["shutdown", "⚠ Shuts the bot down","Do not use this unless absolutely necessary. The bot will not restart on its own."]]
 
         modHelpPages = (len(modHelpContent)//5)+1
 

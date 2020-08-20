@@ -19,6 +19,12 @@ async def unload(ctx, extension):
 
 @bot.command()
 @commands.has_role(admin_role)
+async def reload(ctx, extension):
+    bot.unload_extension(f'cogs.{extension}')
+    bot.load_extension(f'cogs.{extension}')
+
+@bot.command()
+@commands.has_role(admin_role)
 async def shutdown(ctx):
     await ctx.send("Shutting down bot...")
     print(f"{str(ctx.message.author)} (id {str(ctx.message.author.id)}) requested a shutdown")

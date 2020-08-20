@@ -15,6 +15,7 @@ from io import BytesIO
 
 botID = int(config('BOT_ID'))
 bot = commands.Bot(command_prefix=config('PREFIX'))
+bingoChannel = int(config('MOD_BINGO_CHANNEL'))
 
 class ArtToys(commands.Cog):
     def __init__(self, client):
@@ -89,12 +90,14 @@ class ArtToys(commands.Cog):
         img.save(buffer,"png")
         buffer.seek(0)
         file = discord.File(filename="tlcbingo.png", fp=buffer)
-        embed = embedsText("Art Bingo!","Draw an image that would score a bingo on the following sheet")
-        #user = self.client.get_user(ctx.message.author.id)
-        #embed.set_author(name=str(user),icon_url=user.avatar_url)
+        bot_msg = await self.client.get_channel(bingoChannel).send(file=file)
+        embed = embedsText("Art Bingo!","Draw an image that would score a bingo on the following sheet. Don't forget to shout bingo and share your finished drawing!")
+        user = self.client.get_user(ctx.message.author.id)
+        embed.set_author (name="TLC Bingo card for " + str(user).split("#")[0],icon_url=user.avatar_url)
         
-        #embed.set_image(url=buffer)
-        await ctx.send(file=file) #ctx.send(embed=embed)
+        embed.set_image(url=bot_msg.attachments[0].url)
+        #await ctx.send(file=file)
+        await ctx.send(embed=embed)
         
 
 # Required for the cog to be read by the bot

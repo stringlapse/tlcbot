@@ -1,6 +1,6 @@
 from nltk import CFG
 import random
-from nltk.parse.generate import generate
+#from nltk.parse.generate import generate
 import discord
 from discord.ext import commands
 from decouple import config
@@ -17,25 +17,35 @@ botID = int(config('BOT_ID'))
 bot = commands.Bot(command_prefix=config('PREFIX'))
 bingoChannel = int(config('MOD_BINGO_CHANNEL'))
 
+prompt_charprops = open("arttoys_prompts/charprops.cfg").read().split("\n")
+prompt_chars = open("arttoys_prompts/chars.cfg").read().split("\n")
+prompt_colors = open("arttoys_prompts/colors.cfg").read().split("\n")
+prompt_scenery = open("arttoys_prompts/scenery.cfg").read().split("\n")
+prompt_sceneryprops = open("arttoys_prompts/sceneryprops.cfg").read().split("\n")
+
 class ArtToys(commands.Cog):
     def __init__(self, client):
         self.client = client
-        self.grammar = CFG.fromstring(open("default_grammar.cfg").read())
+        #self.grammar = CFG.fromstring(open("default_grammar.cfg").read())
         self.bingo = open("bingo.cfg").read().split("\n")
-        self.all_prompts = list(generate(self.grammar))
+        #self.all_prompts = list(generate(self.grammar))
         print(str(len(self.bingo)) + " bingo elements loaded")
-        print(str(len(self.all_prompts)) + " prompts loaded")
+        #print(str(len(self.all_prompts)) + " prompts loaded")
 
     async def gen(self):
-        prompt = ' '.join(random.choice(self.all_prompts))
+        #prompt = ' '.join(random.choice(self.all_prompts))
         #print(prompt)
+        if random.random() < 0.05: # 1/20 chance to omit charprop
+            prompt = random.choice(prompt_chars)+' '+random.choice(prompt_scenery).format(sceneryprop=random.choice(prompt_sceneryprops))    
+        else:
+            prompt = random.choice(prompt_chars)+' '+random.choice(prompt_charprops).format(color=random.choice(prompt_colors))+' '+random.choice(prompt_scenery).format(sceneryprop=random.choice(prompt_sceneryprops))
         return (prompt)
 
     @bot.command()
     async def prompt(self,ctx):
         user = self.client.get_user(ctx.message.author.id)
         embed = embedsText(await self.gen(),'')
-        embed.set_author (name="Art prompt for " + str(user).split("#")[0],icon_url=user.avatar_url)
+        embed.set_author (name="Art prompt for " + user.name,icon_url=user.avatar_url)
         embed.set_footer(text="🔁 to reroll.")
         msg = await ctx.send(embed=embed)
         await msg.add_reaction('🔁')
@@ -50,7 +60,7 @@ class ArtToys(commands.Cog):
             user = self.client.get_user(ctx.user_id)
             if(msg.author.id == botID and msg.embeds[0] and msg.embeds[0].author.name == "Art prompt for " + str(user).split("#")[0]):
                 embed = embedsText(await self.gen(),'')
-                embed.set_author (name="Art prompt for " + str(user).split("#")[0],icon_url=user.avatar_url)
+                embed.set_author (name="Art prompt for " + user.name,icon_url=user.avatar_url)
                 embed.set_footer(text="🔁 to reroll.")
                 await msg.edit(embed=embed)
                 await msg.remove_reaction("🔁",user)

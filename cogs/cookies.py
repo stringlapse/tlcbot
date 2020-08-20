@@ -44,6 +44,29 @@ class Cookies(commands.Cog):
             c.execute("DELETE FROM invites WHERE invite_id =?", (str(result[0]),))
         conn.commit()
         conn.close()
+    
+    @commands.command()
+    @commands.has_role(admin_role)
+    async def givecookie(self,ctx, member: discord.Member, *args):
+        if member == ctx.message.author:
+            return await ctx.send("You can't give yourself a cookie silly")
+        conn = sqlite3.connect('example.db')
+        c = conn.cursor()
+        c.execute(f"SELECT user_id FROM econ WHERE user_id = '{member.id}'")
+        if c.fetchone() is None:
+            val = (member.id, 0)
+            c.execute("INSERT INTO econ(user_id ,balance) VALUES(?,?)", val)
+            conn.commit()
+        c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{member.id}'")
+        memberBal = int(c.fetchone()[1]) + 1
+        val = (memberBal, member.id)
+        c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
+        conn.commit()
+        reason = "None"
+        if len(args) > 0:
+            reason = " ".join(args)
+        embed=embedsText(f'Gave {member} :cookie:',f'Reason: {reason}')
+        await ctx.send(embed=embed)
 
     # Gives a cookie to the person who invited user 
     @commands.Cog.listener()
@@ -80,9 +103,7 @@ class Cookies(commands.Cog):
                 m = re.search(r'<@!?(\d+)>', message.embeds[0].description)
                 tag = m.group(0)
                 member = tag
-                removeChars = ["<",">","@"]
-                for i in removeChars:
-                    member = member.replace(i,"")
+                member = member[2:member.find('>')]
                 conn = sqlite3.connect('example.db')
                 c = conn.cursor()
                 c.execute(f"SELECT user_id FROM econ WHERE user_id = '{member}'")
@@ -151,8 +172,8 @@ class Cookies(commands.Cog):
         for row in c.execute("SELECT * FROM econ ORDER BY balance DESC"):
             balance = int(row[1])
             if balance > 0:
-                user = await self.client.fetch_user(int(row[0][1:])) 
-                string += f'\n#{i}: {user}\t{balance} :cookie:'
+                user = await self.client.fetch_user(int(row[0])) 
+                string += f'\n#{i}: **{balance}** :cookie: \t{user}'
                 i += 1
             if i > 10:
                 break

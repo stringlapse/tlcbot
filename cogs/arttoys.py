@@ -43,9 +43,9 @@ class ArtToys(commands.Cog):
 
     @bot.command()
     async def prompt(self,ctx):
-        user = self.client.get_user(ctx.message.author.id)
+        member = ctx.message.author #self.client.get_user(ctx.message.author.id)
         embed = embedsText(await self.gen(),'')
-        embed.set_author (name="Art prompt for " + user.name,icon_url=user.avatar_url)
+        embed.set_author (name="Art prompt for " + member.display_name,icon_url=member.avatar_url)
         embed.set_footer(text="🔁 to reroll.")
         msg = await ctx.send(embed=embed)
         await msg.add_reaction('🔁')
@@ -57,13 +57,13 @@ class ArtToys(commands.Cog):
             #print("reaction not made by bot")
             channel = self.client.get_channel(ctx.channel_id)
             msg = await channel.fetch_message(ctx.message_id)
-            user = self.client.get_user(ctx.user_id)
-            if(msg.author.id == botID and msg.embeds[0] and msg.embeds[0].author.name == "Art prompt for " + str(user).split("#")[0]):
+            member = ctx.member #self.client.get_user(ctx.user_id)
+            if(msg.author.id == botID and msg.embeds[0] and msg.embeds[0].author.name == "Art prompt for " + member.display_name):
                 embed = embedsText(await self.gen(),'')
-                embed.set_author (name="Art prompt for " + user.name,icon_url=user.avatar_url)
+                embed.set_author (name="Art prompt for " + member.display_name,icon_url=member.avatar_url)
                 embed.set_footer(text="🔁 to reroll.")
                 await msg.edit(embed=embed)
-                await msg.remove_reaction("🔁",user)
+                await msg.remove_reaction("🔁",member)
                 #print("reaction on message made by bot")
                 #print(msg)
             pass
@@ -102,8 +102,9 @@ class ArtToys(commands.Cog):
         file = discord.File(filename="tlcbingo.png", fp=buffer)
         bot_msg = await self.client.get_channel(bingoChannel).send(file=file)
         embed = embedsText("Art Bingo!","Draw an image that would score a bingo on the following sheet. Don't forget to shout bingo and share your finished drawing!")
-        user = self.client.get_user(ctx.message.author.id)
-        embed.set_author (name="TLC Bingo card for " + str(user).split("#")[0],icon_url=user.avatar_url)
+        #user = self.client.get_user(ctx.message.author.id)
+        member = ctx.message.author
+        embed.set_author (name="TLC Bingo card for " + member.display_name,icon_url=member.avatar_url)
         
         embed.set_image(url=bot_msg.attachments[0].url)
         #await ctx.send(file=file)

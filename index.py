@@ -10,10 +10,12 @@ bot.remove_command('help') # Remove default help command so we can implement our
 admin_role = "devs"
 
 @bot.command()
+@commands.has_role(admin_role)
 async def load(ctx, extension):
     bot.load_extension(f'cogs.{extension}')
 
 @bot.command()
+@commands.has_role(admin_role)
 async def unload(ctx, extension):
     bot.unload_extension(f'cogs.{extension}')
 

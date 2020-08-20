@@ -27,15 +27,16 @@ class Database(commands.Cog):
         ''')
 
         c.execute('''
-<<<<<<< HEAD
         CREATE TABLE IF NOT EXISTS channel(
         channel_id text,
         function text
-=======
+            )
+        ''')
+        
+        c.execute('''
         CREATE TABLE IF NOT EXISTS invites(
         invite_id text,
         uses text
->>>>>>> cookies awarded for inviting users
             )
         ''')
 

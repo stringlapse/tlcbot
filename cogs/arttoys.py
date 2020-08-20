@@ -85,7 +85,7 @@ class ArtToys(commands.Cog):
                 #     d.text((i*200+(200-w)/2,j*200+(200-h)/2),"TLC BINGO",fill=(255,0,0),font=fnt)
         #print(type(img))
         img.paste(tlclogo,(402,402),tlclogo)
-        img.save("test.png")
+        img.save("images/bingo.png")
         buffer = BytesIO()
         img.save(buffer,"png")
         buffer.seek(0)

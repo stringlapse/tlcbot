@@ -5,8 +5,8 @@ __pycache__
 *.log
 *.txt
 config/microwavedinnerfortwo_uuid_and_cookie.json
-images/
 *.stackdump
 .pylintrc
 example.db
 *~
+test.png

@@ -69,8 +69,11 @@ class Help(commands.Cog):
     async def modhelp(self, ctx, page="1"):
         # ["command", "simple description", "detailed description"]
         modHelpContent = [
-        ["restart", "⚠ Restarts the bot","This should be safe for any mod to use but please ask someone on the bot team before using it"],
-        ["shutdown", "⚠ Shuts the bot down","Do not use this unless absolutely necessary. The bot will not restart on its own."]]
+        ["load", "Loads a cog into the bot", ""],
+        ["reload", "Unloads and reloads a cog", "Useful for testing or I guess if the bot is acting up? idk just don't use it unless you know what you're doing"],
+        ["restart", "⚠ Restarts the bot", "This should be safe for any mod to use but please ask someone on the bot team before using it"],
+        ["shutdown", "⚠ Shuts the bot down", "Do not use this unless absolutely necessary. The bot will not restart on its own."],
+        ["unload", "⚠ Uloads a cog from the bot", "This will disable all commands and functionality the cog provides."]]
 
         modHelpPages = (len(modHelpContent)//5)+1
 

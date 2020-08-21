@@ -18,7 +18,7 @@ class Colors(commands.Cog):
     
     # Takes the dominant color of the image in a link and sends the color
     @commands.command()
-    async def colorPhoto(self, ctx, num, mode='normal', link=None):
+    async def colorphoto(self, ctx, num, mode='normal', link=None):
         if not num.isnumeric():
             mode = num
             num = 3

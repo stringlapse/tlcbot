@@ -41,6 +41,13 @@ class Database(commands.Cog):
         ''')
 
         c.execute('''
+        CREATE TABLE IF NOT EXISTS starboard(
+        message_id text,
+        bot_message_id text
+            )
+        ''')
+
+        c.execute('''
         CREATE TABLE IF NOT EXISTS shared_art(
         bot_message_id text,
         original_message_id text,

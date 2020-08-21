@@ -106,7 +106,7 @@ class Stats(commands.Cog):
         result = c.fetchone()
         if result is not None:
             channel = guild.get_channel(int(result[0]))
-        await channel.edit(name=daysText)
+            await channel.edit(name=daysText)
     
     # Code necessary for the task 
     @updateDay.before_loop

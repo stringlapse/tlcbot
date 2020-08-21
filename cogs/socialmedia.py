@@ -107,15 +107,18 @@ class SocialMedia(commands.Cog):
 
                     try:
                         def check(message):
-                            return message.author.id == payload.user_id
+                            return message.author.id == payload.user_id and message.channel.id == modChannel
 
                         response = 'n'
                         description = None
                         
                         while response != 'y':
-                            await channel.send("Type the description you would like to post <@" + str(payload.user_id) + ">")
+                            msg = await channel.send("Type the description you would like to post. Type only ``q`` to quit <@" + str(payload.user_id) + ">")
                             description = await self.client.wait_for('message', check=check, timeout=60.0)
                             description = description.content
+                            if description == 'q':
+                                await msg.delete()
+                                break
 
                             if twitter:
                                 while len(description) > 280:
@@ -134,10 +137,10 @@ class SocialMedia(commands.Cog):
 
 
                         val = (1, result[0])
-                        if instagram:
+                        if instagram and description != 'q':
                             c.execute("UPDATE shared_art SET instagram = ? WHERE bot_message_id = ?", val)
                             await self.postInstagram(url, description, channel)    
-                        else: 
+                        if twitter and description != 'q': 
                             c.execute("UPDATE shared_art SET twitter = ? WHERE bot_message_id = ?", val)
                             await self.postTwitter(url, description, channel)
                     except asyncio.TimeoutError:

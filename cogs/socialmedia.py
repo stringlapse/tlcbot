@@ -228,26 +228,34 @@ class SocialMedia(commands.Cog):
         c.execute("DELETE FROM shared_art WHERE bot_message_id =?", (str(result[0]),))
 
     @bot.command()
-    async def set(self,ctx, platform, name):
-        if platform.lower() not in supported_sm:
+    async def set(self,ctx, platform="", name=""):
+        if platform == "":
             platforms = ", ".join(supported_sm)
-            await ctx.send(f"Platform not yet supported. Choose between ``{platforms}``.\nUsage: {config('PREFIX')}set twitter @TLC_Discord")
+            await ctx.send(f"Please specify a platform. Currently supported platforms are `{platforms}`.\nExample: `{config('PREFIX')}set twitter @TLC_Discord`")
             return
-        if not name or len(name) == 0:
-            await ctx.send(f"Please state your name on the platform.\nUsage: {config('PREFIX')}set twitter @TLC_Discord")
-            return
-        name = normalize(platform,name)
-        author = ctx.message.author.id
+        else:
+            if platform.lower() not in supported_sm:
+                platforms = ", ".join(supported_sm)
+                await ctx.send(f"Platform not yet supported. Choose between ``{platforms}``.\nExample: `{config('PREFIX')}set twitter @TLC_Discord`")
+                return
+            if name == "":
+                await ctx.send(f"Please state your name on the platform.\nExample: `{config('PREFIX')}set twitter @TLC_Discord`")
+                return
+            if not name or len(name) == 0:
+                await ctx.send(f"Please state your name on the platform.\nExample: `{config('PREFIX')}set twitter @TLC_Discord`")
+                return
+            name = normalize(platform,name)
+            author = ctx.message.author.id
 
-        conn = sqlite3.connect('example.db')
-        c = conn.cursor()
-        val = (author,platform,name)
-        c.execute("INSERT OR IGNORE INTO users(user_id,twitter,instagram,personal_website,commission_sheet,youtube,deviantart) VALUES(?,?,?,?,?,?,?)", (author, '','','','','',''))
-        c.execute(f"UPDATE users SET {platform}=? WHERE user_id=?",(name,author))
-        conn.commit()
-        conn.close()
+            conn = sqlite3.connect('example.db')
+            c = conn.cursor()
+            val = (author,platform,name)
+            c.execute("INSERT OR IGNORE INTO users(user_id,twitter,instagram,personal_website,commission_sheet,youtube,deviantart) VALUES(?,?,?,?,?,?,?)", (author, '','','','','',''))
+            c.execute(f"UPDATE users SET {platform}=? WHERE user_id=?",(name,author))
+            conn.commit()
+            conn.close()
 
-        await ctx.send(f"Set your {platform} name to {name}.")
+            await ctx.send(f"Set your {platform} name to {name}.")
 
     # this doesnt do shit yet
     @bot.command() 

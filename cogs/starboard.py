@@ -7,6 +7,7 @@ import sqlite3
 from datetime import date
 
 starboardID = int(config('STARBOARD_CHANNEL_ID'))
+ignored_channel_ids = [starboardID]
 recognizedEmojis = ['⭐']
 minimumEmoji = 2
 
@@ -18,7 +19,7 @@ class Starboard(commands.Cog):
     async def on_reaction_add(self,reaction,user):
         starboard = self.client.get_channel(starboardID)
         count = reaction.count
-        if reaction.message.channel.id != starboardID:
+        if reaction.message.channel.id not in ignored_channel_ids:
             if reaction.emoji in recognizedEmojis and count >= minimumEmoji:
                 conn = sqlite3.connect('example.db')
                 c = conn.cursor()
@@ -59,9 +60,13 @@ class Starboard(commands.Cog):
             c.execute('SELECT * FROM starboard WHERE message_id = ?',(reaction.message.id,))
             result = c.fetchone()
             if result is not None:
-                message = f'{reaction.emoji}**{reaction.count}**{reaction.message.channel.mention}'
                 bot_msg = await starboard.fetch_message(int(result[1]))
-                await bot_msg.edit(content=message)
+                if reaction.count < minimumEmoji:
+                    await bot_msg.delete()
+                    c.execute('DELETE FROM starboard WHERE message_id = ?',(reaction.message.id,))
+                else:
+                    message = f'{reaction.emoji}**{reaction.count}**{reaction.message.channel.mention}'
+                    await bot_msg.edit(content=message)
     
 # Required for the cog to be read by the bot
 def setup(client):

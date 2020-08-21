@@ -17,6 +17,7 @@ class Example(commands.Cog):
     async def ping(self, ctx):
         await ctx.send("Pong!")
     
+    '''
     @commands.command(aliases=['8ball', 'test'])
     async def _8ball(ctx, *, question):
         responses = ['It is a fact.',
@@ -38,6 +39,7 @@ class Example(commands.Cog):
                     'Very doubtful.',
                     'Yes, but only if you inlucde a friend.']
         await ctx.send(f'Q: {question}\nA: {random.choice(responses)}')
+        '''
 
     @commands.command()
     async def joined(ctx, *, member: discord.Member):

@@ -60,9 +60,13 @@ class Starboard(commands.Cog):
             c.execute('SELECT * FROM starboard WHERE message_id = ?',(reaction.message.id,))
             result = c.fetchone()
             if result is not None:
-                message = f'{reaction.emoji}**{reaction.count}**{reaction.message.channel.mention}'
                 bot_msg = await starboard.fetch_message(int(result[1]))
-                await bot_msg.edit(content=message)
+                if reaction.count < minimumEmoji:
+                    await bot_msg.delete()
+                    c.execute('DELETE FROM starboard WHERE message_id = ?',(reaction.message.id,))
+                else:
+                    message = f'{reaction.emoji}**{reaction.count}**{reaction.message.channel.mention}'
+                    await bot_msg.edit(content=message)
     
 # Required for the cog to be read by the bot
 def setup(client):

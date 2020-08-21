@@ -78,80 +78,87 @@ class Colors(commands.Cog):
 
     @commands.command()
     async def color(self, ctx, color='random'):
-        url = None
-        if '#' in color:
-            color = color[1:]
-            url = f'http://www.thecolorapi.com/id?hex={color}'
-        elif '(' in color and ')' in color:
-            url = f'http://www.thecolorapi.com/id?rgb={color}'
-        elif color == 'random':
-            R = random.randrange(1,250)
-            G = random.randrange(1,250)
-            B = random.randrange(1,250)
-            url = f'http://www.thecolorapi.com/id?rgb=({R},{G},{B})'
-        else:
-             return await ctx.send(f"{ctx.message.author.mention} only accepts RGB or hex. Make sure your RGB value is surrounded by paranthesis with no spaces in between \"(A,B,C)\" and your hex value begins with a #")
-        jsonurl = urlopen(url)
-        text = json.loads(jsonurl.read())
-        name = text["name"]["value"]
-        hexVal = text["hex"]["value"]
+        try:
+            url = None
+            if color[0] == "#" and len(color) == 6:
+                color = color[1:]
+                url = f'http://www.thecolorapi.com/id?hex={color}'
+            elif '(' in color and ')' in color:
+                url = f'http://www.thecolorapi.com/id?rgb={color}'
+            elif color == 'random':
+                R = random.randrange(1,250)
+                G = random.randrange(1,250)
+                B = random.randrange(1,250)
+                url = f'http://www.thecolorapi.com/id?rgb=({R},{G},{B})'
+            else:
+                return await ctx.send(f"{ctx.message.author.mention} only accepts RGB or hex. Make sure your RGB value is surrounded by paranthesis with no spaces in between \"(A,B,C)\" and your hex value begins with a #")
+            jsonurl = urlopen(url)
+            text = json.loads(jsonurl.read())
+            name = text["name"]["value"]
+            hexVal = text["hex"]["value"]
 
-        opener = urllib.request.URLopener()
-        filename, headers = opener.retrieve(text["image"]["bare"], 'images/tempSVG.svg')
+            opener = urllib.request.URLopener()
+            filename, headers = opener.retrieve(text["image"]["bare"], 'images/tempSVG.svg')
 
-        # converts photo into usable format and sends
-        f = self.convertsSVG()
+            # converts photo into usable format and sends
+            f = self.convertsSVG()
 
-        # embeds message and sends
-        embed=embedsText(f'{name}','') 
-        embed.set_image(url="attachment://imageSend.png")
-        embed.set_footer(text=f' {hexVal}')
-        await ctx.send(file=f, embed=embed)
+            # embeds message and sends
+            embed=embedsText(f'{name}','') 
+            embed.set_image(url="attachment://imageSend.png")
+            embed.set_footer(text=f' {hexVal}')
+            await ctx.send(file=f, embed=embed)
+        except urllib.error.HTTPError:
+            return await ctx.send(f"{ctx.message.author.mention} only accepts RGB or hex. Make sure your RGB value is surrounded by paranthesis with no spaces in between \"(A,B,C)\" and your hex value begins with a #")
+
 
             
 
     @commands.command()
     async def scheme(self, ctx, color = 'random'):
-        url = 'http://www.thecolorapi.com/scheme'
-        if '#' in color:
-            color = color[1:]
-            url = url + f'?hex={color}'
-        elif '(' in color and ')' in color:
-            url = url + f'?rgb={color}'
-        elif color == 'random':
-            R = random.randrange(1,250)
-            G = random.randrange(1,250)
-            B = random.randrange(1,250)
-            url = f'http://www.thecolorapi.com/scheme?rgb=({R},{G},{B})'
-        else:
-             return await ctx.send(f"{ctx.message.author.mention} only accepts RGB or hex. Make sure your RGB value is surrounded by paranthesis with no spaces in between \"(A,B,C)\" and your hex value begins with a #")
-        
-        
-        # gets photo of that color in svg
-        mode = ['triad','complement','monochrome','quad']
-        url = url + f'&mode={mode[random.randrange(0,len(mode))]}&count=4'
-        print(url)
-        jsonurl = urlopen(url)
-        text = json.loads(jsonurl.read())
-        colors = []
-        hexes = []
-        for i in range(0,4):
-            name = text["colors"][i]["name"]["value"]
-            hexVal = text["colors"][i]["name"]["closest_named_hex"]
-            colors.append(name)
-            hexes.append(hexVal)
+        try:
+            url = 'http://www.thecolorapi.com/scheme'
+            if color[0] == "#" and len(color) == 6:
+                color = color[1:]
+                url = url + f'?hex={color}'
+            elif '(' in color and ')' in color:
+                url = url + f'?rgb={color}'
+            elif color == 'random':
+                R = random.randrange(1,250)
+                G = random.randrange(1,250)
+                B = random.randrange(1,250)
+                url = f'http://www.thecolorapi.com/scheme?rgb=({R},{G},{B})'
+            else:
+                return await ctx.send(f"{ctx.message.author.mention} only accepts RGB or hex. Make sure your RGB value is surrounded by paranthesis with no spaces in between \"(A,B,C)\" and your hex value begins with a #")
+            
+            
+            # gets photo of that color in svg
+            mode = ['triad','complement','monochrome','quad']
+            url = url + f'&mode={mode[random.randrange(0,len(mode))]}&count=4'
+            print(url)
+            jsonurl = urlopen(url)
+            text = json.loads(jsonurl.read())
+            colors = []
+            hexes = []
+            for i in range(0,4):
+                name = text["colors"][i]["name"]["value"]
+                hexVal = text["colors"][i]["name"]["closest_named_hex"]
+                colors.append(name)
+                hexes.append(hexVal)
 
-        opener = urllib.request.URLopener()
-        filename, headers = opener.retrieve(text["image"]["bare"], 'images/tempSVG.svg')
+            opener = urllib.request.URLopener()
+            filename, headers = opener.retrieve(text["image"]["bare"], 'images/tempSVG.svg')
 
-        # converts photo into usable format and sends
-        f = self.convertsSVG()
+            # converts photo into usable format and sends
+            f = self.convertsSVG()
 
-        # embeds message and sends
-        embed=embedsText(f' {", ".join(colors)}','') 
-        embed.set_image(url="attachment://imageSend.png")
-        embed.set_footer(text=f' {", ".join(hexes)}')
-        await ctx.send(file=f, embed=embed)
+            # embeds message and sends
+            embed=embedsText(f' {", ".join(colors)}','') 
+            embed.set_image(url="attachment://imageSend.png")
+            embed.set_footer(text=f' {", ".join(hexes)}')
+            await ctx.send(file=f, embed=embed)
+        except urllib.error.HTTPError:
+            return await ctx.send(f"{ctx.message.author.mention} only accepts RGB or hex. Make sure your RGB value is surrounded by paranthesis with no spaces in between \"(A,B,C)\" and your hex value begins with a #")
     
         # takes photo url and saves it
     def convertsIMGRecieved(self,url, opener):

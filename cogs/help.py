@@ -24,9 +24,12 @@ class Help(commands.Cog):
         # ["command", "simple description", "detailed description"]
         helpContent = [
         ["bingo", "Generates a random art prompt bingo card", "Draw something that uses the prompts in all 5 squares in any line. Diagonal lines count, TLC is a free space. Don't forget to shout bingo and share your drawing when you're done!"],
+        ["color", "Generates a random color", f"Can also be used to display a given color using `{config('PREFIX')}color #123456` (hex) or `{config('PREFIX')}color (12,34,56)` (rgb)."],
+        ["colorphoto", "Picks out the most prominent colors from a picture", f"Upload a photo or include a link to get colors from it. You can also specift how many colors to get (3-6) and if you want complimentary colors. (ex. `{config('PREFIX')}colorphoto 5 complimentary https://via.placeholder.com/150`)"],
         ["cookies", "Shows how many cookies the user has", "Cookies are a valuable resource for TLC, you can get them by:\n - bumping the server with disboard or discord.me\n - giving detailed and helpful critiques to others\n - uplifting the community by having pleasant conversations with others\n\n🍪 Stock up on them so we can start a rewards program!"],
         ["link", "Link your social media accounts", f"Use `{config('PREFIX')}link (twitter|instagram|personal_website|youtube|deviantart) account` to link your social media accounts (ex. `{config('PREFIX')}link twitter @tlc_discord`)"],
         ["prompt", "Generates a random art prompt", ""],
+        ["scheme", "", ""],
         ["socialmedia", "Lists your or someone else's linked social media accounts", f"Use `{config('PREFIX')}socialmedia @member` to see someone else's linked accounts or just `{config('PREFIX')}socialmedia` to see yours"],
         ["unlink", "Unlink your social media accounts", f"Use `{config('PREFIX')}unlink (twitter|instagram|personal_website|youtube|deviantart)` to unlink a social media account (ex. `{config('PREFIX')}unlink twitter`)"]]
 
@@ -74,7 +77,7 @@ class Help(commands.Cog):
         modHelpContent = [
         ["addbingoterm", "Adds a term for bingo (case taken literally)", "However you put the capitalization is how it will show up in bingo. Length is also important, long terms might overflow."],
         ["clear", "Deletes the number of messages specified", ""],
-        ["givecookie", "Give the mentioned member a cookie", f"See `{config('PREFIX')}help cookies` for info on cookies. Usage: `{config('PREFIX')}givecookie @member`"]
+        ["givecookie", "Give the mentioned member a cookie", f"See `{config('PREFIX')}help cookies` for info on cookies. Usage: `{config('PREFIX')}givecookie @member`"],
         ["load", "Loads a cog into the bot", ""],
         ["ping", "Responds pong", "Technically not a mod command but I figured I'd put it here since it can be used to test responsiveness"],
         ["reload", "Unloads and reloads a cog", "Useful for testing or I guess if the bot is acting up? idk just don't use it unless you know what you're doing"],

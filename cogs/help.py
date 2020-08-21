@@ -72,7 +72,7 @@ class Help(commands.Cog):
     async def modhelp(self, ctx, page="1"):
         # ["command", "simple description", "detailed description"]
         modHelpContent = [
-        ["addbingoterm", "Adds a term for bingo (case taken literally)", "However you put the capitalization is how it will show up in bingo"],
+        ["addbingoterm", "Adds a term for bingo (case taken literally)", "However you put the capitalization is how it will show up in bingo. Length is also important, long terms might overflow."],
         ["load", "Loads a cog into the bot", ""],
         ["reload", "Unloads and reloads a cog", "Useful for testing or I guess if the bot is acting up? idk just don't use it unless you know what you're doing"],
         ["restart", "⚠ Restarts the bot", "This should be safe for any mod to use but please ask someone on the bot team before using it"],

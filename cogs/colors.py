@@ -117,9 +117,9 @@ class Colors(commands.Cog):
             elif '(' in color and ')' in color:
                 url = f'http://www.thecolorapi.com/id?rgb={color}'
             elif color == 'random':
-                R = random.randrange(1,250)
-                G = random.randrange(1,250)
-                B = random.randrange(1,250)
+                R = random.randrange(0,256)
+                G = random.randrange(0,256)
+                B = random.randrange(0,256)
                 url = f'http://www.thecolorapi.com/id?rgb=({R},{G},{B})'
             else:
                 return await ctx.send(f"{ctx.message.author.mention} only accepts RGB or hex. Make sure your RGB value is surrounded by paranthesis with no spaces in between \"(A,B,C)\" and your hex value begins with a #")
@@ -155,9 +155,9 @@ class Colors(commands.Cog):
             elif '(' in color and ')' in color:
                 url = url + f'?rgb={color}'
             elif color == 'random':
-                R = random.randrange(1,250)
-                G = random.randrange(1,250)
-                B = random.randrange(1,250)
+                R = random.randrange(0,256)
+                G = random.randrange(0,256)
+                B = random.randrange(0,256)
                 url = f'http://www.thecolorapi.com/scheme?rgb=({R},{G},{B})'
             else:
                 return await ctx.send(f"{ctx.message.author.mention} only accepts RGB or hex. Make sure your RGB value is surrounded by paranthesis with no spaces in between \"(A,B,C)\" and your hex value begins with a #")

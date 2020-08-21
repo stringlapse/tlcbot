@@ -73,7 +73,9 @@ class Help(commands.Cog):
         # ["command", "simple description", "detailed description"]
         modHelpContent = [
         ["addbingoterm", "Adds a term for bingo (case taken literally)", "However you put the capitalization is how it will show up in bingo. Length is also important, long terms might overflow."],
+        ["givecookie", "Give the mentioned member a cookie", f"See `{config('PREFIX')}help cookies` for info on cookies. Usage: `{config('PREFIX')}givecookie @member`"]
         ["load", "Loads a cog into the bot", ""],
+        ["ping", "Responds pong", "Technically not a mod command but I figured I'd put it here since it can be used to test responsiveness"],
         ["reload", "Unloads and reloads a cog", "Useful for testing or I guess if the bot is acting up? idk just don't use it unless you know what you're doing"],
         ["restart", "⚠ Restarts the bot", "This should be safe for any mod to use but please ask someone on the bot team before using it"],
         ["shutdown", "⚠ Shuts the bot down", "Do not use this unless absolutely necessary. The bot will not restart on its own."],

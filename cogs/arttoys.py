@@ -4,7 +4,7 @@ import random
 import discord
 from discord.ext import commands
 from decouple import config
-from index import embedsText
+from index import embedsText, admin_role
 from PIL import Image, ImageDraw, ImageFont
 import random
 from random import randrange
@@ -27,10 +27,15 @@ class ArtToys(commands.Cog):
     def __init__(self, client):
         self.client = client
         #self.grammar = CFG.fromstring(open("default_grammar.cfg").read())
-        self.bingo = open("bingo.cfg").read().split("\n")
+        #self.bingo = open("bingo.cfg").read().split("\n")
         #self.all_prompts = list(generate(self.grammar))
-        print(str(len(self.bingo)) + " bingo elements loaded")
+        #print(str(len(self.bingo)) + " bingo elements loaded")
         #print(str(len(self.all_prompts)) + " prompts loaded")
+        self.loadBingoTerms()
+
+    def loadBingoTerms(self):
+        self.bingo = open("bingo.cfg").read().split("\n")
+        print(str(len(self.bingo)) + " bingo elements loaded")
 
     async def gen(self):
         #prompt = ' '.join(random.choice(self.all_prompts))
@@ -109,6 +114,19 @@ class ArtToys(commands.Cog):
         embed.set_image(url=bot_msg.attachments[0].url)
         #await ctx.send(file=file)
         await ctx.send(embed=embed)
+
+    @commands.command()
+    @commands.has_role(admin_role)
+    async def addbingoterm(self,ctx, term=""):
+        if term == "":
+            await ctx.send("Please provide a term to add")
+        elif (term.lower() in (item.lower() for item in self.bingo)):
+            await ctx.send("That term already exists")
+        else:
+            with open("bingo.cfg",'a') as file:
+                file.write("\n"+term)
+            self.loadBingoTerms()
+            await ctx.send(f"Term {term} successfully added")
         
 
 # Required for the cog to be read by the bot

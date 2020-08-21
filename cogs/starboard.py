@@ -7,6 +7,7 @@ import sqlite3
 from datetime import date
 
 starboardID = int(config('STARBOARD_CHANNEL_ID'))
+ignored_channel_ids = [starboardID]
 recognizedEmojis = ['⭐']
 minimumEmoji = 2
 
@@ -18,7 +19,7 @@ class Starboard(commands.Cog):
     async def on_reaction_add(self,reaction,user):
         starboard = self.client.get_channel(starboardID)
         count = reaction.count
-        if reaction.message.channel.id != starboardID:
+        if reaction.message.channel.id not in ignored_channel_ids:
             if reaction.emoji in recognizedEmojis and count >= minimumEmoji:
                 conn = sqlite3.connect('example.db')
                 c = conn.cursor()

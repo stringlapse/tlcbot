@@ -25,8 +25,8 @@ class Help(commands.Cog):
         helpContent = [
         ["bingo", "Generates a random art prompt bingo card", "Draw something that uses the prompts in all 5 squares in any line. Diagonal lines count, TLC is a free space. Don't forget to shout bingo and share your drawing when you're done!"],
         ["cookies", "Shows how many cookies the user has", "Cookies are a valuable resource for TLC, you can get them by:\n - bumping the server with disboard or discord.me\n - giving detailed and helpful critiques to others\n - uplifting the community by having pleasant conversations with others\n\n🍪 Stock up on them so we can start a rewards program!"],
+        ["link", "Link your social media accounts", f"Use `{config('PREFIX')}link (twitter|instagram|personal_website|youtube|deviantart) account` to link your social media accounts (ex. `{config('PREFIX')}link twitter @tlc_discord`)"],
         ["prompt", "Generates a random art prompt", ""],
-        ["set", "Link your social media accounts", f"Use `{config('PREFIX')}set (twitter|instagram|personal_website|youtube|deviantart) account` to link your social media accounts (ex. `{config('PREFIX')}set twitter @tlc_discord`)"],
         ["socialmedia", "Lists your or someone else's linked social media accounts", f"Use `{config('PREFIX')}socialmedia @member` to see someone else's linked accounts or just `{config('PREFIX')}socialmedia` to see yours"],
         ["unlink", "Unlink your social media accounts", f"Use `{config('PREFIX')}unlink (twitter|instagram|personal_website|youtube|deviantart)` to unlink a social media account (ex. `{config('PREFIX')}unlink twitter`)"]]
 

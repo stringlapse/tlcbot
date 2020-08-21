@@ -34,7 +34,10 @@ class Moderation(commands.Cog):
     @commands.has_role(admin_role)
     async def clear(self, ctx, amount=1):
         await ctx.channel.purge(limit=amount+1)
-        embed=embedsText(f'{amount} messages cleared!', '')
+        if amount == 1:
+            embed=embedsText(f'{amount} message cleared!', '')
+        else:
+            embed=embedsText(f'{amount} messages cleared!', '')
         await ctx.send(embed=embed)
 
 def setup(client):

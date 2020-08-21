@@ -18,14 +18,23 @@ class Colors(commands.Cog):
     
     # Takes the dominant color of the image in a link and sends the color
     @commands.command()
-    async def colorPhoto(self, ctx, arg1, num:int, mode='normal'):
+    async def colorPhoto(self, ctx, num, mode='normal', link=None):
+        if not num.isnumeric():
+            mode = num
+            num = 3
         if num > 6:
             return await ctx.send(f"{ctx.message.author.mention} woah slow down there. I can only show between three to six colors")
         if num < 3:
             return await ctx.send(f"{ctx.message.author.mention} too little colors. Please pick a number between three and six.")
         message = await ctx.send(f"{ctx.message.author.mention} detecting color... might take a few seconds")
         opener = urllib.request.URLopener()
-        self.convertsIMGRecieved(arg1, opener)
+        if link is None:
+            attachments = ctx.message.attachments
+            if len(attachments) == 0:
+                return await message.edit(content=f"{ctx.message.author.mention} please supply some sort of media: link or attached photo")
+            link = attachments[0].url
+
+        self.convertsIMGRecieved(link, opener)
 
         # gets photo of the colors in svg
         palette = self.grabsPalette(num)
@@ -64,6 +73,7 @@ class Colors(commands.Cog):
         embed=embedsText(f' {", ".join(colors)}','')
         embed.set_image(url="attachment://imageSend.png")
         embed.set_footer(text=f' {", ".join(hexes)}')
+        await message.delete()
         await ctx.send(file=f, embed=embed)
 
     @commands.command()

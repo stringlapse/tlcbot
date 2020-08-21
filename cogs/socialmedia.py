@@ -163,9 +163,9 @@ class SocialMedia(commands.Cog):
                 text = (
                     f"By adding the {smRole} role you have opted in for having any of your artwork posted on the server (particularly in the finished art channel) shared"
                     f" on TLC's social media. You may opt out simply by removing the role in the role manager channel\n\nIf you would like to have your social media tagged if your" 
-                    f" work gets reposted, type the following command in the server ``!set [platform] [name]``. We currently support ``{platforms}``."
-                    f" Only do this is you are comfortable with other members knowing your social media, as they will be able to see your account(s) by doing"
-                    f" ``!socialmedia`` {after.mention}"
+                    f" work gets reposted, type the following command in the server: ``{config('PREFIX')}link [platform] [name]``. We currently support ``{platforms}``."
+                    f" Only do this if you are comfortable with other members knowing your social media, as they will be able to see your account(s) by doing"
+                    f" ``{config('PREFIX')}socialmedia {after.mention}``."
                 )
                 await channel.send(text)
 
@@ -177,8 +177,8 @@ class SocialMedia(commands.Cog):
                 platforms = ", ".join(supported_sm)
                 text = (
                     f"You just removed the {smRole} role. By doing this none of your posts in the server will be reposted on TLC's social media; you have opted out. Keep in mind"
-                    f" that if you previously linked social media using the ``!set`` command users will still be able to see them with ``!socialmedia`` {after.mention}"
-                    f" if you would NOT like this to be the case, unlink any social media with ``!unlink [platform]``"
+                    f" that if you previously linked social media using the ``{config('PREFIX')}link`` command users will still be able to see them with ``{config('PREFIX')}socialmedia {after.mention}``."
+                    f" if you would NOT like this to be the case, unlink any social media with ``!unlink [platform]``."
                 )
                 await channel.send(text)
 
@@ -228,21 +228,21 @@ class SocialMedia(commands.Cog):
         c.execute("DELETE FROM shared_art WHERE bot_message_id =?", (str(result[0]),))
 
     @bot.command()
-    async def set(self,ctx, platform="", name=""):
+    async def link(self,ctx, platform="", name=""):
         if platform == "":
             platforms = ", ".join(supported_sm)
-            await ctx.send(f"Please specify a platform. Currently supported platforms are `{platforms}`.\nExample: `{config('PREFIX')}set twitter @TLC_Discord`")
+            await ctx.send(f"Please specify a platform. Currently supported platforms are `{platforms}`.\nExample: `{config('PREFIX')}link twitter @TLC_Discord`")
             return
         else:
             if platform.lower() not in supported_sm:
                 platforms = ", ".join(supported_sm)
-                await ctx.send(f"Platform not yet supported. Choose between ``{platforms}``.\nExample: `{config('PREFIX')}set twitter @TLC_Discord`")
+                await ctx.send(f"Platform not yet supported. Choose between ``{platforms}``.\nExample: `{config('PREFIX')}link twitter @TLC_Discord`")
                 return
             if name == "":
-                await ctx.send(f"Please state your name on the platform.\nExample: `{config('PREFIX')}set twitter @TLC_Discord`")
+                await ctx.send(f"Please state your name on the platform.\nExample: `{config('PREFIX')}link twitter @TLC_Discord`")
                 return
             if not name or len(name) == 0:
-                await ctx.send(f"Please state your name on the platform.\nExample: `{config('PREFIX')}set twitter @TLC_Discord`")
+                await ctx.send(f"Please state your name on the platform.\nExample: `{config('PREFIX')}link twitter @TLC_Discord`")
                 return
             name = normalize(platform,name)
             author = ctx.message.author.id

@@ -276,7 +276,7 @@ class SocialMedia(commands.Cog):
         await ctx.send("Removed your " + platform + " data.")
 
 
-    @bot.command()
+    @bot.command(aliases=['sm'])
     async def socialmedia(self,ctx,user=None):
         if user == None:
             userid = ctx.message.author.id

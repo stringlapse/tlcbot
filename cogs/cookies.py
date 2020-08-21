@@ -6,6 +6,13 @@ import sqlite3
 import re
 from index import embedsText
 
+startingCookies = 0
+rewards = dict(
+    bump= 1,
+    invite= 1,
+    modGift= 1
+)
+
 class Cookies(commands.Cog):
     def __init__(self, client):
         self.client = client
@@ -48,17 +55,13 @@ class Cookies(commands.Cog):
     @commands.command()
     @commands.has_role(admin_role)
     async def givecookie(self,ctx, member: discord.Member, *args):
-        if member == ctx.message.author:
-            return await ctx.send("You can't give yourself a cookie silly")
+        # if member == ctx.message.author:
+        #     return await ctx.send("You can't give yourself a cookie silly")
         conn = sqlite3.connect('example.db')
         c = conn.cursor()
-        c.execute(f"SELECT user_id FROM econ WHERE user_id = '{member.id}'")
-        if c.fetchone() is None:
-            val = (member.id, 0)
-            c.execute("INSERT INTO econ(user_id ,balance) VALUES(?,?)", val)
-            conn.commit()
+        self.createBal(member.id)
         c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{member.id}'")
-        memberBal = int(c.fetchone()[1]) + 1
+        memberBal = int(c.fetchone()[1]) + rewards['bump']
         val = (memberBal, member.id)
         c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
         conn.commit()
@@ -81,14 +84,10 @@ class Cookies(commands.Cog):
                 if invite.uses > int(result[1]):
                     if not (invite.inviter.bot):
                         userID = invite.inviter.id
-                        c.execute(f"SELECT * FROM econ WHERE user_id = ? ",(userID,))
-                        result = c.fetchone()
-                        if result is None:
-                            c.execute("INSERT INTO econ(user_id ,balance) VALUES(?,?)", (userID,1))
-                        else:
-                            memberBal = int(result[1]) + 1
-                            val = (memberBal, userID)
-                            c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
+                        self.createBal(userID)
+                        memberBal = int(result[1]) + rewards['invite']
+                        val = (memberBal, userID)
+                        c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
                         conn.commit()
                         channel = await self.client.fetch_channel(int(config("GENERAL_ONE_CHANNEL_ID")))
                         await channel.send(f"<@{userID}> Thanks for inviting <@{member.id}> to the server. Have a :cookie:")
@@ -104,16 +103,13 @@ class Cookies(commands.Cog):
                 tag = m.group(0)
                 member = tag
                 member = member[2:member.find('>')]
+                member = self.client.get_user(int(member))
                 conn = sqlite3.connect('example.db')
                 c = conn.cursor()
-                c.execute(f"SELECT user_id FROM econ WHERE user_id = '{member}'")
-                if c.fetchone() is None:
-                    val = (member, 1)
-                    c.execute("INSERT INTO econ(user_id ,balance) VALUES(?,?)", val)
-                    conn.commit()
-                c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{member}'")
-                memberBal = int(c.fetchone()[1]) + 1
-                val = (memberBal, member)
+                self.createBal(member.id)
+                c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{member.id}'")
+                memberBal = int(c.fetchone()[1]) + rewards['bump']
+                val = (memberBal, member.id)
                 c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
                 conn.commit()
                 channel = message.channel
@@ -142,7 +138,7 @@ class Cookies(commands.Cog):
         await ctx.send(embed=embed)
 
     # allows user to check their own or another user's balance
-    @commands.command(pass_context = True , aliases=['cookie', 'cookies'])
+    @commands.command(pass_context = True , aliases=['cookie', 'cookies', 'bal'])
     async def balance(self, ctx, member:discord.Member=None):
         memberID = ctx.author.id
         name = ctx.author
@@ -151,19 +147,14 @@ class Cookies(commands.Cog):
             name = member
         conn = sqlite3.connect('example.db')
         c = conn.cursor()
-        c.execute(f"SELECT user_id FROM econ WHERE user_id = '{memberID}'")
-        noUser = c.fetchone() is None
-        if noUser:
-            val = (memberID, 0)
-            c.execute("INSERT INTO econ(user_id ,balance) VALUES(?,?)", val)
-            conn.commit()
+        self.createBal(memberID)
         c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{memberID}'")
         result = c.fetchone()
         bal = int(result[1])
         embed=embedsText(f'{name}\'s balance: {bal} :cookie:','')
         await ctx.send(embed=embed)
 
-    @commands.command()
+    @commands.command(pass_context = True , aliases=['baltop'])
     async def leaderboard(self, ctx):
         conn = sqlite3.connect('example.db')
         c = conn.cursor()
@@ -199,6 +190,15 @@ class Cookies(commands.Cog):
         guild = self.client.get_guild(int(config('GUILD_ID')))
         invites = await guild.invites()
         return invites
+
+    def createBal(self, memberID):
+        conn = sqlite3.connect('example.db')
+        c = conn.cursor()
+        c.execute(f"SELECT user_id FROM econ WHERE user_id = ?", (memberID,))
+        if c.fetchone() is None:
+            val = (memberID, startingCookies)
+            c.execute("INSERT INTO econ(user_id ,balance) VALUES(?,?)", val)
+        conn.commit()
     
 # Required for the cog to be read by the bot
 def setup(client):

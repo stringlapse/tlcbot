@@ -15,13 +15,40 @@ from reportlab.graphics import renderPDF, renderPM
 class Colors(commands.Cog):
     def __init__(self, client):
         self.client = client
-    
+
+    #async def colorphoto(self, ctx, num='3', mode='normal', link=None):
+    #    if not num.isnumeric():
+    #        if mode in ['normal', 'link', 'compliment']:
+    #            link = num
+    #            num = 3
+    #        elif num in ['normal', 'link', 'compliment']:
+    #            link = mode
+    #            mode = num
+    #            num = 3
+    #        else:
+    #            mode = num
+    #            num = 3
+    #    if mode not in ['normal', 'link', 'compliment']:
+    #        link = mode
+    #        mode = 'link'
+    #    num = int(num)
+    #
     # Takes the dominant color of the image in a link and sends the color
     @commands.command()
-    async def colorphoto(self, ctx, num, mode='normal', link=None):
-        if not num.isnumeric():
-            mode = num
-            num = 3
+    async def colorphoto(self, ctx, arg1="", arg2="", arg3=""):
+        num=3
+        mode='normal'
+        link=None
+        arglist = [arg1, arg2, arg3]
+        for arg in arglist:
+            if arg.isnumeric():
+                num = int(arg)
+                continue
+            elif arg in ['normal', 'link', 'compliment']:
+                mode = arg
+                continue
+            elif arg != "":
+                link = arg
         if num > 6:
             return await ctx.send(f"{ctx.message.author.mention} woah slow down there. I can only show between three to six colors")
         if num < 3:
@@ -34,7 +61,11 @@ class Colors(commands.Cog):
                 return await message.edit(content=f"{ctx.message.author.mention} please supply some sort of media: link or attached photo")
             link = attachments[0].url
 
-        self.convertsIMGRecieved(link, opener)
+        try:
+            self.convertsIMGRecieved(link, opener)
+        except urllib.error.URLError:
+            await ctx.send("Sorry, either that isn't a valid URL or an image couldn't be found")
+            return
 
         # gets photo of the colors in svg
         palette = self.grabsPalette(num)
@@ -47,7 +78,7 @@ class Colors(commands.Cog):
         for rgb in palette:
             hexVal = None
             name = None
-            if mode == 'normal':
+            if mode == 'normal' or mode == 'link':
                 jsonurl = urlopen("http://www.thecolorapi.com/id?rgb=rgb({0},{1},{2})".format(rgb[0],rgb[1],rgb[2]))
                 text = json.loads(jsonurl.read())
                 hexVal = text["hex"]["value"]

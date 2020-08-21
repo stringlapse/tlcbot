@@ -9,7 +9,7 @@ from datetime import date
 starboardID = int(config('STARBOARD_CHANNEL_ID'))
 ignored_channel_ids = [starboardID]
 recognizedEmojis = ['⭐']
-minimumEmoji = 2
+minimumEmoji = 1
 
 class Starboard(commands.Cog):
     def __init__(self, client):
@@ -62,11 +62,13 @@ class Starboard(commands.Cog):
             if result is not None:
                 bot_msg = await starboard.fetch_message(int(result[1]))
                 if reaction.count < minimumEmoji:
-                    await bot_msg.delete()
                     c.execute('DELETE FROM starboard WHERE message_id = ?',(reaction.message.id,))
+                    await bot_msg.delete()
                 else:
                     message = f'{reaction.emoji}**{reaction.count}**{reaction.message.channel.mention}'
                     await bot_msg.edit(content=message)
+            conn.commit()
+            conn.close()
     
 # Required for the cog to be read by the bot
 def setup(client):

@@ -2,4 +2,4 @@
 sleep 5
 echo Starting bot...
 source ~/testbot/bin/activate
-python index.py
+python -u index.py

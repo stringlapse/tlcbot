@@ -181,17 +181,20 @@ class Cookies(commands.Cog):
         await ctx.send(embed=embed)
    
     def check_all_message(self,check_for, message):
-        if check_for in message.content:
-            return True
-        for e in message.embeds:
-            if any(item and check_for in item for item in (e.title, e.footer, e.description)):
+        try:
+            if check_for in message.content:
                 return True
-            if e.fields:
-                for field in e.fields:
-                    if check_for in field.name or check_for in field.value:
-                        return True
-        return False
-    
+            for e in message.embeds:
+                if any(item and check_for in item for item in (e.title, e.footer, e.description)):
+                    return True
+                if e.fields:
+                    for field in e.fields:
+                        if check_for in field.name or check_for in field.value:
+                            return True
+            return False
+        except TypeError:
+            pass
+
     async def getsInvites(self):
         guild = self.client.get_guild(int(config('GUILD_ID')))
         invites = await guild.invites()

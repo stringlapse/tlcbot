@@ -112,7 +112,7 @@ class SocialMedia(commands.Cog):
                         response = 'n'
                         description = None
                         
-                        while response is not 'y':
+                        while response != 'y':
                             await channel.send("Type the description you would like to post <@" + str(payload.user_id) + ">")
                             description = await self.client.wait_for('message', check=check, timeout=60.0)
                             description = description.content
@@ -127,7 +127,7 @@ class SocialMedia(commands.Cog):
                             response = await self.client.wait_for('message', check=check, timeout=60.0)
                             response = response.content
 
-                            while response is not 'y' and response is not 'n':
+                            while response != 'y' and response != 'n':
                                 await channel.send("Fuck you, say 'y' or 'n'")
                                 response = await self.client.wait_for('message', check=check, timeout=60.0)
                                 response = response.content

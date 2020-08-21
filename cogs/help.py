@@ -73,6 +73,7 @@ class Help(commands.Cog):
         # ["command", "simple description", "detailed description"]
         modHelpContent = [
         ["addbingoterm", "Adds a term for bingo (case taken literally)", "However you put the capitalization is how it will show up in bingo. Length is also important, long terms might overflow."],
+        ["clear", "Deletes the number of messages specified", ""],
         ["givecookie", "Give the mentioned member a cookie", f"See `{config('PREFIX')}help cookies` for info on cookies. Usage: `{config('PREFIX')}givecookie @member`"]
         ["load", "Loads a cog into the bot", ""],
         ["ping", "Responds pong", "Technically not a mod command but I figured I'd put it here since it can be used to test responsiveness"],

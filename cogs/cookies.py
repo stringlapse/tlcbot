@@ -56,7 +56,7 @@ class Cookies(commands.Cog):
                 conn.commit()
             else:
                 if str(userID) not in claimedID:
-                    self.createBal(userID)
+                    await self.createBal(None,userID)
                     c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = ?",(userID,))
                     result2 = c.fetchone()
                     balance = int(result2[1])
@@ -74,12 +74,6 @@ class Cookies(commands.Cog):
                     conn.commit()
         conn.close()
 
-
-
-
-
-        
-    
     @commands.Cog.listener()
     async def on_invite_create(self, invite):
         conn = sqlite3.connect('example.db')
@@ -143,6 +137,7 @@ class Cookies(commands.Cog):
                 return await preview.edit(content='Post cancelled')
             
             bigboy = await channel.send(message)
+            await bigboy.add_reaction('🍪')
             conn = sqlite3.connect('example.db')
             c = conn.cursor()
             timestamp = (chosenDate - date(1970, 1, 1)).total_seconds()

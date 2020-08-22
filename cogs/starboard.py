@@ -9,7 +9,7 @@ from datetime import date
 starboardID = int(config('STARBOARD_CHANNEL_ID'))
 ignored_channel_ids = [starboardID]
 recognizedEmojis = ['⭐']
-minimumEmoji = 1
+minimumEmoji = 4
 
 class Starboard(commands.Cog):
     def __init__(self, client):

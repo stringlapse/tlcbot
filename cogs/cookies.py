@@ -46,10 +46,10 @@ class Cookies(commands.Cog):
         c = conn.cursor()
         c.execute("SELECT * FROM event WHERE message_id =?",(messageID,))
         result = c.fetchone()
-        claimedID = result[3]
-        endDate = float(result[2])
-        cookies = int(result[1])
         if result is not None:
+            claimedID = result[3]
+            endDate = float(result[2])
+            cookies = int(result[1])
             today = (datetime.now() - datetime(1970, 1, 1)).total_seconds()
             if today > endDate:
                 c.execute("DELETE FROM event WHERE message_id =?", (messageID,))

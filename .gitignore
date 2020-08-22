@@ -11,3 +11,4 @@ config
 example.db
 *~
 test.png
+!requirements.txt

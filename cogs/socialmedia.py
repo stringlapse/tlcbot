@@ -297,13 +297,13 @@ class SocialMedia(commands.Cog):
 
         embed.set_thumbnail(url=user.avatar_url)
         if len(result[1]):
-            embed.add_field(name='<:twitter:742641227622776903> Twitter',value=f"[{result[1]}](http://twitter.com/{result[1][1:]})",inline=False)
+            embed.add_field(name='<:twitter:746823280874356807> Twitter',value=f"[{result[1]}](http://twitter.com/{result[1][1:]})",inline=False)
         if len(result[2]):
-            embed.add_field(name='<:instagram:742641054033117184> Instagram',value=f"[{result[2]}](http://instagram.com/{result[2][1:]})",inline=False)
+            embed.add_field(name='<:instagram:746822890657153025> Instagram',value=f"[{result[2]}](http://instagram.com/{result[2][1:]})",inline=False)
         if len(result[3]):
-            embed.add_field(name='<:youtube:742653485098467399> Youtube',value=f"[{result[3]}](http://youtube.com/c/{result[3][1:]})",inline=False)
+            embed.add_field(name='<:youtube:746823398839156837> Youtube',value=f"[{result[3]}](http://youtube.com/c/{result[3][1:]})",inline=False)
         if len(result[4]):
-            embed.add_field(name='<:deviantart:742653657228640306> DeviantArt',value=f"[{result[4]}](https://www.deviantart.com/{result[4][1:]})",inline=False)
+            embed.add_field(name='<:deviantart:746823381478932571> DeviantArt',value=f"[{result[4]}](https://www.deviantart.com/{result[4][1:]})",inline=False)
         if len(result[5]):
             embed.add_field(name='💻 Website',value=f"[{result[5]}]({result[5]})",inline=False)
 

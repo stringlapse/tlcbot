@@ -257,11 +257,11 @@ class Cookies(commands.Cog):
         result = c.fetchone()
         bal = int(result[1])
         embed=embedsText(f'{ctx.message.author.display_name}\'s balance: {bal} :cookie:','')
-        currentDate = date.today()
-        today = currentDate.strftime('%m/%d/%Y').replace("/0", "/")
-        if today[0] == '0':
-            today = today[1:]
-        embed.set_footer(text=f'{name} • {today}')
+        #currentDate = date.today()
+        #today = currentDate.strftime('%m/%d/%Y').replace("/0", "/")
+        #if today[0] == '0':
+        #    today = today[1:]
+        embed.set_footer(text=f"{name} • {config('PREFIX')}help cookies")
         await ctx.send(embed=embed)
 
     @commands.command(pass_context = True , aliases=['baltop'])

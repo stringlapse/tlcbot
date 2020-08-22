@@ -5,6 +5,7 @@ from decouple import config
 import sqlite3
 import re
 from index import embedsText
+from datetime import date
 
 startingCookies = 0
 rewards = dict(
@@ -59,7 +60,7 @@ class Cookies(commands.Cog):
         #     return await ctx.send("You can't give yourself a cookie silly")
         conn = sqlite3.connect('example.db')
         c = conn.cursor()
-        self.createBal(member.id)
+        await self.createBal(ctx.channel, member.id)
         c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{member.id}'")
         memberBal = int(c.fetchone()[1]) + rewards['modGift']
         val = (memberBal, member.id)
@@ -68,7 +69,7 @@ class Cookies(commands.Cog):
         reason = "None"
         if len(args) > 0:
             reason = " ".join(args)
-        embed=embedsText(f'Gave {member} :cookie:',f'Reason: {reason}')
+        embed=embedsText(f'{ctx.message.author.display_name} gave {member.display_name} :cookie:',f'Reason: {reason}')
         await ctx.send(embed=embed)
 
     # Gives a cookie to the person who invited user 
@@ -84,7 +85,9 @@ class Cookies(commands.Cog):
                 if invite.uses > int(result[1]):
                     if not (invite.inviter.bot):
                         userID = invite.inviter.id
-                        self.createBal(userID)
+                        await self.createBal(None, userID)
+                        c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{userID}'")
+                        result = c.fetchone()
                         memberBal = int(result[1]) + rewards['invite']
                         val = (memberBal, userID)
                         c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
@@ -102,11 +105,11 @@ class Cookies(commands.Cog):
                 m = re.search(r'<@!?(\d+)>', message.embeds[0].description)
                 tag = m.group(0)
                 member = tag
-                member = member[2:member.find('>')]
+                member = member[3:member.find('>')]
                 member = self.client.get_user(int(member))
                 conn = sqlite3.connect('example.db')
                 c = conn.cursor()
-                self.createBal(member.id)
+                await self.createBal(message.channel, member.id)
                 c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{member.id}'")
                 memberBal = int(c.fetchone()[1]) + rewards['bump']
                 val = (memberBal, member.id)
@@ -147,15 +150,21 @@ class Cookies(commands.Cog):
             name = member
         conn = sqlite3.connect('example.db')
         c = conn.cursor()
-        self.createBal(memberID)
+        await self.createBal(ctx.channel, memberID)
         c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{memberID}'")
         result = c.fetchone()
         bal = int(result[1])
-        embed=embedsText(f'{name}\'s balance: {bal} :cookie:','')
+        embed=embedsText(f'{ctx.message.author.display_name}\'s balance: {bal} :cookie:','')
+        currentDate = date.today()
+        today = currentDate.strftime('%m/%d/%Y').replace("/0", "/")
+        if today[0] == '0':
+            today = today[1:]
+        embed.set_footer(text=f'{name} • {today}')
         await ctx.send(embed=embed)
 
     @commands.command(pass_context = True , aliases=['baltop'])
     async def leaderboard(self, ctx):
+        guild = self.client.get_guild(int(config('GUILD_ID')))
         conn = sqlite3.connect('example.db')
         c = conn.cursor()
         i = 1
@@ -163,12 +172,13 @@ class Cookies(commands.Cog):
         for row in c.execute("SELECT * FROM econ ORDER BY balance DESC"):
             balance = int(row[1])
             if balance > 0:
-                user = await self.client.fetch_user(int(row[0])) 
-                string += f'\n#{i}: **{balance}** :cookie: \t{user}'
+                user = await self.client.fetch_user(int(row[0]))
+                member = guild.get_member(int(row[0]))
+                string += f'\n#{i}: **{balance}** :cookie: \t{member.display_name} ({str(member)})'
                 i += 1
             if i > 10:
                 break
-        embed=embedsText('TLC Leaderboard', f'{string}')                                                              
+        embed=embedsText('TLC :cookie: Leaderboard', f'{string}')                                                              
         await ctx.send(embed=embed)
    
     def check_all_message(self,check_for, message):
@@ -191,13 +201,16 @@ class Cookies(commands.Cog):
         invites = await guild.invites()
         return invites
 
-    def createBal(self, memberID):
+    async def createBal(self, channel, memberID):
         conn = sqlite3.connect('example.db')
         c = conn.cursor()
         c.execute(f"SELECT user_id FROM econ WHERE user_id = ?", (memberID,))
         if c.fetchone() is None:
             val = (memberID, startingCookies)
             c.execute("INSERT INTO econ(user_id ,balance) VALUES(?,?)", val)
+            if channel is not None:
+                embed = embed=embedsText("It looks like you've never had cookies before",f"Use `{config('PREFIX')}help cookies` to learn more")
+                await channel.send(embed=embed)
         conn.commit()
     
 # Required for the cog to be read by the bot

@@ -29,7 +29,7 @@ class Starboard(commands.Cog):
                 if result is None:
                     embed = discord.Embed(description=reaction.message.content,color=0x228B22)
                     embed.set_author(name=reaction.message.author.display_name,icon_url=reaction.message.author.avatar_url)
-                    embed.add_field(name='**Source**',value=f'[Jump!]({reaction.message.jump_url})')
+                    embed.add_field(name='Source',value=f'[Jump!]({reaction.message.jump_url})')
                     if(len(reaction.message.attachments) > 0):
                         embed.set_image(url=reaction.message.attachments[-1].url)
                     currentDate = date.today()

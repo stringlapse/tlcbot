@@ -33,7 +33,7 @@ class Help(commands.Cog):
         ["socialmedia", "Lists your or someone else's linked social media accounts", f"Use `{config('PREFIX')}socialmedia @member` to see someone else's linked accounts or just `{config('PREFIX')}socialmedia` to see yours"],
         ["unlink", "Unlink your social media accounts", f"Use `{config('PREFIX')}unlink (twitter|instagram|personal_website|youtube|deviantart)` to unlink a social media account (ex. `{config('PREFIX')}unlink twitter`)"]]
 
-        if len(helpContent)//5 == 0:
+        if len(helpContent)%5 == 0:
             helpPages = (len(helpContent)//5)
         else:
             helpPages = (len(helpContent)//5)+1
@@ -89,7 +89,7 @@ class Help(commands.Cog):
         ["shutdown", "⚠ Shuts the bot down", "Do not use this unless absolutely necessary. The bot will not restart on its own."],
         ["unload", "⚠ Uloads a cog from the bot", "This will disable all commands and functionality the cog provides."]]
 
-        if len(modHelpContent)//5 == 0:
+        if len(modHelpContent)%5 == 0:
             modHelpPages = (len(modHelpContent)//5)
         else:
             modHelpPages = (len(modHelpContent)//5)+1

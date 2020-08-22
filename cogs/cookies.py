@@ -1,12 +1,16 @@
 import discord
+import time 
+from datetime import datetime, date, time, timedelta, timezone
 from discord.ext import commands
 from index import admin_role
 from decouple import config
 import sqlite3
+import asyncio
 import re
 from index import embedsText
 from datetime import date
 
+announcementsID = int(config('ANNOUNCEMENTS_CHANNEL_ID'))
 startingCookies = 0
 rewards = dict(
     bump= 1,
@@ -35,6 +39,48 @@ class Cookies(commands.Cog):
         conn.close()
     
     @commands.Cog.listener()
+    async def on_raw_reaction_add(self,payload):
+        userID = payload.user_id
+        messageID = payload.message_id
+        conn = sqlite3.connect('example.db')
+        c = conn.cursor()
+        c.execute("SELECT * FROM event WHERE message_id =?",(messageID,))
+        result = c.fetchone()
+        claimedID = result[3]
+        endDate = float(result[2])
+        cookies = int(result[1])
+        if result is not None:
+            today = (datetime.now() - datetime(1970, 1, 1)).total_seconds()
+            if today > endDate:
+                c.execute("DELETE FROM event WHERE message_id =?", (messageID,))
+                conn.commit()
+            else:
+                if str(userID) not in claimedID:
+                    self.createBal(userID)
+                    c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = ?",(userID,))
+                    result2 = c.fetchone()
+                    balance = int(result2[1])
+                    memberBal = balance + cookies
+                    val = (memberBal, userID)
+                    c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
+                    conn.commit()
+
+                    if claimedID == '':
+                        claimedID = userID
+                    else:
+                        claimedID =f'{claimedID} {userID}'
+                    
+                    c.execute("UPDATE event SET claimed_ids = ? WHERE message_id = ?", (claimedID,messageID))
+                    conn.commit()
+        conn.close()
+
+
+
+
+
+        
+    
+    @commands.Cog.listener()
     async def on_invite_create(self, invite):
         conn = sqlite3.connect('example.db')
         c = conn.cursor()
@@ -55,6 +101,66 @@ class Cookies(commands.Cog):
     
     @commands.command()
     @commands.has_role(admin_role)
+    async def eventcookie(self,ctx,cookies,chosenDate=None,*args):
+        dateErrorMSG = f'{ctx.message.author.mention} Invalid date specified. Input dates using the M/D/YYYY or M/D format. Dates must be of the future. Leave the date blank to make the event expire tomorrow'
+        channel = self.client.get_channel(announcementsID)
+        message = ' '.join(args)
+        try:
+            if not (cookies.isnumeric()):
+                message = chosenDate
+                chosenDate = cookies
+                cookies = 1 
+            if message is not None:
+                dateList = list(chosenDate.split("/"))
+                if len(dateList) == 2:
+                    year = datetime.today().year
+                    chosenDate = date(year,int(dateList[0]),int(dateList[1]))
+                elif len(dateList) == 3:
+                    chosenDate = date(int(dateList[2]),int(dateList[0]),int(dateList[1]))
+                elif len(dateList) > 3 or len(dateList) == 1:
+                    return await ctx.send(dateErrorMSG)
+            else:
+                message = chosenDate
+                chosenDate = datetime.today() + timedelta(days=1)
+            
+            # Would be code to make sure that the user didn't supply a past date but I forgot how stupid this module is
+            # if datetime.now() > chosenDate:
+            #     return await ctx.send(dateErrorMSG)
+
+            def check(checkMessage):
+                return checkMessage.author.id == ctx.message.author.id and checkMessage.channel.id == ctx.channel.id
+
+            previewMessage = (
+                f'Message: **{message}**\nValid Through: {chosenDate.strftime("%A %B %d %Y")}\nCookies upon reaction: {cookies}'
+                f'\n{ctx.message.author.mention} Posting this to {channel.mention}. Reply ``c`` to cancel and any other key to proceed'
+            )
+
+            preview = await ctx.send(previewMessage)
+            response = await self.client.wait_for('message', check=check, timeout=60.0)
+            response = response.content
+
+            if response == 'c':
+                return await preview.edit(content='Post cancelled')
+            
+            bigboy = await channel.send(message)
+            conn = sqlite3.connect('example.db')
+            c = conn.cursor()
+            timestamp = (chosenDate - date(1970, 1, 1)).total_seconds()
+            val = (bigboy.id,cookies,timestamp,'')
+
+            c.execute("INSERT INTO event(message_id,amount_cookies,end_date,claimed_ids) VALUES(?,?,?,?)", val)
+            conn.commit()
+            conn.close()
+
+            await ctx.send(f'{ctx.message.author.mention} Event created. Check {channel.mention}')
+
+        except ValueError:
+           await ctx.send(dateErrorMSG)
+        except asyncio.TimeoutError:
+            await ctx.send(f'{ctx.message.author.mention} Response timed out')
+
+    @commands.command()
+    @commands.has_role(admin_role)
     async def givecookie(self,ctx, member: discord.Member, *args):
         # if member == ctx.message.author:
         #     return await ctx.send("You can't give yourself a cookie silly")
@@ -71,6 +177,7 @@ class Cookies(commands.Cog):
             reason = " ".join(args)
         embed=embedsText(f'{ctx.message.author.display_name} gave {member.display_name} :cookie:',f'Reason: {reason}')
         await ctx.send(embed=embed)
+    
 
     # Gives a cookie to the person who invited user 
     @commands.Cog.listener()

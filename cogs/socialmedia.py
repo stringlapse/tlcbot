@@ -296,8 +296,7 @@ class SocialMedia(commands.Cog):
         if result == None:
             result = ("","","","","","") # just a workaround for now
 
-
-        embed = embedsText(f"{ctx.message.author.display_name}'s social media",'')
+        embed = embedsText(f"{ctx.message.guild.get_member(int(userid)).display_name}'s social media",'')
 
         embed.set_thumbnail(url=user.avatar_url)
         if len(result[1]):

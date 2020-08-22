@@ -118,8 +118,8 @@ class Cookies(commands.Cog):
                 chosenDate = datetime.today() + timedelta(days=1)
             
             # Would be code to make sure that the user didn't supply a past date but I forgot how stupid this module is
-            # if datetime.now() > chosenDate:
-            #     return await ctx.send(dateErrorMSG)
+            if datetime.now().date() > chosenDate:
+                return await ctx.send(dateErrorMSG)
 
             def check(checkMessage):
                 return checkMessage.author.id == ctx.message.author.id and checkMessage.channel.id == ctx.channel.id

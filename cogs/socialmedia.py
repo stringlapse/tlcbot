@@ -164,7 +164,10 @@ class SocialMedia(commands.Cog):
         if len(before.roles) < len(after.roles):
             new_role = next(role for role in after.roles if role not in before.roles)
             if new_role.name in (smRole):
-                channel = await after.create_dm()
+                if after.dm_channel == None:
+                    channel = await after.create_dm()
+                else:
+                    channel = after.dm_channel
                 platforms = ", ".join(supported_sm)
                 text = (
                     f"By adding the {smRole} role you have opted in for having any of your artwork posted on the server (particularly in the finished art channel) shared"

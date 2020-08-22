@@ -111,7 +111,7 @@ class Colors(commands.Cog):
     async def color(self, ctx, color='random'):
         try:
             url = None
-            if color[0] == "#" and len(color) == 6:
+            if color[0] == "#" and len(color) == 7:
                 color = color[1:]
                 url = f'http://www.thecolorapi.com/id?hex={color}'
             elif '(' in color and ')' in color:
@@ -148,12 +148,20 @@ class Colors(commands.Cog):
     @commands.command()
     async def scheme(self, ctx, color = 'random'):
         try:
+            '''
             url = 'http://www.thecolorapi.com/scheme'
             if color[0] == "#" and len(color) == 6:
                 color = color[1:]
                 url = url + f'?hex={color}'
             elif '(' in color and ')' in color:
                 url = url + f'?rgb={color}'
+            '''
+            url = None
+            if color[0] == "#" and len(color) == 7:
+                color = color[1:]
+                url = f'http://www.thecolorapi.com/scheme?hex={color}'
+            elif '(' in color and ')' in color:
+                url = f'http://www.thecolorapi.com/scheme?rgb={color}'
             elif color == 'random':
                 R = random.randrange(0,256)
                 G = random.randrange(0,256)

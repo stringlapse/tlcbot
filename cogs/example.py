@@ -39,11 +39,11 @@ class Example(commands.Cog):
                     'Very doubtful.',
                     'Yes, but only if you inlucde a friend.']
         await ctx.send(f'Q: {question}\nA: {random.choice(responses)}')
-        '''
 
     @commands.command()
     async def joined(ctx, *, member: discord.Member):
         await ctx.send('{discord.member} joined on {0.joined_at}'.format(member))
+    '''
 
 # Required for the cog to be read by the bot
 def setup(client):

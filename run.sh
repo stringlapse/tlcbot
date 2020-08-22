@@ -1,5 +1,5 @@
 #!/bin/bash
 sleep 5
 echo Starting bot...
-source ~/testbot/bin/activate
+source ~/tlcbot/bin/activate
 python -u index.py

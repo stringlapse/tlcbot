@@ -1,4 +1,4 @@
-from nltk import CFG
+#from nltk import CFG
 import random
 #from nltk.parse.generate import generate
 import discord

@@ -266,6 +266,7 @@ class SocialMedia(commands.Cog):
         platforms = ", ".join(supported_sm)
         if platform == "":
             await ctx.send(f"Please specify a platform. Currently supported platforms are `{platforms}`.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
+            return
         if platform.lower() not in supported_sm:
             await ctx.send(f"Only ``{platforms}`` are supported.\nUsage: {config('PREFIX')}unlink twitter")
             return

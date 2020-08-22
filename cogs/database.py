@@ -27,6 +27,15 @@ class Database(commands.Cog):
         ''')
 
         c.execute('''
+        CREATE TABLE IF NOT EXISTS event(
+        message_id text, 
+        amount_cookies text, 
+        end_date text, 
+        claimed_ids text
+            )
+        ''')
+
+        c.execute('''
         CREATE TABLE IF NOT EXISTS channel(
         channel_id text,
         function text

@@ -61,7 +61,7 @@ class Cookies(commands.Cog):
         c = conn.cursor()
         self.createBal(member.id)
         c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{member.id}'")
-        memberBal = int(c.fetchone()[1]) + rewards['bump']
+        memberBal = int(c.fetchone()[1]) + rewards['modGift']
         val = (memberBal, member.id)
         c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
         conn.commit()

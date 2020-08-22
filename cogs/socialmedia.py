@@ -253,7 +253,7 @@ class SocialMedia(commands.Cog):
             conn = sqlite3.connect('example.db')
             c = conn.cursor()
             val = (author,platform,name)
-            c.execute("INSERT OR IGNORE INTO users(user_id,twitter,instagram,personal_website,commission_sheet,youtube,deviantart) VALUES(?,?,?,?,?,?,?)", (author, '','','','','',''))
+            c.execute("INSERT OR IGNORE INTO users(user_id,twitter,instagram,personal_website,youtube,deviantart) VALUES(?,?,?,?,?,?)", (author, '','','','',''))
             c.execute(f"UPDATE users SET {platform}=? WHERE user_id=?",(name,author))
             conn.commit()
             conn.close()

@@ -21,7 +21,7 @@ from discord.utils import get
 shareArtChannel = int(config('SHARE_ART_CHANNEL'))
 modChannel = int(config('MOD_SOCIAL_ART_GALLERY'))
 botID = int(config('BOT_ID'))
-smRole = 'social media'
+smRole = 'Share Me'
 
 
 supported_sm = ["twitter","instagram","deviantart","youtube","personal_website"]
@@ -38,7 +38,7 @@ class SocialMedia(commands.Cog):
     async def on_message(self,message):
         if message.channel.id == shareArtChannel:
              for role in message.author.roles:
-                if role.name == 'social media' and len(message.attachments) > 0:
+                if role.name == smRole and len(message.attachments) > 0:
                     for i in range(0, len(message.attachments)):
                         url = message.attachments[i].url
                         embed = embedsText(f"New image from #share-your-art", f'**Source**\n[Jump!]({message.jump_url})')

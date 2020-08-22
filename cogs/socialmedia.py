@@ -234,18 +234,18 @@ class SocialMedia(commands.Cog):
     async def link(self,ctx, platform="", name=""):
         if platform == "":
             platforms = ", ".join(supported_sm)
-            await ctx.send(f"Please specify a platform. Currently supported platforms are `{platforms}`.\nExample: `{config('PREFIX')}link twitter @TLC_Discord`")
+            await ctx.send(f"Please specify a platform. Currently supported platforms are `{platforms}`.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
             return
         else:
             if platform.lower() not in supported_sm:
                 platforms = ", ".join(supported_sm)
-                await ctx.send(f"Platform not yet supported. Choose between ``{platforms}``.\nExample: `{config('PREFIX')}link twitter @TLC_Discord`")
+                await ctx.send(f"Platform not yet supported. Choose between ``{platforms}``.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
                 return
             if name == "":
-                await ctx.send(f"Please state your name on the platform.\nExample: `{config('PREFIX')}link twitter @TLC_Discord`")
+                await ctx.send(f"Please state your name on the platform.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
                 return
             if not name or len(name) == 0:
-                await ctx.send(f"Please state your name on the platform.\nExample: `{config('PREFIX')}link twitter @TLC_Discord`")
+                await ctx.send(f"Please state your name on the platform.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
                 return
             name = normalize(platform,name)
             author = ctx.message.author.id
@@ -262,9 +262,12 @@ class SocialMedia(commands.Cog):
 
     # this doesnt do shit yet
     @bot.command() 
-    async def unlink(self,ctx, platform):
+    async def unlink(self,ctx, platform=""):
+        platforms = ", ".join(supported_sm)
+        if platform == "":
+            await ctx.send(f"Please specify a platform. Currently supported platforms are `{platforms}`.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
         if platform.lower() not in supported_sm:
-            await ctx.send(f"Only twitter and instagram are supported.\nUsage: {config('PREFIX')}unlink twitter")
+            await ctx.send(f"Only ``{platforms}`` are supported.\nUsage: {config('PREFIX')}unlink twitter")
             return
         author = ctx.message.author.id
         

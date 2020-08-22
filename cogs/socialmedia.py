@@ -174,7 +174,7 @@ class SocialMedia(commands.Cog):
                     f" on TLC's social media. You may opt out simply by removing the role in the role manager channel\n\nIf you would like to have your social media tagged if your" 
                     f" work gets reposted, type the following command in the server: ``{config('PREFIX')}link [platform] [name]``. We currently support ``{platforms}``."
                     f" Only do this if you are comfortable with other members knowing your social media, as they will be able to see your account(s) by doing"
-                    f" ``{config('PREFIX')}socialmedia {after.mention}``."
+                    f" ``{config('PREFIX')}socialmedia @{after.display_name}``."
                 )
                 await channel.send(text)
 
@@ -186,7 +186,7 @@ class SocialMedia(commands.Cog):
                 platforms = ", ".join(supported_sm)
                 text = (
                     f"You just removed the {smRole} role. By doing this none of your posts in the server will be reposted on TLC's social media; you have opted out. Keep in mind"
-                    f" that if you previously linked social media using the ``{config('PREFIX')}link`` command users will still be able to see them with ``{config('PREFIX')}socialmedia {after.mention}``."
+                    f" that if you previously linked social media using the ``{config('PREFIX')}link`` command users will still be able to see them with ``{config('PREFIX')}socialmedia @{after.display_name}``."
                     f" if you would NOT like this to be the case, unlink any social media with ``!unlink [platform]``."
                 )
                 await channel.send(text)

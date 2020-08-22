@@ -41,7 +41,10 @@ class SocialMedia(commands.Cog):
                 if role.name == smRole and len(message.attachments) > 0:
                     for i in range(0, len(message.attachments)):
                         url = message.attachments[i].url
-                        embed = embedsText(f"New image from #{message.channel.name}", f'**Source**\n[Jump!]({message.jump_url})')
+                        embed = discord.Embed(description=message.content,color=0x228B22)
+                        embed.set_author(name=message.author.display_name,icon_url=message.author.avatar_url)
+                        embed.add_field(name=f'Source: #{message.channel.name}',value=f'[Jump!]({message.jump_url})')
+                        #embed = embedsText(f"New image from #{message.channel.name}", f'**Source**\n[Jump!]({message.jump_url})')
                         embed.set_image(url=url)
                         footerText = f"{message.author.nick} ({message.author}) on {datetime.datetime.now().date()}"
                         

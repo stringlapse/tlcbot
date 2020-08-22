@@ -18,7 +18,7 @@ from crop import prepare_and_fix_photo
 from urllib.request import urlopen
 from discord.utils import get
 
-shareArtChannel = int(config('SHARE_ART_CHANNEL'))
+shareArtChannels = config('SHARE_ART_CHANNEL')
 modChannel = int(config('MOD_SOCIAL_ART_GALLERY'))
 botID = int(config('BOT_ID'))
 smRole = 'Share Me'
@@ -36,12 +36,12 @@ class SocialMedia(commands.Cog):
     # Events: make sure to pass in 'self' 
     @commands.Cog.listener()
     async def on_message(self,message):
-        if message.channel.id == shareArtChannel:
+        if str(message.channel.id) in shareArtChannels:
              for role in message.author.roles:
                 if role.name == smRole and len(message.attachments) > 0:
                     for i in range(0, len(message.attachments)):
                         url = message.attachments[i].url
-                        embed = embedsText(f"New image from #finished-art-✨", f'**Source**\n[Jump!]({message.jump_url})')
+                        embed = embedsText(f"New image from #{message.channel.name}", f'**Source**\n[Jump!]({message.jump_url})')
                         embed.set_image(url=url)
                         footerText = f"{message.author.nick} ({message.author}) on {datetime.datetime.now().date()}"
                         

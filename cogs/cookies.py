@@ -11,6 +11,7 @@ from index import embedsText
 from datetime import date
 
 announcementsID = int(config('ANNOUNCEMENTS_CHANNEL_ID'))
+botID = int(config('BOT_ID'))
 startingCookies = 0
 rewards = dict(
     bump= 1,
@@ -41,38 +42,39 @@ class Cookies(commands.Cog):
     @commands.Cog.listener()
     async def on_raw_reaction_add(self,payload):
         userID = payload.user_id
-        messageID = payload.message_id
-        conn = sqlite3.connect('example.db')
-        c = conn.cursor()
-        c.execute("SELECT * FROM event WHERE message_id =?",(messageID,))
-        result = c.fetchone()
-        if result is not None:
-            claimedID = result[3]
-            endDate = float(result[2])
-            cookies = int(result[1])
-            today = (datetime.now() - datetime(1970, 1, 1)).total_seconds()
-            if today > endDate:
-                c.execute("DELETE FROM event WHERE message_id =?", (messageID,))
-                conn.commit()
-            else:
-                if str(userID) not in claimedID:
-                    await self.createBal(None,userID)
-                    c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = ?",(userID,))
-                    result2 = c.fetchone()
-                    balance = int(result2[1])
-                    memberBal = balance + cookies
-                    val = (memberBal, userID)
-                    c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
+        if userID != botID:
+            messageID = payload.message_id
+            conn = sqlite3.connect('example.db')
+            c = conn.cursor()
+            c.execute("SELECT * FROM event WHERE message_id =?",(messageID,))
+            result = c.fetchone()
+            if result is not None:
+                claimedID = result[3]
+                endDate = float(result[2])
+                cookies = int(result[1])
+                today = (datetime.now() - datetime(1970, 1, 1)).total_seconds()
+                if today > endDate:
+                    c.execute("DELETE FROM event WHERE message_id =?", (messageID,))
                     conn.commit()
+                else:
+                    if str(userID) not in claimedID:
+                        await self.createBal(None,userID)
+                        c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = ?",(userID,))
+                        result2 = c.fetchone()
+                        balance = int(result2[1])
+                        memberBal = balance + cookies
+                        val = (memberBal, userID)
+                        c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
+                        conn.commit()
 
-                    if claimedID == '':
-                        claimedID = userID
-                    else:
-                        claimedID =f'{claimedID} {userID}'
-                    
-                    c.execute("UPDATE event SET claimed_ids = ? WHERE message_id = ?", (claimedID,messageID))
-                    conn.commit()
-        conn.close()
+                        if claimedID == '':
+                            claimedID = userID
+                        else:
+                            claimedID =f'{claimedID} {userID}'
+                        
+                        c.execute("UPDATE event SET claimed_ids = ? WHERE message_id = ?", (claimedID,messageID))
+                        conn.commit()
+            conn.close()
 
     @commands.Cog.listener()
     async def on_invite_create(self, invite):

@@ -318,7 +318,7 @@ class SocialMedia(commands.Cog):
 def normalize(platform,name):
         if name.startswith("@"):
            return name
-        elif platform == "personal_website":
+        elif platform == "personal_website" or platform == "youtube":
             if "https://" not in name:
                 return "https://" + name
             return name

@@ -19,7 +19,7 @@ class Help(commands.Cog):
         self.client = client
 
     # Commands
-    @commands.command()
+    @commands.command(aliases=['commands', '?'])
     async def help(self, ctx, page="1"):
         # ["command", "simple description", "detailed description"]
         helpContent = [

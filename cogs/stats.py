@@ -54,7 +54,7 @@ class Stats(commands.Cog):
         if category is None:
             category = await guild.create_category(categoryName)
 
-        memberCount = len([m for m in guild.members if not m.bot])
+        memberCount = guild.member_count
         memberText = f'Member Count: {memberCount}'
 
         memberChannel = False

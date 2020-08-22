@@ -92,7 +92,7 @@ def setup(client):
 
 # Returns how many days it has been since the server's opening
 def countsDays():
-    return (date.today() - date(2019,8,22)).days
+    return (date.today() - date(2019,8,23)).days
 
 
 

@@ -41,7 +41,7 @@ class SocialMedia(commands.Cog):
                 if role.name == smRole and len(message.attachments) > 0:
                     for i in range(0, len(message.attachments)):
                         url = message.attachments[i].url
-                        embed = embedsText(f"New image from #share-your-art", f'**Source**\n[Jump!]({message.jump_url})')
+                        embed = embedsText(f"New image from #finished-art-✨", f'**Source**\n[Jump!]({message.jump_url})')
                         embed.set_image(url=url)
                         footerText = f"{message.author.nick} ({message.author}) on {datetime.datetime.now().date()}"
                         
@@ -55,7 +55,7 @@ class SocialMedia(commands.Cog):
                             if len(result[2]):
                                 footerText += f"\nInstagram: {result[2]}"
                             if len(result[3]):
-                                footerText += f"\nYoutube: {result[3]}"
+                                footerText += f"\nYouTube: {result[3]}"
                             if len(result[4]):
                                 footerText += f"\nDeviantArt: {result[4]}"
                             if len(result[5]):
@@ -268,7 +268,7 @@ class SocialMedia(commands.Cog):
             await ctx.send(f"Please specify a platform. Currently supported platforms are `{platforms}`.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
             return
         if platform.lower() not in supported_sm:
-            await ctx.send(f"Only ``{platforms}`` are supported.\nUsage: {config('PREFIX')}unlink twitter")
+            await ctx.send(f"Only ``{platforms}`` are supported.\nUsage: ``{config('PREFIX')}unlink twitter``")
             return
         author = ctx.message.author.id
         
@@ -297,7 +297,7 @@ class SocialMedia(commands.Cog):
             result = ("","","","","","") # just a workaround for now
 
 
-        embed = embedsText(f"Social Media for {user}",'')
+        embed = embedsText(f"Social Media for {ctx.message.author.display_name}",'')
 
         embed.set_thumbnail(url=user.avatar_url)
         if len(result[1]):
@@ -305,7 +305,7 @@ class SocialMedia(commands.Cog):
         if len(result[2]):
             embed.add_field(name='<:instagram:746822890657153025> Instagram',value=f"[{result[2]}](http://instagram.com/{result[2][1:]})",inline=False)
         if len(result[3]):
-            embed.add_field(name='<:youtube:746823398839156837> Youtube',value=f"['Channel'](http://youtube.com/c/{result[3][1:]})",inline=False)
+            embed.add_field(name='<:youtube:746823398839156837> YouTube',value=f"['Channel'](http://youtube.com/c/{result[3][1:]})",inline=False)
         if len(result[4]):
             embed.add_field(name='<:deviantart:746823381478932571> DeviantArt',value=f"[{result[4]}](https://www.deviantart.com/{result[4][1:]})",inline=False)
         if len(result[5]):
@@ -314,6 +314,7 @@ class SocialMedia(commands.Cog):
         if len(embed.fields) == 0:
             embed.description = "This user has no social media linked yet."
         #        await ctx.send(str(result))
+        embed.set_footer(text=user)
         await ctx.send(embed=embed)
         conn.commit()
         conn.close()    

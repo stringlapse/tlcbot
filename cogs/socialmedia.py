@@ -46,7 +46,7 @@ class SocialMedia(commands.Cog):
                         embed.add_field(name=f'Source: #{message.channel.name}',value=f'[Jump!]({message.jump_url})')
                         #embed = embedsText(f"New image from #{message.channel.name}", f'**Source**\n[Jump!]({message.jump_url})')
                         embed.set_image(url=url)
-                        footerText = f"{message.author.nick} ({message.author}) on {datetime.datetime.now().date()}"
+                        footerText = f"{message.author.display_name} ({message.author}) on {datetime.datetime.now().date()}"
                         
                         conn = sqlite3.connect('example.db')
                         c = conn.cursor()

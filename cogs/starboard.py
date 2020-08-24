@@ -18,19 +18,15 @@ class Starboard(commands.Cog):
     @commands.Cog.listener()
     async def on_raw_reaction_add(self,payload):
         if str(payload.emoji) in recognizedEmojis:
-            print("reaction recognized")
             message = await self.client.get_channel(payload.channel_id).fetch_message(payload.message_id)
             #starboard = self.client.get_channel(starboardID)
             if message.channel.id not in ignored_channel_ids:
-                print("channel not ignored, looking for reactions")
                 for reaction in message.reactions:
                     if reaction.emoji == '⭐':
-                        print("reaction found")
                         starReaction = reaction
                         count = reaction.count
                         break
                 if count >= minimumEmoji:
-                    print("reaction threshold met")
                     conn = sqlite3.connect('example.db')
                     c = conn.cursor()
                     c.execute('SELECT * FROM starboard WHERE message_id = ?',(reaction.message.id,))

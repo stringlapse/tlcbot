@@ -23,7 +23,6 @@ class Starboard(commands.Cog):
             if message.channel.id not in ignored_channel_ids:
                 for reaction in message.reactions:
                     if reaction.emoji == '⭐':
-                        starReaction = reaction
                         count = reaction.count
                         break
                 if count >= minimumEmoji:

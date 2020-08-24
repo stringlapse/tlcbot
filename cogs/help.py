@@ -21,17 +21,18 @@ class Help(commands.Cog):
     # Commands
     @commands.command(aliases=['commands', '?'])
     async def help(self, ctx, page="1"):
+        valid_platforms = "Valid platforms: `twitter`,`instagram`,`deviantart`,`youtube`,`personal_website`"
         # ["command", "simple description", "detailed description"]
         helpContent = [
         ["bingo", "Generates a random art prompt bingo card", "Draw something that uses the prompts in all 5 squares in any line. Diagonal lines count, TLC is a free space. Don't forget to shout bingo and share your drawing when you're done!"],
         ["color", "Generates a random color", f"Can also be used to display a given color using `{config('PREFIX')}color #123456` (hex) or `{config('PREFIX')}color (12,34,56)` (rgb)."],
         ["colorphoto", "Picks out the most prominent colors from a picture", f"Upload a photo or include a link to get colors from it. You can also specift how many colors to get (3-6) and if you want complimentary colors. (ex. `{config('PREFIX')}colorphoto 5 complimentary https://via.placeholder.com/150`)"],
         ["cookies", "Shows how many cookies the user has", "Cookies are a valuable resource for TLC, you can get them by:\n - bumping the server with disboard or discord.me\n - giving detailed and helpful critiques to others\n - uplifting the community by having pleasant conversations with others\n\n🍪 Stock up on them so we can start a rewards program!"],
-        ["link", "Link your social media accounts", f"Use `{config('PREFIX')}link (twitter|instagram|personal_website|youtube|deviantart) account` to link your social media accounts (ex. `{config('PREFIX')}link twitter @tlc_discord`)"],
+        ["link", "Link your social media accounts", f"Use `{config('PREFIX')}link <platform> <account>` to link your social media accounts (ex. `{config('PREFIX')}link twitter tlc_discord`). \n" + valid_platforms],
         ["prompt", "Generates a random art prompt", ""],
         ["scheme", f"Similar to {config('PREFIX')}color but generates a color scheme", f"By default generates a random color scheme but a color to base the scheme on may be specified. Format fpr specifying a color is `{config('PREFIX')}scheme #123456` (hex) or `{config('PREFIX')}scheme (12,34,56)` (rgb)."],
-        ["socialmedia", "Lists your or someone else's linked social media accounts", f"Use `{config('PREFIX')}socialmedia @member` to see someone else's linked accounts or just `{config('PREFIX')}socialmedia` to see yours"],
-        ["unlink", "Unlink your social media accounts", f"Use `{config('PREFIX')}unlink (twitter|instagram|personal_website|youtube|deviantart)` to unlink a social media account (ex. `{config('PREFIX')}unlink twitter`)"]]
+        ["sm", "Lists your or someone else's linked social media accounts", f"Use `{config('PREFIX')}sm @member` to see someone else's linked accounts or just `{config('PREFIX')}sm` to see yours. To set your social media accounts, see `{config('PREFIX')}help link`"],
+        ["unlink", "Unlink your social media accounts", f"Use `{config('PREFIX')}unlink <platform>` to unlink a social media account (ex. `{config('PREFIX')}unlink twitter`).\n" + valid_platforms]]
 
         if len(helpContent)%5 == 0:
             helpPages = (len(helpContent)//5)

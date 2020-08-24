@@ -8,8 +8,8 @@ from datetime import date
 
 starboardID = int(config('STARBOARD_CHANNEL_ID'))
 ignored_channel_ids = [starboardID]
-recognizedEmojis = ['⭐'] # This no longer works, please do not add anything
-minimumEmoji = 1
+recognizedEmojis = ['⭐'] # This currently doesn't work due to hardcoded emojis. Please do not add anything. See issue #65
+minimumEmoji = 2
 
 class Starboard(commands.Cog):
     def __init__(self, client):
@@ -57,20 +57,34 @@ class Starboard(commands.Cog):
                         await bot_msg.edit(content=message)
     
     @commands.Cog.listener()
-    async def on_reaction_remove(self,reaction,user):
-        starboard = self.client.get_channel(starboardID)
-        if reaction.emoji in recognizedEmojis:
+    async def on_raw_reaction_remove(self,payload):
+        if str(payload.emoji) == '⭐':
+            message = await self.client.get_channel(payload.channel_id).fetch_message(payload.message_id)
+            #starboard = self.client.get_channel(starboardID)
+            foundReaction = False
+            for reaction in message.reactions:
+                if reaction.emoji == '⭐':
+                    count = reaction.count
+                    foundReaction = True
+                    break
+            if not foundReaction:
+                count = 0
             conn = sqlite3.connect('example.db')
             c = conn.cursor()
-            c.execute('SELECT * FROM starboard WHERE message_id = ?',(reaction.message.id,))
+            c.execute('SELECT * FROM starboard WHERE message_id = ?',(message.id,))
             result = c.fetchone()
             if result is not None:
-                bot_msg = await starboard.fetch_message(int(result[1]))
-                if reaction.count < minimumEmoji:
-                    c.execute('DELETE FROM starboard WHERE message_id = ?',(reaction.message.id,))
+                bot_msg = await self.client.get_channel(starboardID).fetch_message(int(result[1]))
+                if count < minimumEmoji:
+                    c.execute('DELETE FROM starboard WHERE message_id = ?',(message.id,))
                     await bot_msg.delete()
                 else:
-                    message = f'{reaction.emoji}**{reaction.count}**{reaction.message.channel.mention}'
+                    emoji = '⭐'
+                    if count >= 5:
+                        emoji = '🌟'
+                    if count >= 10:
+                        emoji = '💫'
+                    message = f'{emoji}**{count}**{message.channel.mention}'
                     await bot_msg.edit(content=message)
             conn.commit()
             conn.close()

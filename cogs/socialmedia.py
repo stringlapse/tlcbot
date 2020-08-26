@@ -98,11 +98,11 @@ class SocialMedia(commands.Cog):
 
                     if twitter:
                         await bot_msg.remove_reaction('🐦',payload.member)
-                        if int(result[3]) == 1 and optedIn:
+                        if int(result[3]) == 1:
                             return await channel.send("This picture has already been posted")
                     else: 
                         await bot_msg.remove_reaction('📷',payload.member)
-                        if int(result[4]) == 1 and optedIn:
+                        if int(result[4]) == 1:
                             return await channel.send("This picture has already been posted")
 
                     if not optedIn:

@@ -302,13 +302,25 @@ class SocialMedia(commands.Cog):
 
 
     @bot.command(aliases=['sm'])
-    async def socialmedia(self,ctx,user=None):
-        if user == None:
+    async def socialmedia(self,ctx,*user):
+        user = ' '.join(user)
+        # no user argument, just lookup self
+        if not user:
             userid = ctx.message.author.id
-        else:
+            user = self.client.get_user(int(userid))
+        
+        # ping argument or name
+        elif user.startswith("<@!"):
             userid = user[3:-1]
-
-        user = self.client.get_user(int(userid))
+            user = self.client.get_user(int(userid))
+        else:
+            user = ctx.guild.get_member_named(user)
+            if user != None:
+                userid = user.id 
+        if (user == None):
+            await ctx.send("No matching user could be found. Either mention them, type their nickname (exact match), or their unique discord tag.")
+            return
+        
         conn = sqlite3.connect('example.db')
         c = conn.cursor()
 

@@ -187,8 +187,8 @@ class Cookies(commands.Cog):
             result = c.fetchone()
             if result is not None:
                 if invite.uses > int(result[1]):
+                    userID = invite.inviter.id
                     if not (invite.inviter.bot):
-                        userID = invite.inviter.id
                         await self.createBal(None, userID)
                         c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{userID}'")
                         result = c.fetchone()

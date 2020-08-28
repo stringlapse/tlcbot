@@ -118,7 +118,16 @@ class SocialMedia(commands.Cog):
                         while response != 'y':
                             msg = await channel.send("Type the description you would like to post. Type only ``q`` to quit <@" + str(payload.user_id) + ">")
                             description = await self.client.wait_for('message', check=check, timeout=60.0)
+                            #print("description: ")
+                            #print(description.content)
+                            channel_re = re.compile(r'<#([0-9]+)>')
+                            for hashtag in re.findall(channel_re, description.content):
+                                #print(hashtag)
+                                channel_name = self.client.get_channel(int(hashtag))
+                                #print(channel_name)
+                                description.content = description.content.replace("<#" + hashtag + ">","#" + str(channel_name))
                             description = description.content
+                            print(description)
                             if description == 'q':
                                 await msg.delete()
                                 break

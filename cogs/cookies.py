@@ -199,6 +199,7 @@ class Cookies(commands.Cog):
                         channel = await self.client.fetch_channel(int(config("GENERAL_ONE_CHANNEL_ID")))
                         await channel.send(f"<@{userID}> Thanks for inviting <@{member.id}> to the server. Have a :cookie:")
                     c.execute("UPDATE invites set uses = ? WHERE invite_id = ?", (invite.uses,invite.id))
+                    conn.commit()
                     break
 
     # awards cookie when someone bumped disboard

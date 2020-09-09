@@ -192,8 +192,10 @@ class Cookies(commands.Cog):
                         await self.createBal(None, userID)
                         c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{userID}'")
                         result = c.fetchone()
+                        print(result)
                         memberBal = int(result[1]) + rewards['invite']
                         val = (memberBal, userID)
+                        print(val)
                         c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
                         conn.commit()
                         channel = await self.client.fetch_channel(int(config("GENERAL_ONE_CHANNEL_ID")))

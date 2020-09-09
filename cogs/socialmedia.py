@@ -121,6 +121,12 @@ class SocialMedia(commands.Cog):
                             #print("description: ")
                             #print(description.content)
                             channel_re = re.compile(r'<#([0-9]+)>')
+                            mention_re = re.compile(r'<@!([0-9]+)>')
+                            for mention in re.findall(mention_re, description.content):
+
+                                user_name = self.client.get_user(int(mention))
+
+                                description.content = description.content.replace("<@!" + mention + ">","@" + str(user_name).split("#")[0])
                             for hashtag in re.findall(channel_re, description.content):
                                 #print(hashtag)
                                 channel_name = self.client.get_channel(int(hashtag))

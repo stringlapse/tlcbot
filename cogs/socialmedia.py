@@ -123,14 +123,10 @@ class SocialMedia(commands.Cog):
                             channel_re = re.compile(r'<#([0-9]+)>')
                             mention_re = re.compile(r'<@!([0-9]+)>')
                             for mention in re.findall(mention_re, description.content):
-
                                 user_name = self.client.get_user(int(mention))
-
                                 description.content = description.content.replace("<@!" + mention + ">","@" + str(user_name).split("#")[0])
                             for hashtag in re.findall(channel_re, description.content):
-                                #print(hashtag)
                                 channel_name = self.client.get_channel(int(hashtag))
-                                #print(channel_name)
                                 description.content = description.content.replace("<#" + hashtag + ">","#" + str(channel_name))
                             description = description.content
                             print(description)
@@ -230,7 +226,8 @@ class SocialMedia(commands.Cog):
             print(e)
             await channel.send('Could not post. You suck')
         finally:
-            await msg.edit(content="Posted! Check twitter to see if everything went well.") 
+            await msg.edit(content="Posted! Check twitter to see if everything went well.")
+            await channel.send("Link to post: " + status.entities["media"][0]["url"])
 
     # Sends to Instagram from message url
     async def postInstagram(self,url, description, channel):

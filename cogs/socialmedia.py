@@ -159,7 +159,7 @@ class SocialMedia(commands.Cog):
                         val = (1, result[0])
                         if instagram and description != 'q':
                             c.execute("UPDATE shared_art SET instagram = ? WHERE bot_message_id = ?", val)
-                            await self.postInstagram(url, description, channel)    
+                            await self.postInstagram(url, description, channel)
                         if twitter and description != 'q': 
                             c.execute("UPDATE shared_art SET twitter = ? WHERE bot_message_id = ?", val)
                             await self.postTwitter(url, description, channel)
@@ -226,7 +226,7 @@ class SocialMedia(commands.Cog):
             print(e)
             await channel.send('Could not post. You suck')
         finally:
-            await msg.edit(content="Posted! Check twitter to see if everything went well.")
+            await msg.edit(content="Posted! Check Twitter to see if everything went well. <https://twitter.com/tlc_discord>")
             await channel.send("Link to post: " + status.entities["media"][0]["url"])
 
     # Sends to Instagram from message url
@@ -248,7 +248,7 @@ class SocialMedia(commands.Cog):
         except Exception as e:
             print(e)
         finally:
-            await msg.edit(content="Posted! Check instagram to see if everything went well.") 
+            await msg.edit(content="Posted! Check Instagram to see if everything went well. <https://instagram.com/tlc_discord>")
     
     async def deleteMessage(self, bot_msg, result, c):
         await bot_msg.delete()

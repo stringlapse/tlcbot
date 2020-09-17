@@ -13,7 +13,7 @@ class Moderation(commands.Cog):
 
     @commands.command()
     @commands.has_role(admin_role)
-    async def mute(self,ctx):
+    async def mute(self,ctx, member: discord.Member):
         role = discord.utils.get(member.guild.roles, name = 'muted')
         await member.add_roles(role)
         embed=embedsText('User Muted!', f'**{member}** was muted by **{ctx.message.author}**!')
@@ -25,7 +25,7 @@ class Moderation(commands.Cog):
         role = discord.utils.get(member.guild.roles, name = 'muted')
         if role in member.roles:
             await member.remove_roles(role)
-            embed=embedsText('User Unmuted!', f'{member} was unmuted by **{ctx.message.author}**!')
+            embed=embedsText('User Unmuted!', f'**{member}** was unmuted by **{ctx.message.author}**!')
             await ctx.send(embed=embed)
         else:
             await ctx.send(f'**{member}** is not currently muted')

@@ -6,6 +6,8 @@ from index import embedsText
 from index import admin_role
 import sqlite3
 
+mute_role = "Muted"
+
 class Moderation(commands.Cog):
 
     def __init__(self, client):
@@ -17,7 +19,7 @@ class Moderation(commands.Cog):
         if member == ctx.message.author:
             await ctx.send("You can't mute yourself")
             return
-        role = discord.utils.get(member.guild.roles, name = 'muted')
+        role = discord.utils.get(member.guild.roles, name = mute_role)
         await member.add_roles(role)
         embed=embedsText('User Muted!', f'**{member}** was muted by **{ctx.message.author}**!')
         await ctx.send(embed=embed)
@@ -25,7 +27,7 @@ class Moderation(commands.Cog):
     @commands.command()
     @commands.has_role(admin_role)
     async def unmute(self,ctx, member: discord.Member):
-        role = discord.utils.get(member.guild.roles, name = 'muted')
+        role = discord.utils.get(member.guild.roles, name = mute_role)
         if role in member.roles:
             await member.remove_roles(role)
             embed=embedsText('User Unmuted!', f'**{member}** was unmuted by **{ctx.message.author}**!')

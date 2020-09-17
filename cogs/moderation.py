@@ -14,6 +14,9 @@ class Moderation(commands.Cog):
     @commands.command()
     @commands.has_role(admin_role)
     async def mute(self,ctx, member: discord.Member):
+        if member == ctx.message.author:
+            await ctx.send("You can't mute yourself")
+            return
         role = discord.utils.get(member.guild.roles, name = 'muted')
         await member.add_roles(role)
         embed=embedsText('User Muted!', f'**{member}** was muted by **{ctx.message.author}**!')

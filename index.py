@@ -12,16 +12,22 @@ admin_role = "Mod"
 @bot.command()
 @commands.has_role(admin_role)
 async def load(ctx, extension):
+    await ctx.send(f"Loading {extension}...")
+    print(f"{str(ctx.message.author)} (id {str(ctx.message.author.id)}) loaded {extension}")
     bot.load_extension(f'cogs.{extension}')
 
 @bot.command()
 @commands.has_role(admin_role)
 async def unload(ctx, extension):
+    await ctx.send(f"Unloading {extension}...")
+    print(f"{str(ctx.message.author)} (id {str(ctx.message.author.id)}) unloaded {extension}")
     bot.unload_extension(f'cogs.{extension}')
 
 @bot.command()
 @commands.has_role(admin_role)
 async def reload(ctx, extension):
+    await ctx.send(f"Reloading {extension}...")
+    print(f"{str(ctx.message.author)} (id {str(ctx.message.author.id)}) reloaded {extension}")
     bot.unload_extension(f'cogs.{extension}')
     bot.load_extension(f'cogs.{extension}')
 

@@ -4,7 +4,9 @@ import os
 from discord.ext import commands
 from decouple import config
 
-bot = commands.Bot(command_prefix = config('PREFIX'))
+intents = discord.Intents.default()
+intents.members = True  # Subscribe to the privileged members intent.
+bot = commands.Bot(command_prefix = config('PREFIX'), intents=intents)
 bot.remove_command('help') # Remove default help command so we can implement our own
 
 admin_role = "Mod"

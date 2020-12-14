@@ -39,30 +39,32 @@ class SocialMedia(commands.Cog):
         if str(message.channel.id) in shareArtChannels:
              for role in message.author.roles:
                 if role.name == smRole and len(message.attachments) > 0:
+                    forbiddenExtensions = ['.mov','.mp4','.mp3','.wmv','.flv','.avi']
                     for i in range(0, len(message.attachments)):
-                        url = message.attachments[i].url
-                        embed = discord.Embed(description=message.content,color=0x228B22)
-                        embed.set_author(name=message.author.display_name,icon_url=message.author.avatar_url)
-                        embed.add_field(name=f'Source: #{message.channel.name}',value=f'[Jump!]({message.jump_url})')
-                        #embed = embedsText(f"New image from #{message.channel.name}", f'**Source**\n[Jump!]({message.jump_url})')
-                        embed.set_image(url=url)
-                        footerText = f"{message.author.display_name} ({message.author}) on {datetime.datetime.now().date()}"
-                        
-                        conn = sqlite3.connect('example.db')
-                        c = conn.cursor()
-                        c.execute("SELECT * from users WHERE user_id=?", (message.author.id,))
-                        result = c.fetchone()
-                        if result is not None:
-                            if len(result[1]):
-                                footerText += f"\nTwitter: {result[1]}"
-                            if len(result[2]):
-                                footerText += f"\nInstagram: {result[2]}"
-                            if len(result[3]):
-                                footerText += f"\nYouTube: {result[3]}"
-                            if len(result[4]):
-                                footerText += f"\nDeviantArt: {result[4]}"
-                            if len(result[5]):
-                                footerText += f"\nPersonal Website: {result[5]}"
+                        if not any(s in message.attachments[i].filename for s in forbiddenExtensions): 
+                            url = message.attachments[i].url
+                            embed = discord.Embed(description=message.content,color=0x228B22)
+                            embed.set_author(name=message.author.display_name,icon_url=message.author.avatar_url)
+                            embed.add_field(name=f'Source: #{message.channel.name}',value=f'[Jump!]({message.jump_url})')
+                            #embed = embedsText(f"New image from #{message.channel.name}", f'**Source**\n[Jump!]({message.jump_url})')
+                            embed.set_image(url=url)
+                            footerText = f"{message.author.display_name} ({message.author}) on {datetime.datetime.now().date()}"
+                            
+                            conn = sqlite3.connect('example.db')
+                            c = conn.cursor()
+                            c.execute("SELECT * from users WHERE user_id=?", (message.author.id,))
+                            result = c.fetchone()
+                            if result is not None:
+                                if len(result[1]):
+                                    footerText += f"\nTwitter: {result[1]}"
+                                if len(result[2]):
+                                    footerText += f"\nInstagram: {result[2]}"
+                                if len(result[3]):
+                                    footerText += f"\nYouTube: {result[3]}"
+                                if len(result[4]):
+                                    footerText += f"\nDeviantArt: {result[4]}"
+                                if len(result[5]):
+                                    footerText += f"\nPersonal Website: {result[5]}"
 
                         embed.set_footer(text=footerText)
                         bot_msg = await self.client.get_channel(modChannel).send(embed=embed)

@@ -11,9 +11,13 @@ import sqlite3
 import asyncio
 import urllib.request
 import tweepy
+import os
 from instabot import Bot
 from index import embedsText
 from decouple import config
+from PIL import Image
+import PIL
+import glob
 from crop import prepare_and_fix_photo
 from urllib.request import urlopen
 from discord.utils import get
@@ -243,6 +247,14 @@ class SocialMedia(commands.Cog):
             opener.addheader('User-Agent', 'whatever')
             photo = 'images/post.jpg'
             filename, headers = opener.retrieve(url, photo)
+            size = os.stat(photo).st_size # gives size of the image but only in bytes
+            print(size)
+            while size > 3072000: # deals with photos over 3072kb
+                picture = Image.open(photo)
+                picture.save(photo, optimize=True, quality=30) 
+                size2 = os.stat(photo).st_size
+                print(f"Was around {size/1000} kb, compressed to {size2/1000}kb")
+                size = size2
 
             bot = Bot()
             bot.login(username=config('INSTAGRAM_USERNAME'),

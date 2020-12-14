@@ -204,7 +204,7 @@ class SocialMedia(commands.Cog):
                 text = (
                     f"You just removed the {smRole} role. By doing this none of your posts in the server will be reposted on TLC's social media; you have opted out. Keep in mind"
                     f" that if you previously linked social media using the ``{config('PREFIX')}link`` command users will still be able to see them with ``{config('PREFIX')}socialmedia @{after.display_name}``."
-                    f" if you would NOT like this to be the case, unlink any social media with ``!unlink [platform]``."
+                    f" if you would NOT like this to be the case, unlink any social media with ``{config('PREFIX')}unlink [platform]``."
                 )
                 await channel.send(text)
 

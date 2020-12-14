@@ -118,7 +118,7 @@ class SocialMedia(commands.Cog):
                         description = None
                         
                         while response != 'y':
-                            msg = await channel.send("Type the description you would like to post. Type only ``q`` to quit <@" + str(payload.user_id) + ">")
+                            msg = await channel.send("Type the description you would like to post. Because discord uses the **@** character to also ping users use the **%%** in place of that. For example, **%%AdamSandler** instead of **@AdamSandler**. Type only ``q`` to quit <@" + str(payload.user_id) + ">")
                             description = await self.client.wait_for('message', check=check, timeout=60.0)
                             #print("description: ")
                             #print(description.content)
@@ -131,11 +131,12 @@ class SocialMedia(commands.Cog):
                                 channel_name = self.client.get_channel(int(hashtag))
                                 description.content = description.content.replace("<#" + hashtag + ">","#" + str(channel_name))
                             description = description.content
-                            print(description)
+                            # print(description)
                             if description == 'q':
                                 await msg.delete()
                                 break
 
+                            description = description.replace("%%","@")
                             if twitter:
                                 while len(description) > 280:
                                     await channel.send(f"<@{str(payload.user_id)}> This tweet ``{description}`` exceeds the 280 character max. Type one with less characters")
@@ -147,7 +148,8 @@ class SocialMedia(commands.Cog):
                                     await channel.send(f"Instagram limits posts to 30 tags and you used {description.count('#')}. Please type a description with 30 tags maximum.")
                                     description = await self.client.wait_for('message', check=check, timeout=60.0)
                                     description = description.content
-
+                            
+                            description = description.replace("%%","@")
                             await channel.send(f"Posting \"{description}\"\nIs that ok? ``y/n``")
                             response = await self.client.wait_for('message', check=check, timeout=60.0)
                             response = response.content

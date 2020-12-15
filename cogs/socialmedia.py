@@ -165,18 +165,25 @@ class SocialMedia(commands.Cog):
                                 response = await self.client.wait_for('message', check=check, timeout=60.0)
                                 response = response.content
 
-
                         val = (1, result[0])
+
+                        opener = urllib.request.URLopener()
+                        opener.addheader('User-Agent', 'whatever')
+                        photo = 'images/post.jpg'
+                        filename, headers = opener.retrieve(url, photo)
+
                         if instagram and description != 'q':
-                            c.execute("UPDATE shared_art SET instagram = ? WHERE bot_message_id = ?", val)
-                            await self.postInstagram(url, description, channel)
+                            await self.postInstagram(photo,description, channel,c,val)
+                            conn.commit()
                         if twitter and description != 'q': 
-                            c.execute("UPDATE shared_art SET twitter = ? WHERE bot_message_id = ?", val)
-                            await self.postTwitter(url, description, channel)
+                            await self.postTwitter(photo,description, channel,c,val)
+                            conn.commit()
                     except asyncio.TimeoutError:
-                        await channel.send("<@" + str(payload.user_id) + "> Took to long to respond. Try again.")
+                        await channel.send("<@" + str(payload.user_id) + "> Took too long to respond. Try again.")
                     finally:
                         conn.commit()
+                        if os.path.exists(photo):
+                            os.remove(photo)
                         c.execute("SELECT * FROM shared_art WHERE bot_message_id = ?", (str(payload.message_id),))
                         result2 = c.fetchone()
                         if(int(result2[3]) == 1 and int(result2[4]) == 1):
@@ -219,43 +226,33 @@ class SocialMedia(commands.Cog):
                 await channel.send(text)
 
     # Sends to Twitter from message url
-    async def postTwitter(self,url, description, channel):
+    async def postTwitter(self,photo,description, channel):
         try:
             msg = await channel.send("Beginning to post to twitter. May take a couple of minutes.") 
             auth = tweepy.OAuthHandler(config('TWITTER_CONSUMER_KEY'), config('TWITTER_CONSUMER_SECRET')) 
             auth.set_access_token(config('TWITTER_ACCESS_TOKEN'), config('TWITER_ACCESS_SECRET'))
             api = tweepy.API(auth)
-
-            opener = urllib.request.URLopener()
-            opener.addheader('User-Agent', 'whatever')
-            photo = 'images/post.jpg'
-            filename, headers = opener.retrieve(url, photo)
-
             status = api.update_with_media(photo, description)  
         except Exception as e:
             print(e)
-            await channel.send('Could not post. You suck')
-        finally:
+            await msg.edit(content='Something went wrong. The error has been sent to our dev team. Notify them for assistance.')
+        else:
             await msg.edit(content="Posted! Check Twitter to see if everything went well. <https://twitter.com/tlc_discord>")
             await channel.send("Link to post: " + status.entities["media"][0]["url"])
+            c.execute("UPDATE shared_art SET twitter = ? WHERE bot_message_id = ?", val)
 
     # Sends to Instagram from message url
-    async def postInstagram(self,url, description, channel):
+    async def postInstagram(self,photo,description,channel,c,val):
         try:
             msg = await channel.send("Beginning to post to instagram. May take a couple of minutes.") 
-            opener = urllib.request.URLopener()
-            opener.addheader('User-Agent', 'whatever')
-            photo = 'images/post.jpg'
-            filename, headers = opener.retrieve(url, photo)
             size = os.stat(photo).st_size # gives size of the image but only in bytes
-            print(size)
+            print(os.stat(photo))
             while size > 3072000: # deals with photos over 3072kb
                 picture = Image.open(photo)
                 picture.save(photo, optimize=True, quality=30) 
                 size2 = os.stat(photo).st_size
                 print(f"Was around {size/1000} kb, compressed to {size2/1000}kb")
                 size = size2
-
             bot = Bot()
             bot.login(username=config('INSTAGRAM_USERNAME'),
                         password=config('INSTAGRAM_PASSWORD'))
@@ -265,8 +262,10 @@ class SocialMedia(commands.Cog):
                     caption = description)
         except Exception as e:
             print(e)
-        finally:
-            await msg.edit(content="Posted! Check Instagram to see if everything went well. <https://instagram.com/tlc_discord>")
+            await msg.edit(content="Something went wrong. The error has been sent to our dev team. Notify them for assistance.")
+        else:
+            await msg.edit(content=f"Posted! Check Instagram to see if everything went well. <https://instagram.com/{config('INSTAGRAM_USERNAME')}>")
+            c.execute("UPDATE shared_art SET instagram = ? WHERE bot_message_id = ?", val)
     
     async def deleteMessage(self, bot_msg, result, c):
         await bot_msg.delete()

@@ -146,13 +146,17 @@ class SocialMedia(commands.Cog):
                                 while len(description) > 280:
                                     await channel.send(f"<@{str(payload.user_id)}> This tweet ``{description}`` exceeds the 280 character max. Type one with less characters")
                                     description = await self.client.wait_for('message', check=check, timeout=60.0)
-                                    description = description.content 
+                                    description = description.content
+                                    description = description.replace("%%","@")
+                                    description = description.replace("&&","#")
 
                             if instagram:
                                 while description.count('#') > 30:
                                     await channel.send(f"Instagram limits posts to 30 tags and you used {description.count('#')}. Please type a description with 30 tags maximum.")
                                     description = await self.client.wait_for('message', check=check, timeout=60.0)
                                     description = description.content
+                                    description = description.replace("%%","@")
+                                    description = description.replace("&&","#")
 
                             await channel.send(f"Posting \"{description}\"\nIs that ok? ``y/n``")
                             response = await self.client.wait_for('message', check=check, timeout=60.0)

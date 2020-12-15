@@ -153,9 +153,7 @@ class SocialMedia(commands.Cog):
                                     await channel.send(f"Instagram limits posts to 30 tags and you used {description.count('#')}. Please type a description with 30 tags maximum.")
                                     description = await self.client.wait_for('message', check=check, timeout=60.0)
                                     description = description.content
-                            
-                            description = description.replace("%%","@")
-                            description = description.replace("&&","#")
+
                             await channel.send(f"Posting \"{description}\"\nIs that ok? ``y/n``")
                             response = await self.client.wait_for('message', check=check, timeout=60.0)
                             response = response.content

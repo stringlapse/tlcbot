@@ -57,7 +57,8 @@ class Help(commands.Cog):
                 helpEmbed = discord.Embed(title=f"Help (Page {page})", description=f"Use `{config('PREFIX')}help [1-{helpPages}]` for more", color=0x00ff00)
                 for i in range(0, 5):
                     try:
-                        helpEmbed.add_field(name=config('PREFIX')+pickedHelpContent[i][0], value=pickedHelpContent[i][1], inline=False)
+                        if pickedHelpContent[i][0] != "cookie":
+                            helpEmbed.add_field(name=config('PREFIX')+pickedHelpContent[i][0], value=pickedHelpContent[i][1], inline=False)
                         if i == 4:
                             await ctx.send(embed=helpEmbed)
                     except IndexError:
@@ -79,7 +80,10 @@ class Help(commands.Cog):
                         await ctx.send("There's no extra help for that command")
                         break
                     extraHelpEmbed = discord.Embed(title=config('PREFIX')+entry[0], color=0x00ff00)
-                    extraHelpEmbed.add_field(name=entry[1], value=entry[2], inline=False)
+                    if entry[0] == "cookies":
+                        extraHelpEmbed.add_field(name=entry[1], value=entry[2] + " [Hungry?](https://pastebin.com/dStYKpUb)", inline=False)
+                    else:
+                        extraHelpEmbed.add_field(name=entry[1], value=entry[2], inline=False)
                     await ctx.send(embed=extraHelpEmbed)
                     break
             if not found:

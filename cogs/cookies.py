@@ -272,9 +272,11 @@ class Cookies(commands.Cog):
     @commands.command(pass_context = True , aliases=['cookie', 'cookies', 'bal'])
     async def balance(self, ctx, member:discord.Member=None):
         memberID = ctx.author.id
+        displayName = ctx.author.display_name
         name = ctx.author
         if member is not None:
             memberID = member.id
+            displayName = member.display_name
             name = member
         conn = sqlite3.connect('example.db')
         c = conn.cursor()
@@ -282,7 +284,7 @@ class Cookies(commands.Cog):
         c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{memberID}'")
         result = c.fetchone()
         bal = int(result[1])
-        embed=embedsText(f'{ctx.message.author.display_name}\'s balance: {bal} :cookie:','')
+        embed=embedsText(f'{displayName}\'s balance: {bal} :cookie:','')
         #currentDate = date.today()
         #today = currentDate.strftime('%m/%d/%Y').replace("/0", "/")
         #if today[0] == '0':

@@ -305,6 +305,8 @@ class Cookies(commands.Cog):
             if balance > 0:
                 user = await self.client.fetch_user(int(row[0]))
                 member = guild.get_member(int(row[0]))
+                if member == None:
+                    continue
                 string += f'\n#{i}: **{balance}** :cookie: \t{member.display_name} ({str(member)})'
                 i += 1
             if i > 10:

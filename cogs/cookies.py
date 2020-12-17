@@ -214,7 +214,8 @@ class Cookies(commands.Cog):
                 member = tag
                 #print("Bumped! Tag: " + member + " ID: " + member[2:-1])
                 member = member[2:-1]
-                member = self.client.get_user(int(member))
+                guild = self.client.get_guild(int(config('GUILD_ID')))
+                member = guild.get_member(int(member))
                 conn = sqlite3.connect('example.db')
                 c = conn.cursor()
                 await self.createBal(message.channel, member.id)
@@ -233,7 +234,8 @@ class Cookies(commands.Cog):
                 member = tag
                 print("Bumped! Tag: " + member + " ID: " + member[2:-1])
                 member = member[2:-1]
-                member = self.client.get_user(int(member))
+                guild = self.client.get_guild(int(config('GUILD_ID')))
+                member = guild.get_member(int(member))
                 conn = sqlite3.connect('example.db')
                 c = conn.cursor()
                 await self.createBal(message.channel, member.id)
@@ -243,7 +245,7 @@ class Cookies(commands.Cog):
                 c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
                 conn.commit()
                 channel = message.channel
-                await channel.send(f"Thanks for bumping {member.mention} have a :cookie:")
+                await channel.send(f"Thanks for bumping {member.display_name}, have a :cookie:!")
             '''
     '''
     # simulates disboard's bump message

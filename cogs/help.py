@@ -28,6 +28,16 @@ class Help(commands.Cog):
         ["color", "Generates a random color", f"Can also be used to display a given color using `{config('PREFIX')}color #123456` (hex) or `{config('PREFIX')}color (12,34,56)` (rgb)."],
         ["colorphoto", "Picks out the most prominent colors from a picture", f"Upload a photo or include a link to get colors from it. You can also specift how many colors to get (3-6) and if you want complimentary colors. (ex. `{config('PREFIX')}colorphoto 5 complimentary https://via.placeholder.com/150`)"],
         ["cookies", "Shows how many cookies the user has", "Cookies are a valuable resource for TLC, you can get them by:\n - bumping the server with disboard or discord.me\n - giving detailed and helpful critiques to others\n - uplifting the community by having pleasant conversations with others\n\n🍪 Stock up on them so we can start a rewards program!"],
+        ["cookie", "Perhaps you are looking for !help cookies, and not Grandma's favorite recipe", """
+        - Preheat oven to 375 degrees F (190 for them cultured folk). Line a baking pan with parchment paper and set aside.
+        - In a separate bowl mix flour, baking soda, salt, baking powder. Set aside.
+        - Cream together butter and sugars until combined.
+        - Beat in eggs and vanilla until fluffy.
+        - Mix in the dry ingredients until combined.
+        - Add 12 oz package of chocolate chips and mix well.
+        - Roll 2-3 TBS (depending on how large you like your cookies) of dough at a time into balls and place them evenly spaced on your prepared cookie sheets. (alternately, use a small cookie scoop to make your cookies).
+        - Bake in preheated oven for approximately 8-10 minutes. Take them out when they are just BARELY starting to turn brown.
+        - Let them sit on the baking pan for 2 minutes before removing to cooling rack."""],
         ["link", "Link your social media accounts", f"Use `{config('PREFIX')}link <platform> <account>` to link your social media accounts (ex. `{config('PREFIX')}link twitter tlc_discord`). \n" + valid_platforms],
         ["prompt", "Generates a random art prompt", ""],
         ["scheme", f"Similar to {config('PREFIX')}color but generates a color scheme", f"By default generates a random color scheme but a color to base the scheme on may be specified. Format fpr specifying a color is `{config('PREFIX')}scheme #123456` (hex) or `{config('PREFIX')}scheme (12,34,56)` (rgb)."],
@@ -46,7 +56,8 @@ class Help(commands.Cog):
                 helpEmbed = discord.Embed(title=f"Help (Page {page})", description=f"Use `{config('PREFIX')}help [1-{helpPages}]` for more", color=0x00ff00)
                 for i in range(0, 5):
                     try:
-                        helpEmbed.add_field(name=config('PREFIX')+pickedHelpContent[i][0], value=pickedHelpContent[i][1], inline=False)
+                        if pickedHelpContent[i][0] != 'cookie':
+                            helpEmbed.add_field(name=config('PREFIX')+pickedHelpContent[i][0], value=pickedHelpContent[i][1], inline=False)
                         if i == 4:
                             await ctx.send(embed=helpEmbed)
                     except IndexError:

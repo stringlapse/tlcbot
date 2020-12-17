@@ -28,7 +28,7 @@ class Help(commands.Cog):
         ["color", "Generates a random color", f"Can also be used to display a given color using `{config('PREFIX')}color #123456` (hex) or `{config('PREFIX')}color (12,34,56)` (rgb)."],
         ["colorphoto", "Picks out the most prominent colors from a picture", f"Upload a photo or include a link to get colors from it. You can also specift how many colors to get (3-6) and if you want complimentary colors. (ex. `{config('PREFIX')}colorphoto 5 complimentary https://via.placeholder.com/150`)"],
         ["cookies", "Shows how many cookies the user has", "Cookies are a valuable resource for TLC, you can get them by:\n - bumping the server with disboard or discord.me\n - giving detailed and helpful critiques to others\n - uplifting the community by having pleasant conversations with others\n\n🍪 Stock up on them so we can start a rewards program!"],
-        ["cookie", "Perhaps you are looking for !help cookies, and not Grandma's favorite recipe", """
+        ["cookie", f"Perhaps you are looking for {config('PREFIX')}help cookies, and not Grandma's favorite recipe", """
         - Preheat oven to 375 degrees F (190 for them cultured folk). Line a baking pan with parchment paper and set aside.
         - In a separate bowl mix flour, baking soda, salt, baking powder. Set aside.
         - Cream together butter and sugars until combined.

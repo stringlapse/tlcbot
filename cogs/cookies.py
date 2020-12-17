@@ -245,7 +245,7 @@ class Cookies(commands.Cog):
                 channel = message.channel
                 await channel.send(f"Thanks for bumping {member.mention} have a :cookie:")
             '''
-         
+    '''
     # simulates disboard's bump message
     @commands.command()
     @commands.has_role(admin_role)
@@ -267,14 +267,17 @@ class Cookies(commands.Cog):
 
         embed.set_thumbnail(url="https://disboard.org/images/bot-command-image-thumbnail-error.png")
         await ctx.send(embed=embed)
+    '''
 
     # allows user to check their own or another user's balance
     @commands.command(pass_context = True , aliases=['cookie', 'cookies', 'bal'])
     async def balance(self, ctx, member:discord.Member=None):
         memberID = ctx.author.id
+        displayName = ctx.author.display_name
         name = ctx.author
         if member is not None:
             memberID = member.id
+            displayName = member.display_name
             name = member
         conn = sqlite3.connect('example.db')
         c = conn.cursor()
@@ -282,7 +285,7 @@ class Cookies(commands.Cog):
         c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{memberID}'")
         result = c.fetchone()
         bal = int(result[1])
-        embed=embedsText(f'{ctx.message.author.display_name}\'s balance: {bal} :cookie:','')
+        embed=embedsText(f'{displayName}\'s balance: {bal} :cookie:','')
         #currentDate = date.today()
         #today = currentDate.strftime('%m/%d/%Y').replace("/0", "/")
         #if today[0] == '0':
@@ -296,17 +299,47 @@ class Cookies(commands.Cog):
         conn = sqlite3.connect('example.db')
         c = conn.cursor()
         i = 1
+        rank = 1
+        rank_found = False
+        need_to_yeet = False
+        users_to_yeet = []
         string = ''
-        for row in c.execute("SELECT * FROM econ ORDER BY balance DESC"):
+        for row in c.execute("SELECT * FROM econ ORDER BY balance + 0 DESC"):
             balance = int(row[1])
-            if balance > 0:
-                user = await self.client.fetch_user(int(row[0]))
-                member = guild.get_member(int(row[0]))
-                string += f'\n#{i}: **{balance}** :cookie: \t{member.display_name} ({str(member)})'
-                i += 1
-            if i > 10:
-                break
-        embed=embedsText('TLC :cookie: Leaderboard', f'{string}')                                                              
+            user = await self.client.fetch_user(int(row[0]))
+            member = guild.get_member(int(row[0]))
+            if member == None:
+                print(str(row[0])+" is not here")
+                need_to_yeet = True
+                users_to_yeet.append(int(row[0]))
+                continue
+            if i <= 10:
+                if balance > 0:
+                    if i == 1:
+                        string += f'\n:first_place:: **{balance}** :cookie: \t{member.display_name} ({str(member)})'
+                    elif i == 2:
+                        string += f'\n:second_place:: **{balance}** :cookie: \t{member.display_name} ({str(member)})'
+                    elif i == 3:
+                        string += f'\n:third_place:: **{balance}** :cookie: \t{member.display_name} ({str(member)})'
+                    else:
+                        string += f'\n#{i}: **{balance}** :cookie: \t{member.display_name} ({str(member)})'
+                    i += 1
+            if not rank_found:
+                if member == ctx.message.author:
+                    rank_found = True
+                    if i > 10:
+                        break
+                else:
+                    rank += 1
+            
+        if need_to_yeet:
+            for yeet in users_to_yeet:
+                c.execute(f"DELETE FROM econ WHERE user_id = {yeet}")
+            conn.commit()
+            need_to_yeet = False
+
+        embed=embedsText('TLC :cookie: Leaderboard', f'{string}')
+        embed.set_footer(text=f"Your rank is #{rank}")
         await ctx.send(embed=embed)
    
     def check_all_message(self,check_for, message):

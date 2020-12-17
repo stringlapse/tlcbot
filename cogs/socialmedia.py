@@ -166,7 +166,7 @@ class SocialMedia(commands.Cog):
                                 await channel.send("Fuck you, say 'y' or 'n'")
                                 response = await self.client.wait_for('message', check=check, timeout=60.0)
                                 response = response.content
-
+                        
                         val = (1, result[0])
 
                         opener = urllib.request.URLopener()
@@ -186,6 +186,8 @@ class SocialMedia(commands.Cog):
                         conn.commit()
                         if os.path.exists(photo):
                             os.remove(photo)
+                        if os.path.exists("images/post.jpg.REMOVE_ME"):
+                            os.remove("images/post.jpg.REMOVE_ME")
                         c.execute("SELECT * FROM shared_art WHERE bot_message_id = ?", (str(payload.message_id),))
                         result2 = c.fetchone()
                         if(int(result2[3]) == 1 and int(result2[4]) == 1):
@@ -228,7 +230,7 @@ class SocialMedia(commands.Cog):
                 await channel.send(text)
 
     # Sends to Twitter from message url
-    async def postTwitter(self,photo,description, channel):
+    async def postTwitter(self,photo,description, channel,c,val):
         try:
             msg = await channel.send("Beginning to post to twitter. May take a couple of minutes.") 
             auth = tweepy.OAuthHandler(config('TWITTER_CONSUMER_KEY'), config('TWITTER_CONSUMER_SECRET')) 

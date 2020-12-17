@@ -245,7 +245,7 @@ class Cookies(commands.Cog):
                 channel = message.channel
                 await channel.send(f"Thanks for bumping {member.mention} have a :cookie:")
             '''
-         
+    '''
     # simulates disboard's bump message
     @commands.command()
     @commands.has_role(admin_role)
@@ -267,6 +267,7 @@ class Cookies(commands.Cog):
 
         embed.set_thumbnail(url="https://disboard.org/images/bot-command-image-thumbnail-error.png")
         await ctx.send(embed=embed)
+    '''
 
     # allows user to check their own or another user's balance
     @commands.command(pass_context = True , aliases=['cookie', 'cookies', 'bal'])

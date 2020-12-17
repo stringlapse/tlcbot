@@ -174,6 +174,12 @@ class SocialMedia(commands.Cog):
                         photo = 'images/post.jpg'
                         filename, headers = opener.retrieve(url, photo)
 
+                        
+                        img = Image.open(photo, 'r')
+                        background = Image.new('RGB', img.size, (255, 255, 255))
+                        background.paste(img, (0,0), img)
+                        background.save(photo)
+
                         if instagram and description != 'q':
                             await self.postInstagram(photo,description, channel,c,val)
                             conn.commit()
@@ -228,7 +234,7 @@ class SocialMedia(commands.Cog):
                 await channel.send(text)
 
     # Sends to Twitter from message url
-    async def postTwitter(self,photo,description, channel):
+    async def postTwitter(self,photo,description, channel,c,val):
         try:
             msg = await channel.send("Beginning to post to twitter. May take a couple of minutes.") 
             auth = tweepy.OAuthHandler(config('TWITTER_CONSUMER_KEY'), config('TWITTER_CONSUMER_SECRET')) 

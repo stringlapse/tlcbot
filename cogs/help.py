@@ -38,6 +38,7 @@ class Help(commands.Cog):
         - Bake in preheated oven for approximately 8-10 minutes. Take them out when they are just BARELY starting to turn brown.
         - Let them sit on the baking pan for 2 minutes before removing to cooling rack."""],
         ["cookies", "Shows how many cookies the user has", "Cookies are a valuable resource for TLC, you can get them by:\n - bumping the server with disboard or discord.me\n - giving detailed and helpful critiques to others\n - uplifting the community by having pleasant conversations with others\n\n🍪 Stock up on them so we can start a rewards program!"],
+        ["leaderboard", "Show who has the most cookies", f"See `{config('PREFIX')}help cookies` for more info about cookies"],
         ["link", "Link your social media accounts", f"Use `{config('PREFIX')}link <platform> <account>` to link your social media accounts (ex. `{config('PREFIX')}link twitter tlc_discord`). \n" + valid_platforms],
         ["prompt", "Generates a random art prompt", ""],
         ["scheme", f"Similar to {config('PREFIX')}color but generates a color scheme", f"By default generates a random color scheme but a color to base the scheme on may be specified. Format fpr specifying a color is `{config('PREFIX')}scheme #123456` (hex) or `{config('PREFIX')}scheme (12,34,56)` (rgb)."],

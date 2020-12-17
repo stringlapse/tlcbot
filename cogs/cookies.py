@@ -225,7 +225,7 @@ class Cookies(commands.Cog):
                 c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
                 conn.commit()
                 channel = message.channel
-                await channel.send(f"Thanks for bumping {tag} have a :cookie:")
+                await channel.send(f"Thanks for bumping {member.mention} have a :cookie:")
          
     # simulates disboard's bump message
     @commands.command()

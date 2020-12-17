@@ -28,16 +28,19 @@ class Help(commands.Cog):
         ["color", "Generates a random color", f"Can also be used to display a given color using `{config('PREFIX')}color #123456` (hex) or `{config('PREFIX')}color (12,34,56)` (rgb)."],
         ["colorphoto", "Picks out the most prominent colors from a picture", f"Upload a photo or include a link to get colors from it. You can also specift how many colors to get (3-6) and if you want complimentary colors. (ex. `{config('PREFIX')}colorphoto 5 complimentary https://via.placeholder.com/150`)"],
         ["cookies", "Shows how many cookies the user has", "Cookies are a valuable resource for TLC, you can get them by:\n - bumping the server with disboard or discord.me\n - giving detailed and helpful critiques to others\n - uplifting the community by having pleasant conversations with others\n\n🍪 Stock up on them so we can start a rewards program!"],
+        ["leaderboard", "Show who has the most cookies", f"See `{config('PREFIX')}help cookies` for more info about cookies"],
         ["link", "Link your social media accounts", f"Use `{config('PREFIX')}link <platform> <account>` to link your social media accounts (ex. `{config('PREFIX')}link twitter tlc_discord`). \n" + valid_platforms],
         ["prompt", "Generates a random art prompt", ""],
         ["scheme", f"Similar to {config('PREFIX')}color but generates a color scheme", f"By default generates a random color scheme but a color to base the scheme on may be specified. Format fpr specifying a color is `{config('PREFIX')}scheme #123456` (hex) or `{config('PREFIX')}scheme (12,34,56)` (rgb)."],
         ["sm", "Lists your or someone else's linked social media accounts", f"Use `{config('PREFIX')}sm @member` to see someone else's linked accounts or just `{config('PREFIX')}sm` to see yours. To set your social media accounts, see `{config('PREFIX')}help link`"],
-        ["unlink", "Unlink your social media accounts", f"Use `{config('PREFIX')}unlink <platform>` to unlink a social media account (ex. `{config('PREFIX')}unlink twitter`).\n" + valid_platforms]]
+        ["unlink", "Unlink your social media accounts", f"Use `{config('PREFIX')}unlink <platform>` to unlink a social media account (ex. `{config('PREFIX')}unlink twitter`).\n" + valid_platforms]
+        ]
 
-        if len(helpContent)%5 == 0:
-            helpPages = (len(helpContent)//5)
+        length = len(helpContent)
+        if length%5 == 0:
+            helpPages = (length//5)
         else:
-            helpPages = (len(helpContent)//5)+1
+            helpPages = (length//5)+1
 
         if page == "1" or page.isnumeric():
             try:
@@ -60,6 +63,19 @@ class Help(commands.Cog):
                 await ctx.send(f"There are only {helpPages} pages of help. Use `{config('PREFIX')}help [1-{helpPages}]` for help.")
         else:
             page = page.lower()
+            if page == "cookie":
+                embed = discord.Embed(title=f"{config('PREFIX')}cookie",color=0x00ff00)
+                embed.add_field(name=f"Perhaps you are looking for `{config('PREFIX')}help cookies`, and not Grandma's favorite recipe", value="""
+                - Preheat oven to 375 degrees F (190 for them cultured folk). Line a baking pan with parchment paper and set aside.
+                - In a separate bowl mix flour, baking soda, salt, baking powder. Set aside.
+                - Cream together butter and sugars until combined.
+                - Beat in eggs and vanilla until fluffy.
+                - Mix in the dry ingredients until combined.
+                - Add 12 oz package of chocolate chips and mix well.
+                - Roll 2-3 TBS (depending on how large you like your cookies) of dough at a time into balls and place them evenly spaced on your prepared cookie sheets. (alternately, use a small cookie scoop to make your cookies).
+                - Bake in preheated oven for approximately 8-10 minutes. Take them out when they are just BARELY starting to turn brown.
+                - Let them sit on the baking pan for 2 minutes before removing to cooling rack.""", inline=False)
+                return await ctx.send(embed=embed)
             found = False
             for entry in helpContent:
                 if page == entry[0]:
@@ -68,7 +84,10 @@ class Help(commands.Cog):
                         await ctx.send("There's no extra help for that command")
                         break
                     extraHelpEmbed = discord.Embed(title=config('PREFIX')+entry[0], color=0x00ff00)
-                    extraHelpEmbed.add_field(name=entry[1], value=entry[2], inline=False)
+                    if entry[0] == "cookies":
+                        extraHelpEmbed.add_field(name=entry[1], value=entry[2] + " [Hungry?](https://pastebin.com/dStYKpUb)", inline=False)
+                    else:
+                        extraHelpEmbed.add_field(name=entry[1], value=entry[2], inline=False)
                     await ctx.send(embed=extraHelpEmbed)
                     break
             if not found:

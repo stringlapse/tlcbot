@@ -57,8 +57,7 @@ class Help(commands.Cog):
                 helpEmbed = discord.Embed(title=f"Help (Page {page})", description=f"Use `{config('PREFIX')}help [1-{helpPages}]` for more", color=0x00ff00)
                 for i in range(0, 5):
                     try:
-                        if pickedHelpContent[i][0] != 'cookie':
-                            helpEmbed.add_field(name=config('PREFIX')+pickedHelpContent[i][0], value=pickedHelpContent[i][1], inline=False)
+                        helpEmbed.add_field(name=config('PREFIX')+pickedHelpContent[i][0], value=pickedHelpContent[i][1], inline=False)
                         if i == 4:
                             await ctx.send(embed=helpEmbed)
                     except IndexError:

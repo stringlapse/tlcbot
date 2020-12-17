@@ -299,19 +299,30 @@ class Cookies(commands.Cog):
         conn = sqlite3.connect('example.db')
         c = conn.cursor()
         i = 1
+        need_to_yeet = False
+        users_to_yeet = []
         string = ''
         for row in c.execute("SELECT * FROM econ ORDER BY balance + 0 DESC"):
             balance = int(row[1])
-            if balance > 0:
-                user = await self.client.fetch_user(int(row[0]))
-                member = guild.get_member(int(row[0]))
-                if member == None:
-                    continue
-                string += f'\n#{i}: **{balance}** :cookie: \t{member.display_name} ({str(member)})'
-                i += 1
-            if i > 10:
-                break
-        embed=embedsText('TLC :cookie: Leaderboard', f'{string}')                                                              
+            user = await self.client.fetch_user(int(row[0]))
+            member = guild.get_member(int(row[0]))
+            if member == None:
+                print(str(row[0])+" is not here")
+                need_to_yeet = True
+                users_to_yeet.append(int(row[0]))
+                continue
+            if i <= 10:
+                if balance > 0:
+                    string += f'\n#{i}: **{balance}** :cookie: \t{member.display_name} ({str(member)})'
+                    i += 1
+            
+        if need_to_yeet:
+            for yeet in users_to_yeet:
+                c.execute(f"DELETE FROM econ WHERE user_id = {yeet}")
+            conn.commit()
+            need_to_yeet = False
+
+        embed=embedsText('TLC :cookie: Leaderboard', f'{string}')
         await ctx.send(embed=embed)
    
     def check_all_message(self,check_for, message):

@@ -299,6 +299,8 @@ class Cookies(commands.Cog):
         conn = sqlite3.connect('example.db')
         c = conn.cursor()
         i = 1
+        rank = 1
+        rank_found = False
         need_to_yeet = False
         users_to_yeet = []
         string = ''
@@ -315,6 +317,13 @@ class Cookies(commands.Cog):
                 if balance > 0:
                     string += f'\n#{i}: **{balance}** :cookie: \t{member.display_name} ({str(member)})'
                     i += 1
+            if not rank_found:
+                if member == ctx.message.author:
+                    rank_found = True
+                    if i > 10:
+                        break
+                else:
+                    rank += 1
             
         if need_to_yeet:
             for yeet in users_to_yeet:
@@ -323,6 +332,7 @@ class Cookies(commands.Cog):
             need_to_yeet = False
 
         embed=embedsText('TLC :cookie: Leaderboard', f'{string}')
+        embed.set_footer(text=f"Your rank is #{rank}")
         await ctx.send(embed=embed)
    
     def check_all_message(self,check_for, message):

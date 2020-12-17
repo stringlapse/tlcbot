@@ -10,6 +10,7 @@ import PIL.Image
 def prepare_and_fix_photo(photo):
     with open(photo, "rb") as f:
         img = PIL.Image.open(f)
+        img =img.convert("RGB")
         img = strip_exif(img)
         if not correct_ratio(photo):
             img = crop_maximize_entropy(img)

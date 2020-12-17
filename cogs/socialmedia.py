@@ -174,6 +174,12 @@ class SocialMedia(commands.Cog):
                         photo = 'images/post.jpg'
                         filename, headers = opener.retrieve(url, photo)
 
+                        
+                        img = Image.open(photo, 'r')
+                        background = Image.new('RGB', img.size, (255, 255, 255))
+                        background.paste(img, (0,0), img)
+                        background.save(photo)
+
                         if instagram and description != 'q':
                             await self.postInstagram(photo,description, channel,c,val)
                             conn.commit()

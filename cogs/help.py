@@ -27,7 +27,7 @@ class Help(commands.Cog):
         ["bingo", "Generates a random art prompt bingo card", "Draw something that uses the prompts in all 5 squares in any line. Diagonal lines count, TLC is a free space. Don't forget to shout bingo and share your drawing when you're done!"],
         ["color", "Generates a random color", f"Can also be used to display a given color using `{config('PREFIX')}color #123456` (hex) or `{config('PREFIX')}color (12,34,56)` (rgb)."],
         ["colorphoto", "Picks out the most prominent colors from a picture", f"Upload a photo or include a link to get colors from it. You can also specift how many colors to get (3-6) and if you want complimentary colors. (ex. `{config('PREFIX')}colorphoto 5 complimentary https://via.placeholder.com/150`)"],
-        ["cookie", f"Perhaps you are looking for {config('PREFIX')}help cookies, and not Grandma's favorite recipe", """
+        ["cookie", f"Perhaps you are looking for `{config('PREFIX')}help cookies`, and not Grandma's favorite recipe", """
         - Preheat oven to 375 degrees F (190 for them cultured folk). Line a baking pan with parchment paper and set aside.
         - In a separate bowl mix flour, baking soda, salt, baking powder. Set aside.
         - Cream together butter and sugars until combined.

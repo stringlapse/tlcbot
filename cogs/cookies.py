@@ -209,11 +209,13 @@ class Cookies(commands.Cog):
     async def on_message(self, message):
         if message.author.id == int(config('DISBOARD_ID')):
             if self.check_all_message("Bump done :thumbsup:", message):
-                m = re.search(r'<@!?(\d+)>', message.embeds[0].description)
-                tag = m.group(0)
-                member = tag
-                member = member[3:member.find('>')]
-                member = self.client.get_user(int(member))
+                #m = re.search(r'<@!?(\d+)>', message.embeds[0].description)
+                #tag = m.group(0)
+                #member = tag
+                #member = member[3:member.find('>')]
+                #member = self.client.get_user(int(member))
+                member = self.client.get_user(int(message.mentions[0]))
+                print("Mention 0: " + message.mentions[0] + " ID: " + int(message.mentions[0]))
                 conn = sqlite3.connect('example.db')
                 c = conn.cursor()
                 await self.createBal(message.channel, member.id)

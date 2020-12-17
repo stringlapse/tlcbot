@@ -128,27 +128,6 @@ class SocialMedia(commands.Cog):
                         def check(message):
                             return message.author.id == payload.user_id and message.channel.id == modChannel
 
-                        photo = 'images/post.jpg'
-                        if os.path.exists(photo):
-                            os.remove(photo)
-                        if os.path.exists("images/post.jpg.REMOVE_ME"):
-                            os.remove("images/post.jpg.REMOVE_ME")
-
-                        opener = urllib.request.URLopener()
-                        opener.addheader('User-Agent', 'whatever')
-                        filename, headers = opener.retrieve(url, photo)
-
-                        if twitter:
-                            size = os.stat(photo).st_size # gives size of the image but only in bytes
-                            while size > 3072000: # deals with photos over 3072kb; apparently twitter hates them too
-                                picture = Image.open(photo)
-                                if picture.is_animated:
-                                    return await channel.send(f"Twitter does not currently support gifs above 3072kb. This file is too large at {round(size/1000)}kb. The devs are currently working on supporting these larger gifs.")
-                                picture.save(photo, optimize=True, quality=30) 
-                                size2 = os.stat(photo).st_size
-                                print(f"Was around {size/1000} kb, compressed to {size2/1000}kb")
-                                size = size2
-
                         response = 'n'
                         description = None
                         
@@ -197,6 +176,27 @@ class SocialMedia(commands.Cog):
                                 await channel.send("Fuck you, say 'y' or 'n'")
                                 response = await self.client.wait_for('message', check=check, timeout=60.0)
                                 response = response.content
+                        
+
+                        photo = 'images/post.jpg'
+                        if os.path.exists(photo):
+                            os.remove(photo)
+                        if os.path.exists("images/post.jpg.REMOVE_ME"):
+                            os.remove("images/post.jpg.REMOVE_ME")
+
+                        opener = urllib.request.URLopener()
+                        opener.addheader('User-Agent', 'whatever')
+                        filename, headers = opener.retrieve(url, photo)
+
+                        # Code below fails with gif (will return to)
+                        # size = os.stat(photo).st_size # gives size of the image but only in bytes
+                        # print(os.stat(photo))
+                        # while size > 3072000: # deals with photos over 3072kb; apparently twitter hates them too
+                        #     picture = Image.open(photo)
+                        #     picture.save(photo, optimize=True, quality=30) 
+                        #     size2 = os.stat(photo).st_size
+                        #     print(f"Was around {size/1000} kb, compressed to {size2/1000}kb")
+                        #     size = size2
 
                         if instagram:
                             img = Image.open(photo, 'r')  

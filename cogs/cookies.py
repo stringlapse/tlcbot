@@ -212,7 +212,8 @@ class Cookies(commands.Cog):
                 m = re.search(r'<@!?(\d+)>', message.embeds[0].description)
                 tag = m.group(0)
                 member = tag
-                member = member[3:member.find('>')]
+                #print("Bumped! Tag: " + member + " ID: " + member[2:-1])
+                member = member[2:-1]
                 member = self.client.get_user(int(member))
                 conn = sqlite3.connect('example.db')
                 c = conn.cursor()
@@ -223,7 +224,27 @@ class Cookies(commands.Cog):
                 c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
                 conn.commit()
                 channel = message.channel
-                await channel.send(f"Thanks for bumping {tag} have a :cookie:")
+                await channel.send(f"Thanks for bumping {member.mention} have a :cookie:")
+            '''
+            # Don't use this code, it gives cookies for failed bumps
+            elif self.check_all_message("until the server can be bumped", message):
+                m = re.search(r'<@!?(\d+)>', message.embeds[0].description)
+                tag = m.group(0)
+                member = tag
+                print("Bumped! Tag: " + member + " ID: " + member[2:-1])
+                member = member[2:-1]
+                member = self.client.get_user(int(member))
+                conn = sqlite3.connect('example.db')
+                c = conn.cursor()
+                await self.createBal(message.channel, member.id)
+                c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{member.id}'")
+                memberBal = int(c.fetchone()[1]) + rewards['bump']
+                val = (memberBal, member.id)
+                c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
+                conn.commit()
+                channel = message.channel
+                await channel.send(f"Thanks for bumping {member.mention} have a :cookie:")
+            '''
          
     # simulates disboard's bump message
     @commands.command()

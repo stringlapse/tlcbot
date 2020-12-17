@@ -43,13 +43,18 @@ class SocialMedia(commands.Cog):
         if str(message.channel.id) in shareArtChannels:
              for role in message.author.roles:
                 if role.name == smRole and len(message.attachments) > 0:
-                    forbiddenExtensions = ['.mov','.mp4','.mp3','.wmv','.flv','.avi']
                     for i in range(0, len(message.attachments)):
-                        if not any(s in message.attachments[i].filename for s in forbiddenExtensions): 
-                            url = message.attachments[i].url
+                        image = message.attachments[i]
+                        halalExtensions = ['.png','.jpg','.jpeg','.gif']
+                        if any(s in image.filename for s in halalExtensions): 
+                            instaHalal = True
+                            if '.gif' in image.filename:
+                                instaHalal = False
+                            url = image.url
                             embed = discord.Embed(description=message.content,color=0x228B22)
                             embed.set_author(name=message.author.display_name,icon_url=message.author.avatar_url)
                             embed.add_field(name=f'Source: #{message.channel.name}',value=f'[Jump!]({message.jump_url})')
+
                             #embed = embedsText(f"New image from #{message.channel.name}", f'**Source**\n[Jump!]({message.jump_url})')
                             embed.set_image(url=url)
                             footerText = f"{message.author.display_name} ({message.author}) on {datetime.datetime.now().date()}"
@@ -70,17 +75,22 @@ class SocialMedia(commands.Cog):
                                 if len(result[5]):
                                     footerText += f"\nPersonal Website: {result[5]}"
 
-                        embed.set_footer(text=footerText)
-                        bot_msg = await self.client.get_channel(modChannel).send(embed=embed)
-                        # stores message information into database ()
-                        val = (bot_msg.id, message.id, url, 0, 0)
-                        c.execute("INSERT INTO shared_art(bot_message_id,original_message_id, image_url,twitter,instagram) VALUES(?,?,?,?,?)", val)
-                        conn.commit()
-                        conn.close()
+                            embed.set_footer(text=footerText)
+                            bot_msg = await self.client.get_channel(modChannel).send(embed=embed)
+                            # stores message information into database ()
+                            val = (bot_msg.id, message.id, url, 0, 1)
+                            if instaHalal:
+                                await bot_msg.add_reaction('📷')
+                                val = (bot_msg.id, message.id, url, 0, 0)
+                            
+                            c.execute("INSERT INTO shared_art(bot_message_id,original_message_id, image_url,twitter,instagram) VALUES(?,?,?,?,?)", val)
+                            conn.commit()
+                            conn.close()
 
-                        await bot_msg.add_reaction('🐦')
-                        await bot_msg.add_reaction('📷')
-                        await bot_msg.add_reaction('❌')
+                            await bot_msg.add_reaction('🐦')
+                            await bot_msg.add_reaction('❌')
+                        
+                        
     
     @commands.Cog.listener()
     async def on_raw_reaction_add(self,payload):
@@ -167,19 +177,36 @@ class SocialMedia(commands.Cog):
                                 response = await self.client.wait_for('message', check=check, timeout=60.0)
                                 response = response.content
                         
-                        val = (1, result[0])
+
+                        photo = 'images/post.jpg'
+                        if os.path.exists(photo):
+                            os.remove(photo)
+                        if os.path.exists("images/post.jpg.REMOVE_ME"):
+                            os.remove("images/post.jpg.REMOVE_ME")
 
                         opener = urllib.request.URLopener()
                         opener.addheader('User-Agent', 'whatever')
-                        photo = 'images/post.jpg'
                         filename, headers = opener.retrieve(url, photo)
 
-                        img = Image.open(photo, 'r')
-                        if img.mode == "RGBA":
-                            background = Image.new('RGB', img.size, (255, 255, 255))
-                            background.paste(img, (0,0), img)
-                            background.save(photo)
+                        # Code below fails with gif (will return to)
+                        # size = os.stat(photo).st_size # gives size of the image but only in bytes
+                        # print(os.stat(photo))
+                        # while size > 3072000: # deals with photos over 3072kb; apparently twitter hates them too
+                        #     picture = Image.open(photo)
+                        #     picture.save(photo, optimize=True, quality=30) 
+                        #     size2 = os.stat(photo).st_size
+                        #     print(f"Was around {size/1000} kb, compressed to {size2/1000}kb")
+                        #     size = size2
 
+                        if instagram:
+                            img = Image.open(photo, 'r')  
+                            if img.mode == "RGBA": 
+                                # trans rights!
+                                background = Image.new('RGB', img.size, (255, 255, 255))
+                                background.paste(img, (0,0), img)
+                                background.save(photo)
+
+                        val = (1, result[0])
                         if instagram and description != 'q':
                             await self.postInstagram(photo,description, channel,c,val)
                             conn.commit()
@@ -190,10 +217,6 @@ class SocialMedia(commands.Cog):
                         await channel.send("<@" + str(payload.user_id) + "> Took too long to respond. Try again.")
                     finally:
                         conn.commit()
-                        if os.path.exists(photo):
-                            os.remove(photo)
-                        if os.path.exists("images/post.jpg.REMOVE_ME"):
-                            os.remove("images/post.jpg.REMOVE_ME")
                         c.execute("SELECT * FROM shared_art WHERE bot_message_id = ?", (str(payload.message_id),))
                         result2 = c.fetchone()
                         if(int(result2[3]) == 1 and int(result2[4]) == 1):
@@ -255,14 +278,6 @@ class SocialMedia(commands.Cog):
     async def postInstagram(self,photo,description,channel,c,val):
         try:
             msg = await channel.send("Beginning to post to instagram. May take a couple of minutes.") 
-            size = os.stat(photo).st_size # gives size of the image but only in bytes
-            print(os.stat(photo))
-            while size > 3072000: # deals with photos over 3072kb
-                picture = Image.open(photo)
-                picture.save(photo, optimize=True, quality=30) 
-                size2 = os.stat(photo).st_size
-                print(f"Was around {size/1000} kb, compressed to {size2/1000}kb")
-                size = size2
             bot = Bot()
             bot.login(username=config('INSTAGRAM_USERNAME'),
                         password=config('INSTAGRAM_PASSWORD'))

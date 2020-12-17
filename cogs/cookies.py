@@ -315,7 +315,14 @@ class Cookies(commands.Cog):
                 continue
             if i <= 10:
                 if balance > 0:
-                    string += f'\n#{i}: **{balance}** :cookie: \t{member.display_name} ({str(member)})'
+                    if i == 1:
+                        string += f'\n:first_place:: **{balance}** :cookie: \t{member.display_name} ({str(member)})'
+                    elif i == 2:
+                        string += f'\n:second_place:: **{balance}** :cookie: \t{member.display_name} ({str(member)})'
+                    elif i == 3:
+                        string += f'\n:third_place:: **{balance}** :cookie: \t{member.display_name} ({str(member)})'
+                    else:
+                        string += f'\n#{i}: **{balance}** :cookie: \t{member.display_name} ({str(member)})'
                     i += 1
             if not rank_found:
                 if member == ctx.message.author:

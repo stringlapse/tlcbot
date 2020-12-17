@@ -300,7 +300,7 @@ class Cookies(commands.Cog):
         c = conn.cursor()
         i = 1
         string = ''
-        for row in c.execute("SELECT * FROM econ ORDER BY balance DESC"):
+        for row in c.execute("SELECT * FROM econ ORDER BY balance + 0 DESC"):
             balance = int(row[1])
             if balance > 0:
                 user = await self.client.fetch_user(int(row[0]))

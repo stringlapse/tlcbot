@@ -19,16 +19,22 @@ class Moderation(commands.Cog):
     @commands.command()
     @commands.has_role(admin_role)
     async def mute(self,ctx, member: discord.Member, *args):
-
         channel = self.client.get_channel(int(config('MOD_LOG_CHANNEL')))
         role = discord.utils.get(member.guild.roles, name = mute_role)
-
+        
         if member == ctx.message.author:
             return await ctx.send(f"You can't mute yourself {ctx.message.author.mention}")
+        
+        if role in member.roles:
+            return await ctx.send(f"This user is already currently muted {ctx.message.author.mention}")
 
         if not args:
-            await channel.send(f"{ctx.message.author} muted {member} for an unspecified amount of time")
-            await ctx.send(f"{member} muted for an unspecified amount of time")
+            embed = embedsText("User Muted!",f"**{member}** muted for an unspecified amount of time")
+            embed.set_footer(text=f"Use the {config('PREFIX')}unmute command to unmute this user")
+            embedMod = embedsText("User Muted!", f"{ctx.message.author} muted {member} for an unspecified amount of time")
+            embedMod.add_field(name='Source',value=f'[Jump!]({ctx.message.jump_url})')
+            await channel.send(embed=embedMod)
+            await ctx.send(embed=embed)
             return await member.add_roles(role)
         
         time = ''.join(args)
@@ -63,22 +69,36 @@ class Moderation(commands.Cog):
             hours = hours % 24
 
         p = inflect.engine()
-        text = "muted " + str(member) + " for", days, p.plural("day",days)+",",hours,p.plural("hour",hours)+", and",minutes,p.plural("minute",minutes)
+        text = "muted **" + str(member) + "** for", days, p.plural("day",days)+",",hours,p.plural("hour",hours)+", and",minutes,p.plural("minute",minutes)
         if minutes == 0 and hours == 0 and days == 0:
             return await ctx.send(f"Invalid amount of time specified {ctx.message.author.mention}")
         elif days == 0 and hours == 0:
-            text = "muted " + str(member) + " for", minutes,p.plural("minute",minutes)
+            text = "muted **" + str(member) + "** for", minutes,p.plural("minute",minutes)
         elif days == 0 and minutes == 0:
-            text = "muted " + str(member) + " for",hours,p.plural("hour",hours)
+            text = "muted **" + str(member) + "** for",hours,p.plural("hour",hours)
         elif minutes == 0 and hours == 0:
-            text = "muted " + str(member) + " for", days, p.plural("day",days)
+            text = "muted **" + str(member) + "** for", days, p.plural("day",days)
+
         text = " ".join(map(str, text))
-        await ctx.send(text[0].upper()+text[1:])
-        await channel.send(str(ctx.message.author) + " " + text)
+        embedText = text[0].upper()+text[1:]
+        modEmbedText = f"**{ctx.message.author}** {text}"
+        
+        embed = embedsText("User Muted!",embedText)
+        embed.set_footer(text=f"Use the {config('PREFIX')}unmute command to unmute this user sooner")
+        embedMod = embedsText("User Muted!", modEmbedText)
+        embedMod.add_field(name='Source',value=f'[Jump!]({ctx.message.jump_url})')
+        
+        await ctx.send(embed=embed)
+        modMessage = await channel.send(embed=embedMod)
         await member.add_roles(role)
 
         await asyncio.sleep(seconds)
-        await member.remove_roles(role)
+
+        if role in member.roles:
+            await member.remove_roles(role)
+            embedUnmute = embedsText("User Unmuted!", f"**{member}**\'s timed mute has run out.")
+            embedUnmute.add_field(name='Source',value=f'[Jump!]({modMessage.jump_url})')
+            await channel.send(embed=embedUnmute)
 
 
        
@@ -91,12 +111,20 @@ class Moderation(commands.Cog):
     @commands.has_role(admin_role)
     async def unmute(self,ctx, member: discord.Member):
         role = discord.utils.get(member.guild.roles, name = mute_role)
-        if role in member.roles:
-            await member.remove_roles(role)
-            embed=embedsText('User Unmuted!', f'**{member}** was unmuted by **{ctx.message.author}**!')
-            await ctx.send(embed=embed)
-        else:
-            await ctx.send(f'**{member}** is not currently muted')
+        if role not in member.roles:
+            return await ctx.send(f'This user is not currently muted {ctx.message.author.mention}')
+        
+        await member.remove_roles(role)
+        channel = self.client.get_channel(int(config('MOD_LOG_CHANNEL')))
+        
+        embedMod=embedsText('User Unmuted!', f'**{member}** was unmuted by **{ctx.message.author}**!')
+        embedMod.add_field(name='Source',value=f'[Jump!]({ctx.message.jump_url})')
+
+        embed = embedsText('User Unmuted!', f'**{member}** has been unmuted')
+        
+        await ctx.send(embed=embed)
+        await channel.send(embed=embedMod)
+            
 
     @commands.command()
     @commands.has_role(admin_role)

@@ -131,8 +131,7 @@ class SocialMedia(commands.Cog):
                         while size > 3072000: # compression algorithmn for twitter
                             picture = Image.open(photo)
                             if extension == "gif" and picture.is_animated:
-                                # optimize(photo)
-                                return await ctx.send("Gif too big :(")
+                                optimize(photo)
                             else:
                                 picture.save(photo, optimize=True, quality=30) 
                                 size2 = os.stat(photo).st_size

@@ -1,3 +1,4 @@
+## For my own sake, the command to install from requirements is 'pip install -r requirements.txt'
 aiohttp==3.6.2
 appdirs==1.4.3
 async-timeout==3.0.1
@@ -22,6 +23,7 @@ imageio==2.9.0
 imageio-ffmpeg==0.4.2
 iniconfig==1.0.1
 instabot==0.117.0
+inflect==5.0.2
 ipaddr==2.2.0
 lockfile==0.12.2
 lxml==4.5.2
@@ -63,3 +65,4 @@ tweepy==3.9.0
 urllib3==1.25.8
 webencodings==0.5.1
 yarl==1.5.1
+

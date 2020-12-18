@@ -32,7 +32,7 @@ class Cookies(commands.Cog):
             c.execute(f"SELECT * FROM invites WHERE invite_id =?",(invite.id,))
             result = c.fetchone()
             if result is None:
-                c.execute(f"INSERT INTO invites(invite_id, uses) VALUES(?,?)",(invite.id,invite.uses))
+                c.execute(f"INSERT INTO invites(invite_id,uses) VALUES(?,?)",(invite.id,invite.uses))
             else:
                 if invite.uses != result[1]:
                     c.execute(f"UPDATE invites SET uses = ? WHERE invite_id = ?",(invite.uses, invite.id))
@@ -80,7 +80,7 @@ class Cookies(commands.Cog):
     async def on_invite_create(self, invite):
         conn = sqlite3.connect('example.db')
         c = conn.cursor()
-        c.execute(f"INSERT INTO invites(invite_id, uses) VALUES(?,?)",(invite.id,invite.uses))
+        c.execute(f"INSERT INTO invites(invite_id, uses,users) VALUES(?,?)",(invite.id,invite.uses))
         conn.commit()
         conn.close()
     
@@ -186,23 +186,26 @@ class Cookies(commands.Cog):
             c.execute(f"SELECT * FROM invites WHERE invite_id =?",(invite.id,))
             result = c.fetchone()
             if result is not None:
-                if invite.uses > int(result[1]):
-                    userID = invite.inviter.id
-                    if not (invite.inviter.bot):
-                        await self.createBal(None, userID)
-                        c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{userID}'")
-                        result = c.fetchone()
-                        print(result)
-                        memberBal = int(result[1]) + rewards['invite']
-                        val = (memberBal, userID)
-                        print(val)
-                        c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
-                        conn.commit()
-                        channel = await self.client.fetch_channel(int(config("GENERAL_ONE_CHANNEL_ID")))
-                        await channel.send(f"<@{userID}> Thanks for inviting <@{member.id}> to the server. Have a :cookie:")
-                    c.execute("UPDATE invites set uses = ? WHERE invite_id = ?", (invite.uses,invite.id))
+                c.execute("SELECT * FROM users WHERE user_id=?", (member.id,))
+                userInfo = c.fetchone()
+                if userInfo is None:
+                    c.execute("INSERT INTO users(user_id) VALUES(?)", (member.id,))
                     conn.commit()
-                    break
+                    if invite.uses > int(result[1]):
+                        userID = invite.inviter.id
+                        if not (invite.inviter.bot):
+                            await self.createBal(None, userID)
+                            c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{userID}'")
+                            result = c.fetchone()
+                            memberBal = int(result[1]) + rewards['invite']
+                            val = (memberBal, userID)
+                            c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
+                            conn.commit()
+                            channel = await self.client.fetch_channel(int(config("GENERAL_ONE_CHANNEL_ID")))
+                            await channel.send(f"<@{userID}> Thanks for inviting <@{member.id}> to the server. Have a :cookie:")
+                        c.execute("UPDATE invites set uses = ? WHERE invite_id = ?", (invite.uses,invite.id))
+                        conn.commit()
+                        break
 
     # awards cookie when someone bumped disboard
     @commands.Cog.listener()
@@ -212,7 +215,6 @@ class Cookies(commands.Cog):
                 m = re.search(r'<@!?(\d+)>', message.embeds[0].description)
                 tag = m.group(0)
                 member = tag
-                #print("Bumped! Tag: " + member + " ID: " + member[2:-1])
                 member = member[2:-1]
                 guild = self.client.get_guild(int(config('GUILD_ID')))
                 member = guild.get_member(int(member))
@@ -308,10 +310,8 @@ class Cookies(commands.Cog):
         string = ''
         for row in c.execute("SELECT * FROM econ ORDER BY balance + 0 DESC"):
             balance = int(row[1])
-            #user = await self.client.fetch_user(int(row[0]))
             member = guild.get_member(int(row[0]))
             if member == None:
-                print(str(row[0])+" is not here")
                 need_to_yeet = True
                 users_to_yeet.append(int(row[0]))
                 continue

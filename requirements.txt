@@ -40,6 +40,7 @@ pluggy==0.13.1
 proglog==0.1.9
 progress==1.5
 py==1.9.0
+pygifsicle==1.0.1
 pyparsing==2.4.6
 PySocks==1.7.1
 pytest==6.0.1

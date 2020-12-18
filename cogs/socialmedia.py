@@ -19,6 +19,7 @@ from PIL import Image
 import PIL
 import glob
 from crop import prepare_and_fix_photo
+from pygifsicle import optimize
 from urllib.request import urlopen
 from discord.utils import get
 
@@ -112,12 +113,11 @@ class SocialMedia(commands.Cog):
                     check_role = get(bot_msg.guild.roles, name=smRole)
                     optedIn = check_role in payload.member.roles
 
-                    photo = 'images/post.jpg'
-                    if os.path.exists(photo):
-                        os.remove(photo)
-                    if os.path.exists("images/post.jpg.REMOVE_ME"):
-                        os.remove("images/post.jpg.REMOVE_ME")
-
+                    
+                    extension =  re.findall(r'.+(\..+)$',url)
+                    extension = extension[0]
+                    photo = f'images/post{extension}'
+                    
                     opener = urllib.request.URLopener()
                     opener.addheader('User-Agent', 'whatever')
                     filename, headers = opener.retrieve(url, photo)
@@ -130,12 +130,14 @@ class SocialMedia(commands.Cog):
                         size = os.stat(photo).st_size 
                         while size > 3072000: # compression algorithmn for twitter
                             picture = Image.open(photo)
-                            if picture.is_animated:
-                                return await channel.send(f"This gif at {round(size/1000)}kb is bigger than the 3072kb max allowed by twitter and can not be posted. The devs are working on supporting large gifs.")
-                            picture.save(photo, optimize=True, quality=30) 
-                            size2 = os.stat(photo).st_size
-                            print(f"Was around {size/1000} kb, compressed to {size2/1000}kb")
-                            size = size2
+                            if extension == "gif" and picture.is_animated:
+                                # optimize(photo)
+                                return await ctx.send("Gif too big :(")
+                            else:
+                                picture.save(photo, optimize=True, quality=30) 
+                                size2 = os.stat(photo).st_size
+                                print(f"Was around {size/1000} kb, compressed to {size2/1000}kb")
+                                size = size2
 
                     else: 
                         await bot_msg.remove_reaction('📷',payload.member)
@@ -204,6 +206,11 @@ class SocialMedia(commands.Cog):
                                 # trans rights!
                                 background = Image.new('RGB', img.size, (255, 255, 255))
                                 background.paste(img, (0,0), img)
+                                if os.path.exists(photo):
+                                    os.remove(photo)
+                                if os.path.exists(f"{photo}.REMOVE_ME"):
+                                    os.remove(f"{photo}.REMOVE_ME")
+                                photo = "images/post.jpg"
                                 background.save(photo)
 
                         val = (1, result[0])
@@ -216,6 +223,10 @@ class SocialMedia(commands.Cog):
                     except asyncio.TimeoutError:
                         await channel.send("<@" + str(payload.user_id) + "> Took too long to respond. Try again.")
                     finally:
+                        if os.path.exists(photo):
+                            os.remove(photo)
+                        if os.path.exists(f"{photo}.REMOVE_ME"):
+                            os.remove(f"{photo}.REMOVE_ME")
                         conn.commit()
                         c.execute("SELECT * FROM shared_art WHERE bot_message_id = ?", (str(payload.message_id),))
                         result2 = c.fetchone()

@@ -9,7 +9,7 @@ intents.members = True  # Subscribe to the privileged members intent.
 bot = commands.Bot(command_prefix = config('PREFIX'), intents=intents, case_insensitive=True)
 bot.remove_command('help') # Remove default help command so we can implement our own
 
-admin_role = "Mod"
+admin_role = int(config('ADMIN_ROLE'))
 
 @bot.command()
 @commands.has_role(admin_role)

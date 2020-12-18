@@ -15,6 +15,12 @@ mute_role = "Muted"
 class Moderation(commands.Cog):
     def __init__(self, client):
         self.client = client
+    
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        if isinstance(error, (commands.MissingRole, commands.MissingAnyRole)):
+            await ctx.send(f"You do not have the permissions necessary to be using this command {ctx.message.author.mention}")
+
 
     @commands.command()
     @commands.has_role(admin_role)
@@ -29,7 +35,7 @@ class Moderation(commands.Cog):
             return await ctx.send(f"This user is already currently muted {ctx.message.author.mention}")
 
         if not args:
-            embed = embedsText("User Muted!",f"**{member}** muted for an unspecified amount of time")
+            embed = embedsText("User Muted!",f"**{member}** has been muted ")
             embed.set_footer(text=f"Use the {config('PREFIX')}unmute command to unmute this user")
             embedMod = embedsText("User Muted!", f"{ctx.message.author} muted {member} for an unspecified amount of time")
             embedMod.add_field(name='Source',value=f'[Jump!]({ctx.message.jump_url})')

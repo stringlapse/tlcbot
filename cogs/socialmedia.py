@@ -344,19 +344,24 @@ class SocialMedia(commands.Cog):
         await ctx.send(f"Set your {platform} name to {name}. {ctx.message.author.mention}")
 
     # this doesnt do shit yet
+    # that's where you're wrong, bucko
     @bot.command() 
     async def unlink(self,ctx, platform=""):
         platforms = ", ".join(supported_sm)
+        author = ctx.message.author.id
+        conn = sqlite3.connect('example.db')
+        c = conn.cursor()
         if platform == "":
             await ctx.send(f"Please specify a platform. Currently supported platforms are `{platforms}`.\nExample: `{config('PREFIX')}unlink twitter` {ctx.message.author.mention}")
             return
+        if platform.lower() == "all":
+            c.execute(f"UPDATE users SET twitter=?,instagram=?,personal_website=?,youtube=?,deviantart=? WHERE user_id=?",("","","","","",author))
+            conn.commit()
+            conn.close()
+            return await ctx.send(f"Cleared all your social media data from the bot {ctx.message.author.mention}")
         if platform.lower() not in supported_sm:
             await ctx.send(f"Only ``{platforms}`` are supported.\nUsage: ``{config('PREFIX')}unlink twitter`` {ctx.message.author.mention}")
             return
-        author = ctx.message.author.id
-        
-        conn = sqlite3.connect('example.db')
-        c = conn.cursor()
         c.execute(f"UPDATE users SET {platform}=? WHERE user_id=?",("",author))
         conn.commit()
         conn.close()

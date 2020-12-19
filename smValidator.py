@@ -45,9 +45,10 @@ def grabsDeviantart(url):
     return result[0]
 
 def validatesYoutube(url):
-    regex = re.compile(r'http(?:s)?://(?:www\.)?youtube\.com/[c|channel|user]+/([\w-]+)')
+    regex = re.compile(r'http(?:s)?://(?:www\.)?(?:m.)?youtube\.com/[c|channel|user]+/([\w-]+)')
     result = re.findall(regex,url)
     return len(result) != 0
+
     
 
 

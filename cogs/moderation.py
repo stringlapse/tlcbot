@@ -5,6 +5,7 @@ from discord.ext import commands
 from index import embedsText
 from index import admin_role
 import sqlite3
+import inflect
 
 mute_role = "Muted"
 
@@ -34,6 +35,31 @@ class Moderation(commands.Cog):
             await ctx.send(embed=embed)
         else:
             await ctx.send(f'**{member}** is not currently muted')
+    
+    @commands.command()
+    @commands.has_role(admin_role)
+    async def numrole(self,ctx,*args):
+        roleName = " ".join(args)
+
+        role = None
+        for r in ctx.guild.roles:
+            if r.name.lower() == roleName.lower():
+                role = r
+
+        if role is None:
+            return await ctx.send(f"The role specified does not exist. {ctx.message.author.mention}")
+
+        num = 0
+        for member in ctx.guild.members:
+             if role in member.roles:
+                 num += 1
+        
+        p = inflect.engine()
+        text = "There",p.plural_verb("is",num),num,p.plural("person",num) + " with the **" + role.name + "** role " + ctx.message.author.mention
+        text = " ".join(map(str, text))
+        await ctx.send(text)
+                 
+
 
     @commands.command()
     @commands.has_role(admin_role)

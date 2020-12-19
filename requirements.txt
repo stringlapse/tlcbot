@@ -22,6 +22,7 @@ imageio==2.9.0
 imageio-ffmpeg==0.4.2
 iniconfig==1.0.1
 instabot==0.117.0
+inflect==5.0.2
 ipaddr==2.2.0
 lockfile==0.12.2
 lxml==4.5.2

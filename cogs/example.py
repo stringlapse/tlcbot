@@ -2,6 +2,7 @@
 
 import discord
 from discord.ext import commands
+from smValidator import *
 
 class Example(commands.Cog):
     def __init__(self, client):
@@ -16,6 +17,7 @@ class Example(commands.Cog):
     @commands.command()
     async def ping(self, ctx):
         await ctx.send("Pong!")
+        
     
     '''
     @commands.command(aliases=['8ball', 'test'])

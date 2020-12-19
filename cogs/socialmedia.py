@@ -21,6 +21,7 @@ import glob
 from crop import prepare_and_fix_photo
 from urllib.request import urlopen
 from discord.utils import get
+from smValidator import *
 
 shareArtChannels = config('SHARE_ART_CHANNEL')
 modChannel = int(config('MOD_SOCIAL_ART_GALLERY'))
@@ -300,41 +301,57 @@ class SocialMedia(commands.Cog):
     async def link(self,ctx, platform="", name=""):
         if platform == "":
             platforms = ", ".join(supported_sm)
-            await ctx.send(f"Please specify a platform. Currently supported platforms are `{platforms}`.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
+            return await ctx.send(f"Please specify a platform or link. Currently supported platforms are `{platforms}`.\nExample: `{config('PREFIX')}link twitter TLC_Discord` {ctx.message.author.mention}")
+
+        if name == "":
+            url = platform
+            if not validatesURL(url):
+                return await ctx.send(f"Invalid platform or link. Choose between ``{platforms}``.\nExample: `{config('PREFIX')}link twitter TLC_Discord {ctx.message.author.mention}")
+            if grabsInstagram(url) is not None:
+                platform = "instagram"
+                name = grabsInstagram(url)
+            elif grabsDeviantart(url) is not None:
+                platform = "deviantart"
+                name = grabsDeviantart(url)
+            elif grabsTwitter(url) is not None:
+                platform = "twitter"
+                name = grabsTwitter(url)
+            elif validatesYoutube(url):
+                platform = "youtube"
+                name = url
+            else:
+                platform = "personal_website"
+                name = url
+        
+        if platform.lower() not in supported_sm:
+            platforms = ", ".join(supported_sm)
+            await ctx.send(f"Platform not yet supported. Choose between ``{platforms}``.\nExample: `{config('PREFIX')}link twitter TLC_Discord` {ctx.message.author.mention}")
             return
-        else:
-            if platform.lower() not in supported_sm:
-                platforms = ", ".join(supported_sm)
-                await ctx.send(f"Platform not yet supported. Choose between ``{platforms}``.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
-                return
-            if name == "":
-                await ctx.send(f"Please state your name on the platform.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
-                return
-            if not name or len(name) == 0:
-                await ctx.send(f"Please state your name on the platform.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
-                return
-            name = normalize(platform,name)
-            author = ctx.message.author.id
+        
+        name = normalize(platform,name)
+        author = ctx.message.author.id
 
-            conn = sqlite3.connect('example.db')
-            c = conn.cursor()
-            val = (author,platform,name)
-            c.execute("INSERT OR IGNORE INTO users(user_id,twitter,instagram,personal_website,youtube,deviantart) VALUES(?,?,?,?,?,?)", (author, '','','','',''))
-            c.execute(f"UPDATE users SET {platform}=? WHERE user_id=?",(name,author))
-            conn.commit()
-            conn.close()
+        conn = sqlite3.connect('example.db')
+        c = conn.cursor()
+        val = (author,platform,name)
+        c.execute("INSERT OR IGNORE INTO users(user_id,twitter,instagram,personal_website,youtube,deviantart) VALUES(?,?,?,?,?,?)", (author, '','','','',''))
+        c.execute(f"UPDATE users SET {platform}=? WHERE user_id=?",(name,author))
+        conn.commit()
+        conn.close()
 
-            await ctx.send(f"Set your {platform} name to {name}.")
+        if platform == "personal_website":
+            platform = "personal website"
+        await ctx.send(f"Set your {platform} name to {name}. {ctx.message.author.mention}")
 
     # this doesnt do shit yet
     @bot.command() 
     async def unlink(self,ctx, platform=""):
         platforms = ", ".join(supported_sm)
         if platform == "":
-            await ctx.send(f"Please specify a platform. Currently supported platforms are `{platforms}`.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
+            await ctx.send(f"Please specify a platform. Currently supported platforms are `{platforms}`.\nExample: `{config('PREFIX')}unlink twitter` {ctx.message.author.mention}")
             return
         if platform.lower() not in supported_sm:
-            await ctx.send(f"Only ``{platforms}`` are supported.\nUsage: ``{config('PREFIX')}unlink twitter``")
+            await ctx.send(f"Only ``{platforms}`` are supported.\nUsage: ``{config('PREFIX')}unlink twitter`` {ctx.message.author.mention}")
             return
         author = ctx.message.author.id
         
@@ -343,7 +360,7 @@ class SocialMedia(commands.Cog):
         c.execute(f"UPDATE users SET {platform}=? WHERE user_id=?",("",author))
         conn.commit()
         conn.close()
-        await ctx.send("Removed your " + platform + " data.")
+        await ctx.send(f"Removed your {platform} data. {ctx.message.author.mention}")
 
 
     @bot.command(aliases=['sm'])
@@ -363,7 +380,7 @@ class SocialMedia(commands.Cog):
             if user != None:
                 userid = user.id 
         if (user == None):
-            await ctx.send("No matching user could be found. Either mention them, type their nickname (exact match), or their unique discord tag.")
+            await ctx.send(f"No matching user could be found. Either mention them, type their nickname (exact match), or their unique discord tag. {ctx.message.author.mention}")
             return
         
         conn = sqlite3.connect('example.db')
@@ -401,7 +418,7 @@ def normalize(platform,name):
         if name.startswith("@"):
            return name
         elif platform == "personal_website" or platform == "youtube":
-            if "https://" not in name:
+            if "https://" not in name and "http://" not in name:
                 return "https://" + name
             return name
         else:

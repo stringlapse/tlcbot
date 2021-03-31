@@ -211,7 +211,7 @@ class Cookies(commands.Cog):
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author.id == int(config('DISBOARD_ID')):
-            if self.check_all_message("Bump done :thumbsup:", message):
+            if self.check_all_message(":thumbsup:", message):
                 m = re.search(r'<@!?(\d+)>', message.embeds[0].description)
                 tag = m.group(0)
                 member = tag

@@ -80,7 +80,11 @@ class Cookies(commands.Cog):
     async def on_invite_create(self, invite):
         conn = sqlite3.connect('example.db')
         c = conn.cursor()
-        c.execute(f"INSERT INTO invites(invite_id, uses,users) VALUES(?,?)",(invite.id,invite.uses))
+        c.execute(f"INSERT INTO invites(invite_id, uses) VALUES(?,?)",(invite.id,invite.uses))
+        # Line was
+        # INSERT INTO invites(invite_id, uses,users) VALUES(?,?)
+        # but I had to remove the users part since things were breaking.
+        # This was added with double invite cookie protection, see #115
         conn.commit()
         conn.close()
     

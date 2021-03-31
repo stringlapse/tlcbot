@@ -15,8 +15,8 @@ botID = int(config('BOT_ID'))
 startingCookies = 0
 rewards = dict(
     bump= 1,
-    invite= 1,
-    modGift= 1
+    invite= 3,
+    modGift= 5
 )
 
 class Cookies(commands.Cog):

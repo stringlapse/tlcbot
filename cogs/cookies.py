@@ -172,7 +172,7 @@ class Cookies(commands.Cog):
         reason = "None"
         if len(args) > 0:
             reason = " ".join(args)
-        embed=embedsText(f'{ctx.message.author.display_name} gave {member.display_name} {rewards['modGift']} :cookie:',f'Reason: {reason}')
+        embed=embedsText(f'{ctx.message.author.display_name} gave {member.display_name} 5 :cookie:',f'Reason: {reason}')
         await ctx.send(embed=embed)
     
 
@@ -202,7 +202,7 @@ class Cookies(commands.Cog):
                             c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
                             conn.commit()
                             channel = await self.client.fetch_channel(int(config("GENERAL_ONE_CHANNEL_ID")))
-                            await channel.send(f"<@{userID}> Thanks for inviting <@{member.id}> to the server. Have {rewards['invite']} :cookie:")
+                            await channel.send(f"<@{userID}> Thanks for inviting <@{member.id}> to the server. Have 3 :cookie:")
                         c.execute("UPDATE invites set uses = ? WHERE invite_id = ?", (invite.uses,invite.id))
                         conn.commit()
                         break

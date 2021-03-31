@@ -13,6 +13,7 @@ from datetime import date
 announcementsID = int(config('ANNOUNCEMENTS_CHANNEL_ID'))
 botID = int(config('BOT_ID'))
 startingCookies = 0
+# This is hard coded in the response messages right now. Either fix that or update the messages when you're updating this.
 rewards = dict(
     bump= 1,
     invite= 3,

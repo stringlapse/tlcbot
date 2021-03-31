@@ -345,7 +345,7 @@ class Cookies(commands.Cog):
             need_to_yeet = False
 
         embed=embedsText('TLC :cookie: Leaderboard', f'{string}')
-        embed.set_footer(text=f"Your rank is #{rank} • You have f{authorBalance} :cookie:")
+        embed.set_footer(text=f"Your rank is #{rank} • You have {authorBalance} 🍪")
         await ctx.send(embed=embed)
    
     def check_all_message(self,check_for, message):

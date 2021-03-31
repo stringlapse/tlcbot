@@ -172,7 +172,7 @@ class Cookies(commands.Cog):
         reason = "None"
         if len(args) > 0:
             reason = " ".join(args)
-        embed=embedsText(f'{ctx.message.author.display_name} gave {member.display_name} :cookie:',f'Reason: {reason}')
+        embed=embedsText(f'{ctx.message.author.display_name} gave {member.display_name} {modGift} :cookie:',f'Reason: {reason}')
         await ctx.send(embed=embed)
     
 

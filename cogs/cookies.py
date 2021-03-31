@@ -304,6 +304,7 @@ class Cookies(commands.Cog):
         c = conn.cursor()
         i = 1
         rank = 1
+        authorBalance = 0
         rank_found = False
         need_to_yeet = False
         users_to_yeet = []
@@ -329,6 +330,7 @@ class Cookies(commands.Cog):
             if not rank_found:
                 if member == ctx.message.author:
                     rank_found = True
+                    authorBalance = balance
                     if i > 10:
                         break
                 else:
@@ -343,7 +345,7 @@ class Cookies(commands.Cog):
             need_to_yeet = False
 
         embed=embedsText('TLC :cookie: Leaderboard', f'{string}')
-        embed.set_footer(text=f"Your rank is #{rank}")
+        embed.set_footer(text=f"Your rank is #{rank} • You have f{authorBalance} :cookie:")
         await ctx.send(embed=embed)
    
     def check_all_message(self,check_for, message):

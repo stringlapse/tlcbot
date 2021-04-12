@@ -64,16 +64,21 @@ class SocialMedia(commands.Cog):
                             c.execute("SELECT * from users WHERE user_id=?", (message.author.id,))
                             result = c.fetchone()
                             if result is not None:
-                                if len(result[1]):
-                                    footerText += f"\nTwitter: {result[1]}"
-                                if len(result[2]):
-                                    footerText += f"\nInstagram: {result[2]}"
-                                if len(result[3]):
-                                    footerText += f"\nYouTube: {result[3]}"
-                                if len(result[4]):
-                                    footerText += f"\nDeviantArt: {result[4]}"
-                                if len(result[5]):
-                                    footerText += f"\nPersonal Website: {result[5]}"
+                                if result[1] != None:
+                                    if len(result[1]):
+                                        footerText += f"\nTwitter: {result[1]}"
+                                if result[2] != None:
+                                    if len(result[2]):
+                                        footerText += f"\nInstagram: {result[2]}"
+                                if result[3] != None:
+                                    if len(result[3]):
+                                        footerText += f"\nYouTube: {result[3]}"
+                                if result[4] != None:
+                                    if len(result[4]):
+                                        footerText += f"\nDeviantArt: {result[4]}"
+                                if result[5] != None:
+                                    if len(result[5]):
+                                        footerText += f"\nPersonal Website: {result[5]}"
 
                             embed.set_footer(text=footerText)
                             bot_msg = await self.client.get_channel(modChannel).send(embed=embed)

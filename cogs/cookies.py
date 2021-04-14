@@ -14,6 +14,7 @@ announcementsID = int(config('ANNOUNCEMENTS_CHANNEL_ID'))
 botID = int(config('BOT_ID'))
 startingCookies = 0
 # This is hard coded in the response messages right now. Either fix that or update the messages when you're updating this.
+# Also update help for ;givecookie to match
 rewards = dict(
     bump= 1,
     invite= 3,
@@ -179,7 +180,25 @@ class Cookies(commands.Cog):
             reason = " ".join(args)
         embed=embedsText(f'{ctx.message.author.display_name} gave {member.display_name} 5 :cookie:',f'Reason: {reason}')
         await ctx.send(embed=embed)
-    
+
+    @commands.command()
+    @commands.has_role(admin_role)
+    async def givemultiplecookies(self,ctx, member: discord.Member, amt, *args):
+        if not (amt.isnumeric()):
+            return await ctx.send("Invalid argument. Command format: `;givemultiplecookies [member] [amount]`\nex: `;givemultiplecookies @someone 7`")
+        conn = sqlite3.connect('example.db')
+        c = conn.cursor()
+        await self.createBal(ctx.channel, member.id)
+        c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{member.id}'")
+        memberBal = int(c.fetchone()[1]) + int(amt)
+        val = (memberBal, member.id)
+        c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
+        conn.commit()
+        reason = "None"
+        if len(args) > 0:
+            reason = " ".join(args)
+        embed=embedsText(f'{ctx.message.author.display_name} gave {member.display_name} {amt} :cookie:',f'Reason: {reason}')
+        await ctx.send(embed=embed)
 
     # Gives a cookie to the person who invited user 
     @commands.Cog.listener()

@@ -101,7 +101,7 @@ class Help(commands.Cog):
         ["addbingoterm", "Adds a term for bingo (case taken literally)", "However you put the capitalization is how it will show up in bingo. Length is also important, long terms might overflow."],
         ["clear", "Deletes the number of messages specified", ""],
         ["eventcookie", "Creates a cookie event", f"Sends a message in announcements that users can react to to claim free cookies. Usage: `{config('PREFIX')}eventcookie amount end_date message`"],
-        ["givecookie", "Give the mentioned member a cookie", f"See `{config('PREFIX')}help cookies` for info on cookies. Usage: `{config('PREFIX')}givecookie @member`"],
+        ["givecookie", "Give the mentioned member 5 cookies", f"See `{config('PREFIX')}help cookies` for info on cookies. Usage: `{config('PREFIX')}givecookie @member`"],
         ["load", "Loads a cog into the bot", ""],
         ["ping", "Responds pong", "Technically not a mod command but I figured I'd put it here since it can be used to test responsiveness"],
         ["reload", "Unloads and reloads a cog", "Useful for testing or I guess if the bot is acting up? idk just don't use it unless you know what you're doing"],

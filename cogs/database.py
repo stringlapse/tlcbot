@@ -45,8 +45,7 @@ class Database(commands.Cog):
         c.execute('''
         CREATE TABLE IF NOT EXISTS invites(
         invite_id text,
-        uses text,
-        users text
+        uses text
             )
         ''')
 

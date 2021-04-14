@@ -191,6 +191,25 @@ class Cookies(commands.Cog):
             c.execute(f"SELECT * FROM invites WHERE invite_id =?",(invite.id,))
             result = c.fetchone()
             if result is not None:
+                if invite.uses > int(result[1]):
+                    userID = invite.inviter.id
+                    if not (invite.inviter.bot):
+                        await self.createBal(None, userID)
+                        c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{userID}'")
+                        result = c.fetchone()
+                        print(result)
+                        memberBal = int(result[1]) + rewards['invite']
+                        val = (memberBal, userID)
+                        print(val)
+                        c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
+                        conn.commit()
+                        channel = await self.client.fetch_channel(int(config("GENERAL_ONE_CHANNEL_ID")))
+                        await channel.send(f"<@{userID}> Thanks for inviting <@{member.id}> to the server. Have a :cookie:")
+                    c.execute("UPDATE invites set uses = ? WHERE invite_id = ?", (invite.uses,invite.id))
+                    conn.commit()
+                    break
+            '''
+            if result is not None:
                 c.execute("SELECT * FROM users WHERE user_id=?", (member.id,))
                 userInfo = c.fetchone()
                 if userInfo is None:
@@ -211,6 +230,7 @@ class Cookies(commands.Cog):
                         c.execute("UPDATE invites set uses = ? WHERE invite_id = ?", (invite.uses,invite.id))
                         conn.commit()
                         break
+            '''
 
     # awards cookie when someone bumped disboard
     @commands.Cog.listener()

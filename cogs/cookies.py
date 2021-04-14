@@ -223,7 +223,7 @@ class Cookies(commands.Cog):
                         c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
                         conn.commit()
                         channel = await self.client.fetch_channel(int(config("GENERAL_ONE_CHANNEL_ID")))
-                        await channel.send(f"<@{userID}> Thanks for inviting <@{member.id}> to the server. Have a :cookie:")
+                        await channel.send(f"<@{userID}> Thanks for inviting <@{member.id}> to the server. Have 3 :cookie:")
                     c.execute("UPDATE invites set uses = ? WHERE invite_id = ?", (invite.uses,invite.id))
                     conn.commit()
                     break

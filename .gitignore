@@ -13,3 +13,4 @@ example.db
 test.png
 /backups
 !requirements.txt
+.vscode

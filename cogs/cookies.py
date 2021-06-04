@@ -180,6 +180,7 @@ class Cookies(commands.Cog):
             reason = " ".join(args)
         embed=embedsText(f'{ctx.message.author.display_name} gave {member.display_name} 5 :cookie:',f'Reason: {reason}')
         await ctx.send(embed=embed)
+        await ctx.message.delete()
 
     @commands.command()
     @commands.has_role(admin_role)
@@ -199,6 +200,7 @@ class Cookies(commands.Cog):
             reason = " ".join(args)
         embed=embedsText(f'{ctx.message.author.display_name} gave {member.display_name} {amt} :cookie:',f'Reason: {reason}')
         await ctx.send(embed=embed)
+        await ctx.message.delete()
 
     # Gives a cookie to the person who invited user 
     @commands.Cog.listener()

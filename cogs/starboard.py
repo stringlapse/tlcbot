@@ -7,10 +7,10 @@ import sqlite3
 from datetime import date
 
 starboardID = int(config('STARBOARD_CHANNEL_ID'))
-starboardBlacklist = int(config("STARBOARD_BLACKLIST"))
+starboardBlacklist = config("STARBOARD_BLACKLIST")
 ignored_channel_ids = [starboardID]
 for i in starboardBlacklist.split():
-    ignored_channel_ids.append(i)
+    ignored_channel_ids.append(int(i))
 recognizedEmojis = ['⭐'] # This currently doesn't work due to hardcoded emojis. Please do not add anything. See issue #65
 minimumEmoji = 6
 

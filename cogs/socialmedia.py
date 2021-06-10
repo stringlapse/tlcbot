@@ -396,7 +396,7 @@ class SocialMedia(commands.Cog):
                 embed.add_field(name='<:instagram:746822890657153025> Instagram',value=f"[{result[2]}](http://instagram.com/{result[2][1:]})",inline=False)
         if result[3] != None:
             if len(result[3]):
-                embed.add_field(name='<:youtube:746823398839156837> YouTube',value=f"[Channel]({result[3]})",inline=False)
+                embed.add_field(name='<:youtube:852404377171001354> YouTube',value=f"[Channel]({result[3]})",inline=False)
         if result[4] != None:
             if len(result[4]):
                 embed.add_field(name='<:deviantart:852401746495012874> DeviantArt',value=f"[{result[4]}](https://www.deviantart.com/{result[4][1:]})",inline=False)

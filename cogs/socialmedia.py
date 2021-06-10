@@ -390,7 +390,7 @@ class SocialMedia(commands.Cog):
         embed.set_thumbnail(url=user.avatar_url)
         if result[1] != None:
             if len(result[1]):
-                embed.add_field(name='<:twitter:746823280874356807> Twitter',value=f"[{result[1]}](http://twitter.com/{result[1][1:]})",inline=False)
+                embed.add_field(name='<:twitter:852398421620424704> Twitter',value=f"[{result[1]}](http://twitter.com/{result[1][1:]})",inline=False)
         if result[2] != None:
             if len(result[2]):
                 embed.add_field(name='<:instagram:746822890657153025> Instagram',value=f"[{result[2]}](http://instagram.com/{result[2][1:]})",inline=False)

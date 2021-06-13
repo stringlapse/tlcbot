@@ -64,21 +64,27 @@ class SocialMedia(commands.Cog):
                             c.execute("SELECT * from users WHERE user_id=?", (message.author.id,))
                             result = c.fetchone()
                             if result is not None:
+
+                                # Escape any markdown characters in usernames
+                                filteredResult = []
+                                for item in result:
+                                    filteredResult.append(cleanMarkdown(item))
+
                                 if result[1] != None:
                                     if len(result[1]):
-                                        footerText += f"\nTwitter: {result[1]}"
+                                        footerText += f"\nTwitter: {filteredResult[1]}"
                                 if result[2] != None:
                                     if len(result[2]):
-                                        footerText += f"\nInstagram: {result[2]}"
+                                        footerText += f"\nInstagram: {filteredResult[2]}"
                                 if result[3] != None:
                                     if len(result[3]):
-                                        footerText += f"\nYouTube: {result[3]}"
+                                        footerText += f"\nYouTube: {filteredResult[3]}"
                                 if result[4] != None:
                                     if len(result[4]):
-                                        footerText += f"\nDeviantArt: {result[4]}"
+                                        footerText += f"\nDeviantArt: {filteredResult[4]}"
                                 if result[5] != None:
                                     if len(result[5]):
-                                        footerText += f"\nPersonal Website: {result[5]}"
+                                        footerText += f"\nPersonal Website: {filteredResult[5]}"
 
                             embed.set_footer(text=footerText)
                             bot_msg = await self.client.get_channel(modChannel).send(embed=embed)
@@ -338,7 +344,7 @@ class SocialMedia(commands.Cog):
             conn.commit()
             conn.close()
 
-            await ctx.send(f"Set your {platform} name to {name}.")
+            await ctx.send(f"Set your {platform} name to {cleanMarkdown(name)}.")
 
     # this doesnt do shit yet
     @bot.command() 
@@ -391,21 +397,27 @@ class SocialMedia(commands.Cog):
         embed = embedsText(f"{ctx.message.guild.get_member(int(userid)).display_name}'s social media",'')
 
         embed.set_thumbnail(url=user.avatar_url)
+
+        # Escape any markdown characters in usernames
+        filteredResult = []
+        for item in result:
+            filteredResult.append(cleanMarkdown(item))
+
         if result[1] != None:
             if len(result[1]):
-                embed.add_field(name='<:twitter:852398421620424704> Twitter',value=f"[{result[1]}](http://twitter.com/{result[1][1:]})",inline=False)
+                embed.add_field(name='<:twitter:852398421620424704> Twitter',value=f"[{filteredResult[1]}](http://twitter.com/{result[1][1:]})",inline=False)
         if result[2] != None:
             if len(result[2]):
-                embed.add_field(name='<:instagram:746822890657153025> Instagram',value=f"[{result[2]}](http://instagram.com/{result[2][1:]})",inline=False)
+                embed.add_field(name='<:instagram:746822890657153025> Instagram',value=f"[{filteredResult[2]}](http://instagram.com/{result[2][1:]})",inline=False)
         if result[3] != None:
             if len(result[3]):
-                embed.add_field(name='<:youtube:852404377171001354> YouTube',value=f"[Channel]({result[3]})",inline=False)
+                embed.add_field(name='<:youtube:852404377171001354> YouTube',value=f"[Channel]({filteredResult[3]})",inline=False)
         if result[4] != None:
             if len(result[4]):
-                embed.add_field(name='<:deviantart:852401746495012874> DeviantArt',value=f"[{result[4]}](https://www.deviantart.com/{result[4][1:]})",inline=False)
+                embed.add_field(name='<:deviantart:852401746495012874> DeviantArt',value=f"[{filteredResult[4]}](https://www.deviantart.com/{result[4][1:]})",inline=False)
         if result[5] != None:
             if len(result[5]):
-                embed.add_field(name='💻 Website',value=f"[{result[5]}]({result[5]})",inline=False)
+                embed.add_field(name='💻 Website',value=f"[{filteredResult[5]}]({result[5]})",inline=False)
 
         if len(embed.fields) == 0:
             embed.description = "This user has no social media linked yet."
@@ -425,7 +437,14 @@ def normalize(platform,name):
             return name
         else:
             return "@" + name
-           
+
+# Escapes markdown characters in a string
+def cleanMarkdown(text):
+    text = text.replace('_', "\_")
+    text = text.replace('*', "\*")
+    text = text.replace('~', "\~")
+    return text
+
 # Required for the cog to be read by the bot
 def setup(client):
     client.add_cog(SocialMedia(client))

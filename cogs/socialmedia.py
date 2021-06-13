@@ -135,8 +135,11 @@ class SocialMedia(commands.Cog):
                         size = os.stat(photo).st_size 
                         while size > 3072000: # compression algorithmn for twitter
                             picture = Image.open(photo)
-                            if picture.is_animated:
-                                return await channel.send(f"This gif at {round(size/1000)}kb is bigger than the 3072kb max allowed by twitter and can not be posted. The devs are working on supporting large gifs.")
+                            try:
+                                if picture.is_animated:
+                                    return await channel.send(f"This gif at {round(size/1000)}kb is bigger than the 3072kb max allowed by twitter and can not be posted. The devs are working on supporting large gifs.")
+                            except AttributeError:
+                                pass
                             if picture.mode == "RGBA": 
                                 # trans rights!
                                 background = Image.new('RGB', picture.size, (255, 255, 255))

@@ -63,6 +63,17 @@ class Help(commands.Cog):
                 await ctx.send(f"There are only {helpPages} pages of help. Use `{config('PREFIX')}help [1-{helpPages}]` for help.")
         else:
             page = page.lower()
+            if page == "bingo":
+                embed = discord.Embed(title=f"{config('PREFIX')}bingo",color=0x00ff00)
+                embed.add_field(name=":sparkles::sparkles::sparkles:BINGO:sparkles::sparkles::sparkles:",
+                value=f"""-Submit an art based off prompts from a generated (`{config('PREFIX')}bingo`) card for 10 cookies!
+                -Can use generated cards of other folx.
+                -You can “steal” (read: use) the same set of prompts from someone who has already submitted but your art receives 5 cookies instead. **No redraws, pls** <:blobcookie:622891874331394070>!  
+                -Post your art here and caption it “Bingo!” along with the set of prompts you used (remember to cite/reply with someone else’s set of prompts if you did use theirs).
+                
+                Get aerting!""")
+                embed.set_image(url="https://cdn.discordapp.com/attachments/746448871005094018/853711607675092992/bingo_help.jpg")
+                return await ctx.send(embed=embed)
             if page == "cookie":
                 embed = discord.Embed(title=f"{config('PREFIX')}cookie",color=0x00ff00)
                 embed.add_field(name=f"Perhaps you are looking for `{config('PREFIX')}help cookies`, and not Grandma's favorite recipe", value="""

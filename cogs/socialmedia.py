@@ -318,6 +318,11 @@ class SocialMedia(commands.Cog):
 
     @bot.command()
     async def link(self,ctx, platform="", name=""):
+        # Prevent people from setting their name to "everyone" to prevent people from abusing the bot to ping @everyone
+        if name == "everyone" or name == "@everyone":
+            await ctx.send("You can't set your name to \"everyone\"")
+            return
+
         if platform == "":
             platforms = ", ".join(supported_sm)
             await ctx.send(f"Please specify a platform. Currently supported platforms are `{platforms}`.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")

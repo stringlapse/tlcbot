@@ -174,7 +174,7 @@ class Colors(commands.Cog):
             # gets photo of that color in svg
             mode = ['triad','complement','monochrome','quad']
             url = url + f'&mode={mode[random.randrange(0,len(mode))]}&count=4'
-            print(url)
+            #print(url)
             jsonurl = urlopen(url)
             text = json.loads(jsonurl.read())
             colors = []

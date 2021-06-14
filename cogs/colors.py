@@ -6,6 +6,7 @@ import urllib.request
 from colorthief import ColorThief
 from urllib.request import urlopen
 from index import embedsText
+from decouple import config
 import json
 from svglib.svglib import svg2rlg
 import random
@@ -135,9 +136,9 @@ class Colors(commands.Cog):
             f = self.convertsSVG()
 
             # embeds message and sends
-            embed=embedsText(f'{name}','') 
+            embed = discord.Embed(title=f'{name}', color=int(hexVal[1:], 16))
             embed.set_image(url="attachment://imageSend.png")
-            embed.set_footer(text=f' {hexVal}')
+            embed.set_footer(text=f'{hexVal}')
             await ctx.send(file=f, embed=embed)
         except urllib.error.HTTPError:
             return await ctx.send(f"{ctx.message.author.mention} only accepts RGB or hex. Make sure your RGB value is surrounded by paranthesis with no spaces in between \"(A,B,C)\" and your hex value begins with a #")

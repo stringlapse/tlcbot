@@ -271,7 +271,9 @@ class Cookies(commands.Cog):
                 c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
                 conn.commit()
                 channel = message.channel
-                await channel.send(f"Thanks for bumping {member.display_name}, have a :cookie:!")
+                #await channel.send(f"Thanks for bumping {member.display_name}, have a :cookie:!")
+                embed = discord.Embed(title=f"Thanks for bumping {member.display_name}!", description="Have a :cookie:!", color=0x00ff00)
+                await channel.send(embed=embed)
             '''
             # Don't use this code, it gives cookies for failed bumps
             elif self.check_all_message("until the server can be bumped", message):

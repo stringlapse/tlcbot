@@ -272,7 +272,7 @@ class Cookies(commands.Cog):
                 conn.commit()
                 channel = message.channel
                 #await channel.send(f"Thanks for bumping {member.display_name}, have a :cookie:!")
-                embed = discord.Embed(title=f"Thanks for bumping {member.display_name}!", description="Have a :cookie:!", color=0x00ff00)
+                embed = discord.Embed(title=f"Thanks for bumping {member.display_name}!", description="Have a :cookie:!", color=int(config("EMBED_COLOR"), 16))
                 await channel.send(embed=embed)
             '''
             # Don't use this code, it gives cookies for failed bumps

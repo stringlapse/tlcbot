@@ -46,7 +46,7 @@ class Help(commands.Cog):
             try:
                 page = int(page)
                 pickedHelpContent = helpContent[(page-1)*5:(page-1)*5+5]
-                helpEmbed = discord.Embed(title=f"Help (Page {page})", description=f"Use `{config('PREFIX')}help [1-{helpPages}]` for more", color=0x00ff00)
+                helpEmbed = discord.Embed(title=f"Help (Page {page})", description=f"Use `{config('PREFIX')}help [1-{helpPages}]` for more", color=int(config("EMBED_COLOR"), 16))
                 for i in range(0, 5):
                     try:
                         helpEmbed.add_field(name=config('PREFIX')+pickedHelpContent[i][0], value=pickedHelpContent[i][1], inline=False)
@@ -64,7 +64,7 @@ class Help(commands.Cog):
         else:
             page = page.lower()
             if page == "bingo":
-                embed = discord.Embed(title=f"{config('PREFIX')}bingo",color=0x00ff00)
+                embed = discord.Embed(title=f"{config('PREFIX')}bingo",color=int(config("EMBED_COLOR"), 16))
                 embed.add_field(name=":sparkles::sparkles::sparkles:BINGO:sparkles::sparkles::sparkles:",
                 value=f"""-Submit an art based off prompts from a generated (`{config('PREFIX')}bingo`) card for 10 cookies!
                 -Can use generated cards of other folx.
@@ -75,7 +75,7 @@ class Help(commands.Cog):
                 embed.set_image(url="https://cdn.discordapp.com/attachments/746448871005094018/853711607675092992/bingo_help.jpg")
                 return await ctx.send(embed=embed)
             if page == "cookie":
-                embed = discord.Embed(title=f"{config('PREFIX')}cookie",color=0x00ff00)
+                embed = discord.Embed(title=f"{config('PREFIX')}cookie",color=int(config("EMBED_COLOR"), 16))
                 embed.add_field(name=f"Perhaps you are looking for `{config('PREFIX')}help cookies`, and not Grandma's favorite recipe", value="""
                 - Preheat oven to 375 degrees F (190 for them cultured folk). Line a baking pan with parchment paper and set aside.
                 - In a separate bowl mix flour, baking soda, salt, baking powder. Set aside.
@@ -94,7 +94,7 @@ class Help(commands.Cog):
                     if entry[2] == "":
                         await ctx.send("There's no extra help for that command")
                         break
-                    extraHelpEmbed = discord.Embed(title=config('PREFIX')+entry[0], color=0x00ff00)
+                    extraHelpEmbed = discord.Embed(title=config('PREFIX')+entry[0], color=int(config("EMBED_COLOR"), 16))
                     if entry[0] == "cookies":
                         extraHelpEmbed.add_field(name=entry[1], value=entry[2] + " [Hungry?](https://pastebin.com/dStYKpUb)", inline=False)
                     else:
@@ -130,7 +130,7 @@ class Help(commands.Cog):
             try:
                 page = int(page)
                 pickedModHelpContent = modHelpContent[(page-1)*5:(page-1)*5+5]
-                modHelpEmbed = discord.Embed(title=f"Mod Help (Page {page})", description=f"Use `{config('PREFIX')}modhelp [1-{modHelpPages}]` for more", color=0x00ff00)
+                modHelpEmbed = discord.Embed(title=f"Mod Help (Page {page})", description=f"Use `{config('PREFIX')}modhelp [1-{modHelpPages}]` for more", color=int(config("EMBED_COLOR"), 16))
                 for i in range(0, 5):
                     try:
                         modHelpEmbed.add_field(name=config('PREFIX')+pickedModHelpContent[i][0], value=pickedModHelpContent[i][1], inline=False)
@@ -154,7 +154,7 @@ class Help(commands.Cog):
                     if entry[2] == "":
                         await ctx.send("There's no extra help for that command")
                         break
-                    extraModHelpEmbed = discord.Embed(title=config('PREFIX')+entry[0], color=0x00ff00)
+                    extraModHelpEmbed = discord.Embed(title=config('PREFIX')+entry[0], color=int(config("EMBED_COLOR"), 16))
                     extraModHelpEmbed.add_field(name=entry[1], value=entry[2], inline=False)
                     await ctx.send(embed=extraModHelpEmbed)
                     break

@@ -51,7 +51,7 @@ class SocialMedia(commands.Cog):
                             if '.gif' in image.filename:
                                 instaHalal = False
                             url = image.url
-                            embed = discord.Embed(description=message.content,color=0x228B22)
+                            embed = discord.Embed(description=message.content,color=int(config("EMBED_COLOR"), 16))
                             embed.set_author(name=message.author.display_name,icon_url=message.author.avatar_url)
                             embed.add_field(name=f'Source: #{message.channel.name}',value=f'[Jump!]({message.jump_url})')
 

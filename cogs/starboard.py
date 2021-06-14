@@ -35,7 +35,7 @@ class Starboard(commands.Cog):
                     result = c.fetchone()
                     message = f'{reaction.emoji} **{count}** {reaction.message.channel.mention}'
                     if result is None:
-                        embed = discord.Embed(description=reaction.message.content,color=0x228B22)
+                        embed = discord.Embed(description=reaction.message.content,color=int(config("EMBED_COLOR"), 16))
                         embed.set_author(name=reaction.message.author.display_name,icon_url=reaction.message.author.avatar_url)
                         embed.add_field(name='Source',value=f'[Jump!]({reaction.message.jump_url})')
                         if(len(reaction.message.attachments) > 0):

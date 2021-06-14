@@ -50,11 +50,11 @@ async def restart(ctx):
 
 def embedsText(title, description):
     if title == '':
-        return discord.Embed(description=description, color=0x228B22)
+        return discord.Embed(description=description, color=int(config("EMBED_COLOR"), 16))
     elif description == '':
-        return discord.Embed(title=title, color=0x228B22)
+        return discord.Embed(title=title, color=int(config("EMBED_COLOR"), 16))
     else:
-        return discord.Embed(description=description, title=title, color=0x228B22)
+        return discord.Embed(description=description, title=title, color=int(config("EMBED_COLOR"), 16))
 
 # loads cogs into bot
 for filename in os.listdir('./cogs'):

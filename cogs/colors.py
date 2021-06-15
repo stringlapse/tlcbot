@@ -116,8 +116,9 @@ class Colors(commands.Cog):
         #f, embed = await self.pickColor(ctx, ctx.message.author)
         #msg = await ctx.send(file=f, embed=embed)
         embed = await self.pickColor(ctx, ctx.message.author, color)
-        msg = await ctx.send(embed=embed)
-        await msg.add_reaction('🔁')
+        if type(embed) == discord.embeds.Embed:
+            msg = await ctx.send(embed=embed)
+            await msg.add_reaction('🔁')
 
     # Inner workings of the color command, placed in a separate function to simplify rerolling
     async def pickColor(self, ctx, member, color='random'):

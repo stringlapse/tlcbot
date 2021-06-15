@@ -105,7 +105,7 @@ class ArtToys(commands.Cog):
         img.save(buffer,"png")
         buffer.seek(0)
         file = discord.File(filename="tlcbingo.png", fp=buffer)
-        bot_msg = await self.client.get_channel(bingoChannel).send(content=f"{ctx.message.author.display_name} {str(ctx.message.author)}",file=file)
+        bot_msg = await self.client.get_channel(bingoChannel).send(content=f"`{ctx.message.author.display_name}` `{str(ctx.message.author)}`",file=file)
         embed = embedsText("Art Bingo!","Draw an image that would score a bingo on the following sheet. Don't forget to shout bingo and share your finished drawing!")
         #user = self.client.get_user(ctx.message.author.id)
         member = ctx.message.author

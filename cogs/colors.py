@@ -147,7 +147,7 @@ class Colors(commands.Cog):
             # converts photo into usable format and sends
             f = self.convertsSVG()
 
-            bot_msg = await self.client.get_channel(colorChannel).send(content=f"`{member.display_name}` `{str(member)}`",file=f)
+            bot_msg = await self.client.get_channel(colorChannel).send(content=f"`{member.display_name}` `{str(member)}` `{name}` `{hexVal}`",file=f)
 
             # Create embed
             #member = ctx.message.author

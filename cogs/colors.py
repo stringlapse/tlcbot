@@ -203,7 +203,7 @@ class Colors(commands.Cog):
                 B = random.randrange(0,256)
                 url = f'http://www.thecolorapi.com/scheme?rgb=({R},{G},{B})'
             else:
-                return await ctx.send(f"{ctx.message.author.mention} only accepts RGB or hex. Make sure your RGB value is surrounded by paranthesis with no spaces in between \"(A,B,C)\" and your hex value begins with a #")
+                return await ctx.send(f"{ctx.message.author.mention} only accepts RGB or hex. Make sure your RGB value is surrounded by paranthesis with no spaces in between \"(R,G,B)\" and your hex value begins with a #")
             
             
             # gets photo of that color in svg
@@ -232,7 +232,7 @@ class Colors(commands.Cog):
             embed.set_footer(text=f' {", ".join(hexes)}')
             await ctx.send(file=f, embed=embed)
         except urllib.error.HTTPError:
-            return await ctx.send(f"{ctx.message.author.mention} only accepts RGB or hex. Make sure your RGB value is surrounded by paranthesis with no spaces in between \"(A,B,C)\" and your hex value begins with a #")
+            return await ctx.send(f"{ctx.message.author.mention} only accepts RGB or hex. Make sure your RGB value is surrounded by paranthesis with no spaces in between \"(R,G,B)\" and your hex value begins with a #")
     
         # takes photo url and saves it
     def convertsIMGRecieved(self,url, opener):

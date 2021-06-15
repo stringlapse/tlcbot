@@ -20,10 +20,15 @@ class Moderation(commands.Cog):
             await ctx.send("You can't mute yourself")
             return
         role = discord.utils.get(member.guild.roles, name = mute_role)
-        await member.add_roles(role)
-        embed=embedsText('User Muted!', f'**{member}** was muted by **{ctx.message.author}**!')
-        await ctx.send(embed=embed)
-        await ctx.message.delete()
+        if role not in member.roles:
+            await member.add_roles(role)
+            embed=embedsText('User Muted!', f'**{member}** was muted by **{ctx.message.author}**!')
+            await ctx.send(embed=embed)
+            await ctx.message.delete()
+        else:
+            #await ctx.send(f'**{member}** is already muted')
+            embed=embedsText(f'**{member}** is already muted', '')
+            await ctx.send(embed=embed)
 
     @commands.command()
     @commands.has_role(admin_role)
@@ -35,7 +40,9 @@ class Moderation(commands.Cog):
             await ctx.send(embed=embed)
             await ctx.message.delete()
         else:
-            await ctx.send(f'**{member}** is not currently muted')
+            #await ctx.send(f'**{member}** is not currently muted')
+            embed=embedsText(f'**{member}** is not currently muted', '')
+            await ctx.send(embed=embed)
 
     @commands.command()
     @commands.has_role(admin_role)

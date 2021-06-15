@@ -343,7 +343,7 @@ class Cookies(commands.Cog):
         #today = currentDate.strftime('%m/%d/%Y').replace("/0", "/")
         #if today[0] == '0':
         #    today = today[1:]
-        embed.set_footer(text=f"{name} • {config('PREFIX')}help cookies")
+        embed.set_footer(text=f"{config('PREFIX')}help cookies")
         await ctx.send(embed=embed)
 
     @commands.command(pass_context = True , aliases=['baltop'])

@@ -12,6 +12,7 @@ from datetime import date
 
 announcementsID = int(config('ANNOUNCEMENTS_CHANNEL_ID'))
 botID = int(config('BOT_ID'))
+cookieLogID = int(config('COOKIE_LOG_CHANNEL'))
 startingCookies = 0
 # This is hard coded in the response messages right now. Either fix that or update the messages when you're updating this.
 # Also update help for ;givecookie to match
@@ -179,8 +180,9 @@ class Cookies(commands.Cog):
         if len(args) > 0:
             reason = " ".join(args)
         embed=embedsText(f'{ctx.message.author.display_name} gave {member.display_name} 5 :cookie:',f'Reason: {reason}')
-        await ctx.send(embed=embed)
+        cookiemsg = await ctx.send(embed=embed)
         await ctx.message.delete()
+        await self.client.get_channel(cookieLogID).send(f"{ctx.message.author} {cookiemsg.jump_url}", embed=embed) # Send to cookie log
 
     @commands.command()
     @commands.has_role(admin_role)
@@ -199,8 +201,9 @@ class Cookies(commands.Cog):
         if len(args) > 0:
             reason = " ".join(args)
         embed=embedsText(f'{ctx.message.author.display_name} gave {member.display_name} {amt} :cookie:',f'Reason: {reason}')
-        await ctx.send(embed=embed)
+        cookiemsg = await ctx.send(embed=embed)
         await ctx.message.delete()
+        await self.client.get_channel(cookieLogID).send(f"{ctx.message.author} {cookiemsg.jump_url}", embed=embed) # Send to cookie log
 
     # Gives a cookie to the person who invited user 
     @commands.Cog.listener()

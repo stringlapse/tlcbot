@@ -115,13 +115,12 @@ class Colors(commands.Cog):
     async def color(self, ctx, color='random'):
         #f, embed = await self.pickColor(ctx, ctx.message.author)
         #msg = await ctx.send(file=f, embed=embed)
-        embed = await self.pickColor(ctx, ctx.message.author)
+        embed = await self.pickColor(ctx, ctx.message.author, color)
         msg = await ctx.send(embed=embed)
         await msg.add_reaction('🔁')
 
     # Inner workings of the color command, placed in a separate function to simplify rerolling
-    async def pickColor(self, ctx, member):
-        color='random'
+    async def pickColor(self, ctx, member, color='random'):
         try:
             url = None
             if color[0] == "#" and len(color) == 7:
@@ -172,7 +171,7 @@ class Colors(commands.Cog):
             if(msg.author.id == botID and msg.embeds[0] and msg.embeds[0].author.name == "Color for " + member.display_name):
                 #f, embed = await self.pickColor(ctx, member)
                 #await msg.edit(file=f, embed=embed)
-                embed = await self.pickColor(ctx, member)
+                embed = await self.pickColor(ctx, member, color='random')
                 await msg.edit(embed=embed)
                 await msg.remove_reaction("🔁",member)
                 #print("reaction on message made by bot")

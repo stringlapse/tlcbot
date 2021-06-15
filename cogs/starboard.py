@@ -44,7 +44,7 @@ class Starboard(commands.Cog):
                         today = currentDate.strftime('%m/%d/%Y').replace("/0", "/")
                         if today[0] == '0':
                             today = today[1:]
-                        embed.set_footer(text=f'{reaction.message.id} • {today}')
+                        embed.set_footer(text=f'{reaction.message.author} • {today}')
                         sent_msg = await self.client.get_channel(starboardID).send(content=message,embed=embed)
                         
                         c.execute('INSERT INTO starboard(message_id,bot_message_id) VALUES(?,?)',(reaction.message.id,sent_msg.id))

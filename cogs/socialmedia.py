@@ -380,9 +380,12 @@ class SocialMedia(commands.Cog):
             user = self.client.get_user(int(userid))
         
         # ping argument or name
-        elif user.startswith("<@!"):
-            userid = user[3:-1]
-            user = self.client.get_user(int(userid))
+        #elif user.startswith("<@!"):
+        #    userid = user[3:-1]
+        #    user = self.client.get_user(int(userid))
+        elif ctx.message.mentions:
+            user = ctx.message.mentions[0]
+            userid = user.id
         else:
             user = ctx.guild.get_member_named(user)
             if user != None:

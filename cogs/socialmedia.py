@@ -28,8 +28,8 @@ botID = int(config('BOT_ID'))
 smRole = 'Share Me'
 
 
-supported_sm = ["twitter","instagram","deviantart","youtube","personal_website"]
-supported_platforms_list = "Instagram, Twitter, YouTube, ArtStation, and DeviantArt"
+supported_sm = ["twitter","instagram","deviantart","youtube","personal_website","artstation","twitch","tiktok"]
+supported_platforms_list = "Instagram, Twitter, YouTube, ArtStation, DeviantArt, TikTok, Twitch, and Personal Website"
 
 bot = commands.Bot(command_prefix=config('PREFIX'))
 
@@ -71,18 +71,27 @@ class SocialMedia(commands.Cog):
                                 for item in result:
                                     filteredResult.append(cleanMarkdown(item))
 
-                                if result[1] != None:
-                                    if len(result[1]):
-                                        footerText += f"\nTwitter: {filteredResult[1]}"
                                 if result[2] != None:
                                     if len(result[2]):
                                         footerText += f"\nInstagram: {filteredResult[2]}"
+                                if result[1] != None:
+                                    if len(result[1]):
+                                        footerText += f"\nTwitter: {filteredResult[1]}"
                                 if result[3] != None:
                                     if len(result[3]):
                                         footerText += f"\nYouTube: {filteredResult[3]}"
+                                if result[6] != None:
+                                    if len(result[6]):
+                                        footerText += f"\nArtStation: {filteredResult[6]}"
                                 if result[4] != None:
                                     if len(result[4]):
                                         footerText += f"\nDeviantArt: {filteredResult[4]}"
+                                if result[8] != None:
+                                    if len(result[8]):
+                                        footerText += f"\nTikTok: {filteredResult[8]}"
+                                if result[7] != None:
+                                    if len(result[7]):
+                                        footerText += f"\nTwitch: {filteredResult[7]}"
                                 if result[5] != None:
                                     if len(result[5]):
                                         footerText += f"\nPersonal Website: {filteredResult[5]}"
@@ -344,7 +353,7 @@ class SocialMedia(commands.Cog):
             conn = sqlite3.connect('example.db')
             c = conn.cursor()
             val = (author,platform,name)
-            c.execute("INSERT OR IGNORE INTO users(user_id,twitter,instagram,personal_website,youtube,deviantart) VALUES(?,?,?,?,?,?)", (author, '','','','',''))
+            c.execute("INSERT OR IGNORE INTO users(user_id,twitter,instagram,personal_website,youtube,deviantart,artstation,twitch,tiktok) VALUES(?,?,?,?,?,?,?,?,?)", (author, '','','','','','','',''))
             c.execute(f"UPDATE users SET {platform}=? WHERE user_id=?",(name,author))
             conn.commit()
             conn.close()
@@ -353,7 +362,6 @@ class SocialMedia(commands.Cog):
             embed = discord.Embed(title=f"Set your {platform} name to {cleanMarkdown(name)}.", color=int(config("EMBED_COLOR"), 16))
             await ctx.send(embed=embed)
 
-    # this doesnt do shit yet
     @bot.command() 
     async def unlink(self,ctx, platform=""):
         platforms = supported_platforms_list
@@ -404,7 +412,7 @@ class SocialMedia(commands.Cog):
         c.execute("SELECT * from users WHERE user_id=?", (userid,))
         result = c.fetchone()
         if result == None:
-            result = ("","","","","","") # just a workaround for now
+            result = ("","","","","","","","","") # just a workaround for now
 
         embed = embedsText(f"{ctx.message.guild.get_member(int(userid)).display_name}'s social media",'')
 
@@ -415,21 +423,31 @@ class SocialMedia(commands.Cog):
         for item in result:
             filteredResult.append(cleanMarkdown(item))
 
-        if result[1] != None:
-            if len(result[1]):
-                embed.add_field(name='<:twitter:852398421620424704> Twitter',value=f"[{filteredResult[1]}](http://twitter.com/{result[1][1:]})",inline=False)
         if result[2] != None:
             if len(result[2]):
                 embed.add_field(name='<:instagram:746822890657153025> Instagram',value=f"[{filteredResult[2]}](http://instagram.com/{result[2][1:]})",inline=False)
+        if result[1] != None:
+            if len(result[1]):
+                embed.add_field(name='<:twitter:852398421620424704> Twitter',value=f"[{filteredResult[1]}](http://twitter.com/{result[1][1:]})",inline=False)
         if result[3] != None:
             if len(result[3]):
                 embed.add_field(name='<:youtube:852404377171001354> YouTube',value=f"[Channel]({filteredResult[3]})",inline=False)
+        if result[6] != None:
+            if len(result[6]):
+                embed.add_field(name='<:artstation:852405321824993290> ArtStation',value=f"[{filteredResult[6]}](http://artstation.com/{result[6][1:]})",inline=False)
         if result[4] != None:
             if len(result[4]):
                 embed.add_field(name='<:deviantart:852401746495012874> DeviantArt',value=f"[{filteredResult[4]}](https://www.deviantart.com/{result[4][1:]})",inline=False)
+        if result[8] != None:
+            if len(result[8]):
+                embed.add_field(name='<:tiktok:852400600947490826> TikTok',value=f"[{filteredResult[8]}](https://www.tiktok.com/{result[8]})",inline=False)
+        if result[7] != None:
+            if len(result[7]):
+                embed.add_field(name='<:twitch:852402994138185749> Twitch',value=f"[{filteredResult[7]}](https://www.twitch.tv/{result[7][1:]})",inline=False)
         if result[5] != None:
             if len(result[5]):
                 embed.add_field(name='💻 Website',value=f"[{filteredResult[5]}]({result[5]})",inline=False)
+        
 
         if len(embed.fields) == 0:
             embed.description = "This user has no social media linked yet."
@@ -452,9 +470,10 @@ def normalize(platform,name):
 
 # Escapes markdown characters in a string
 def cleanMarkdown(text):
-    text = text.replace('_', "\_")
-    text = text.replace('*', "\*")
-    text = text.replace('~', "\~")
+    if type(text) == str:
+        text = text.replace('_', "\_")
+        text = text.replace('*', "\*")
+        text = text.replace('~', "\~")
     return text
 
 # Required for the cog to be read by the bot

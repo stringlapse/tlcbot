@@ -370,8 +370,12 @@ class SocialMedia(commands.Cog):
             conn.close()
 
             #await ctx.send(f"Set your {platform} name to {cleanMarkdown(name)}.")
-            embed = discord.Embed(title=f"Set your {platform} name to {cleanMarkdown(name)}.", color=int(config("EMBED_COLOR"), 16))
-            await ctx.send(embed=embed)
+            if platform == "personal_website":
+                embed = discord.Embed(title=f"Set your personal website to {cleanMarkdown(name)}.", color=int(config("EMBED_COLOR"), 16))
+                await ctx.send(embed=embed)
+            else:
+                embed = discord.Embed(title=f"Set your {platform} name to {cleanMarkdown(name)}.", color=int(config("EMBED_COLOR"), 16))
+                await ctx.send(embed=embed)
 
     @bot.command() 
     async def unlink(self,ctx, platform=""):

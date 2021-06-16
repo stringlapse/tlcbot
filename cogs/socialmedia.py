@@ -29,6 +29,7 @@ smRole = 'Share Me'
 
 
 supported_sm = ["twitter","instagram","deviantart","youtube","personal_website"]
+supported_platforms_list = "Instagram, Twitter, YouTube, ArtStation, and DeviantArt"
 
 bot = commands.Bot(command_prefix=config('PREFIX'))
 
@@ -323,14 +324,13 @@ class SocialMedia(commands.Cog):
             await ctx.send("You can't set your name to \"everyone\"")
             return
 
+        platforms = supported_platforms_list
         if platform == "":
-            platforms = ", ".join(supported_sm)
-            await ctx.send(f"Please specify a platform. Currently supported platforms are `{platforms}`.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
+            await ctx.send(f"Please specify a platform. Currently supported platforms are {platforms}.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
             return
         else:
             if platform.lower() not in supported_sm:
-                platforms = ", ".join(supported_sm)
-                await ctx.send(f"Platform not yet supported. Choose between ``{platforms}``.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
+                await ctx.send(f"Platform not yet supported. Choose between {platforms}.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
                 return
             if name == "":
                 await ctx.send(f"Please state your name on the platform.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
@@ -349,17 +349,19 @@ class SocialMedia(commands.Cog):
             conn.commit()
             conn.close()
 
-            await ctx.send(f"Set your {platform} name to {cleanMarkdown(name)}.")
+            #await ctx.send(f"Set your {platform} name to {cleanMarkdown(name)}.")
+            embed = discord.Embed(title=f"Set your {platform} name to {cleanMarkdown(name)}.", color=int(config("EMBED_COLOR"), 16))
+            await ctx.send(embed=embed)
 
     # this doesnt do shit yet
     @bot.command() 
     async def unlink(self,ctx, platform=""):
-        platforms = ", ".join(supported_sm)
+        platforms = supported_platforms_list
         if platform == "":
-            await ctx.send(f"Please specify a platform. Currently supported platforms are `{platforms}`.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
+            await ctx.send(f"Please specify a platform. Currently supported platforms are {platforms}.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
             return
         if platform.lower() not in supported_sm:
-            await ctx.send(f"Only ``{platforms}`` are supported.\nUsage: ``{config('PREFIX')}unlink twitter``")
+            await ctx.send(f"Only {platforms} are supported.\nExample: ``{config('PREFIX')}unlink twitter``")
             return
         author = ctx.message.author.id
         
@@ -368,7 +370,9 @@ class SocialMedia(commands.Cog):
         c.execute(f"UPDATE users SET {platform}=? WHERE user_id=?",("",author))
         conn.commit()
         conn.close()
-        await ctx.send("Removed your " + platform + " data.")
+        #await ctx.send("Removed your " + platform + " data.")
+        embed = discord.Embed(title=f"Removed your {platform} data.", color=int(config("EMBED_COLOR"), 16))
+        await ctx.send(embed=embed)
 
 
     @bot.command(aliases=['sm'])

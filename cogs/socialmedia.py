@@ -29,7 +29,7 @@ smRole = 'Share Me'
 
 
 supported_sm = ["twitter","instagram","deviantart","youtube","personal_website","artstation","twitch","tiktok"]
-supported_platforms_list = "Instagram, Twitter, YouTube, ArtStation, DeviantArt, TikTok, Twitch, and Personal Website"
+supported_platforms_list = "Instagram, Twitter, YouTube, ArtStation, DeviantArt, TikTok, Twitch, and Personal Website (use `personal_website` for platform)"
 
 bot = commands.Bot(command_prefix=config('PREFIX'))
 
@@ -332,6 +332,17 @@ class SocialMedia(commands.Cog):
         if name == "everyone" or name == "@everyone":
             await ctx.send("You can't set your name to \"everyone\"")
             return
+
+        if name.lower() == "tlc_discord" or name.lower() == "@tlc_discord":
+            await ctx.send("That's our username, use your own instead")
+            return
+
+        if ctx.message.mentions:
+            await ctx.send("You seem to have pinged someone. Try the same command without the @")
+            return
+
+        if name.startswith('@'):
+            name = name[1:]
 
         platforms = supported_platforms_list
         if platform == "":

@@ -74,6 +74,9 @@ class Database(commands.Cog):
         youtube text,
         deviantart text,
         personal_website text,
+        artstation text,
+        twitch text,
+        tiktok text,
         UNIQUE(user_id)
             )
         ''') 

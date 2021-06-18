@@ -21,19 +21,18 @@ class Help(commands.Cog):
     # Commands
     @commands.command(aliases=['commands', '?'])
     async def help(self, ctx, page="1"):
-        valid_platforms = "Valid platforms: `twitter`,`instagram`,`deviantart`,`youtube`,`personal_website`"
         # ["command", "simple description", "detailed description"]
         helpContent = [
-        ["bingo", "Generates a random art prompt bingo card", "Draw something that uses the prompts in all 5 squares in any line. Diagonal lines count, TLC is a free space. Don't forget to shout bingo and share your drawing when you're done!"],
+        ["bingo", "Generates a random art prompt bingo card", ""], # Detailed description left blank as this is handled further down
         ["color", "Generates a random color", f"Can also be used to display a given color using `{config('PREFIX')}color #123456` (hex) or `{config('PREFIX')}color (12,34,56)` (rgb)."],
-        ["colorphoto", "Picks out the most prominent colors from a picture", f"Upload a photo or include a link to get colors from it. You can also specift how many colors to get (3-6) and if you want complimentary colors. (ex. `{config('PREFIX')}colorphoto 5 complimentary https://via.placeholder.com/150`)"],
-        ["cookies", "Shows how many cookies the user has", "Cookies are a valuable resource for TLC, you can get them by:\n - bumping the server with disboard or discord.me\n - giving detailed and helpful critiques to others\n - uplifting the community by having pleasant conversations with others\n\n🍪 Stock up on them so we can start a rewards program!"],
+        ["colorphoto", "Picks out the most prominent colors from a picture", f"Upload a photo or include a link to get colors from it. You can also specify how many colors to get (3-6) and if you want complimentary colors. (ex. `{config('PREFIX')}colorphoto 5 complimentary https://via.placeholder.com/150`)"],
+        ["cookies", "Shows how many cookies you have", f"Cookies are TLC's in-server point system, you can get them by:\n- Bumping the server on Disboard with `!d bump` in {self.client.get_channel(int(config('BOT_COMMAND_CHANNEL'))).mention}\n- Giving detailed and helpful critiques to others\n- Participating in monthly challenges, ongoing events, and `{config('PREFIX')}bingo`\n- Uplifting the community by having pleasant conversations with others\n- Inviting your friends over to TLC <:blobpinkspheart:635533584563961875>\n\n:cookie: Stock up so we can start a rewards program! [Hungry?](https://pastebin.com/dStYKpUb)"],
         ["leaderboard", "Show who has the most cookies", f"See `{config('PREFIX')}help cookies` for more info about cookies"],
-        ["link", "Link your social media accounts", f"Use `{config('PREFIX')}link <platform> <account>` to link your social media accounts (ex. `{config('PREFIX')}link twitter tlc_discord`). \n" + valid_platforms],
+        ["link", "Link your social media accounts", f"Use `{config('PREFIX')}link <platform> <account>` to link your social media accounts (ex. `{config('PREFIX')}link twitter tlc_discord`).\nCurrently supported platforms are Instagram, Twitter, YouTube, ArtStation, DeviantArt, TikTok, Twitch, and Personal Website (use `personal_website` for platform)"],
         ["prompt", "Generates a random art prompt", ""],
         ["scheme", f"Similar to {config('PREFIX')}color but generates a color scheme", f"By default generates a random color scheme but a color to base the scheme on may be specified. Format fpr specifying a color is `{config('PREFIX')}scheme #123456` (hex) or `{config('PREFIX')}scheme (12,34,56)` (rgb)."],
         ["sm", "Lists your or someone else's linked social media accounts", f"Use `{config('PREFIX')}sm @member` to see someone else's linked accounts or just `{config('PREFIX')}sm` to see yours. To set your social media accounts, see `{config('PREFIX')}help link`"],
-        ["unlink", "Unlink your social media accounts", f"Use `{config('PREFIX')}unlink <platform>` to unlink a social media account (ex. `{config('PREFIX')}unlink twitter`).\n" + valid_platforms]
+        ["unlink", "Unlink your social media accounts", f"Use `{config('PREFIX')}unlink <platform>` to unlink a social media account (ex. `{config('PREFIX')}unlink twitter`).\nCurrently supported platforms are Instagram, Twitter, YouTube, ArtStation, DeviantArt, TikTok, Twitch, and Personal Website (use `personal_website` for platform)"]
         ]
 
         length = len(helpContent)
@@ -46,7 +45,7 @@ class Help(commands.Cog):
             try:
                 page = int(page)
                 pickedHelpContent = helpContent[(page-1)*5:(page-1)*5+5]
-                helpEmbed = discord.Embed(title=f"Help (Page {page})", description=f"Use `{config('PREFIX')}help [1-{helpPages}]` for more", color=0x00ff00)
+                helpEmbed = discord.Embed(title=f"Help (Page {page})", description=f"Use `{config('PREFIX')}help [1-{helpPages}]` for more", color=int(config("EMBED_COLOR"), 16))
                 for i in range(0, 5):
                     try:
                         helpEmbed.add_field(name=config('PREFIX')+pickedHelpContent[i][0], value=pickedHelpContent[i][1], inline=False)
@@ -63,8 +62,19 @@ class Help(commands.Cog):
                 await ctx.send(f"There are only {helpPages} pages of help. Use `{config('PREFIX')}help [1-{helpPages}]` for help.")
         else:
             page = page.lower()
+            if page == "bingo":
+                embed = discord.Embed(title=f"{config('PREFIX')}bingo",color=int(config("EMBED_COLOR"), 16))
+                embed.add_field(name=":sparkles::sparkles::sparkles:BINGO:sparkles::sparkles::sparkles:",
+                value=f"""-Submit an art based off prompts from a generated (`{config('PREFIX')}bingo`) card for 10 cookies!
+                -Can use cards generated for other people.
+                -You can “steal” (read: use) the same set of prompts from someone who has already submitted but your art receives 5 cookies instead. **No redraws, pls** <:blobcookie:622891874331394070>!  
+                -Post your art here and caption it “Bingo!” along with the set of prompts you used (remember to cite/reply with someone else’s set of prompts if you did use theirs).
+                
+                Get aerting!""")
+                embed.set_image(url="https://cdn.discordapp.com/attachments/746448871005094018/853711607675092992/bingo_help.jpg")
+                return await ctx.send(embed=embed)
             if page == "cookie":
-                embed = discord.Embed(title=f"{config('PREFIX')}cookie",color=0x00ff00)
+                embed = discord.Embed(title=f"{config('PREFIX')}cookie",color=int(config("EMBED_COLOR"), 16))
                 embed.add_field(name=f"Perhaps you are looking for `{config('PREFIX')}help cookies`, and not Grandma's favorite recipe", value="""
                 - Preheat oven to 375 degrees F (190 for them cultured folk). Line a baking pan with parchment paper and set aside.
                 - In a separate bowl mix flour, baking soda, salt, baking powder. Set aside.
@@ -83,11 +93,8 @@ class Help(commands.Cog):
                     if entry[2] == "":
                         await ctx.send("There's no extra help for that command")
                         break
-                    extraHelpEmbed = discord.Embed(title=config('PREFIX')+entry[0], color=0x00ff00)
-                    if entry[0] == "cookies":
-                        extraHelpEmbed.add_field(name=entry[1], value=entry[2] + " [Hungry?](https://pastebin.com/dStYKpUb)", inline=False)
-                    else:
-                        extraHelpEmbed.add_field(name=entry[1], value=entry[2], inline=False)
+                    extraHelpEmbed = discord.Embed(title=config('PREFIX')+entry[0], color=int(config("EMBED_COLOR"), 16))
+                    extraHelpEmbed.add_field(name=entry[1], value=entry[2], inline=False)
                     await ctx.send(embed=extraHelpEmbed)
                     break
             if not found:
@@ -119,7 +126,7 @@ class Help(commands.Cog):
             try:
                 page = int(page)
                 pickedModHelpContent = modHelpContent[(page-1)*5:(page-1)*5+5]
-                modHelpEmbed = discord.Embed(title=f"Mod Help (Page {page})", description=f"Use `{config('PREFIX')}modhelp [1-{modHelpPages}]` for more", color=0x00ff00)
+                modHelpEmbed = discord.Embed(title=f"Mod Help (Page {page})", description=f"Use `{config('PREFIX')}modhelp [1-{modHelpPages}]` for more", color=int(config("EMBED_COLOR"), 16))
                 for i in range(0, 5):
                     try:
                         modHelpEmbed.add_field(name=config('PREFIX')+pickedModHelpContent[i][0], value=pickedModHelpContent[i][1], inline=False)
@@ -143,7 +150,7 @@ class Help(commands.Cog):
                     if entry[2] == "":
                         await ctx.send("There's no extra help for that command")
                         break
-                    extraModHelpEmbed = discord.Embed(title=config('PREFIX')+entry[0], color=0x00ff00)
+                    extraModHelpEmbed = discord.Embed(title=config('PREFIX')+entry[0], color=int(config("EMBED_COLOR"), 16))
                     extraModHelpEmbed.add_field(name=entry[1], value=entry[2], inline=False)
                     await ctx.send(embed=extraModHelpEmbed)
                     break

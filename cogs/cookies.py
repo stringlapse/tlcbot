@@ -12,6 +12,7 @@ from datetime import date
 
 announcementsID = int(config('ANNOUNCEMENTS_CHANNEL_ID'))
 botID = int(config('BOT_ID'))
+cookieLogID = int(config('COOKIE_LOG_CHANNEL'))
 startingCookies = 0
 # This is hard coded in the response messages right now. Either fix that or update the messages when you're updating this.
 # Also update help for ;givecookie to match
@@ -179,8 +180,9 @@ class Cookies(commands.Cog):
         if len(args) > 0:
             reason = " ".join(args)
         embed=embedsText(f'{ctx.message.author.display_name} gave {member.display_name} 5 :cookie:',f'Reason: {reason}')
-        await ctx.send(embed=embed)
+        cookiemsg = await ctx.send(embed=embed)
         await ctx.message.delete()
+        await self.client.get_channel(cookieLogID).send(f"{ctx.message.author} {cookiemsg.jump_url}", embed=embed) # Send to cookie log
 
     @commands.command()
     @commands.has_role(admin_role)
@@ -199,8 +201,9 @@ class Cookies(commands.Cog):
         if len(args) > 0:
             reason = " ".join(args)
         embed=embedsText(f'{ctx.message.author.display_name} gave {member.display_name} {amt} :cookie:',f'Reason: {reason}')
-        await ctx.send(embed=embed)
+        cookiemsg = await ctx.send(embed=embed)
         await ctx.message.delete()
+        await self.client.get_channel(cookieLogID).send(f"{ctx.message.author} {cookiemsg.jump_url}", embed=embed) # Send to cookie log
 
     # Gives a cookie to the person who invited user 
     @commands.Cog.listener()
@@ -218,10 +221,8 @@ class Cookies(commands.Cog):
                         await self.createBal(None, userID)
                         c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{userID}'")
                         result = c.fetchone()
-                        print(result)
                         memberBal = int(result[1]) + rewards['invite']
                         val = (memberBal, userID)
-                        print(val)
                         c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
                         conn.commit()
                         channel = await self.client.fetch_channel(int(config("GENERAL_ONE_CHANNEL_ID")))
@@ -273,7 +274,9 @@ class Cookies(commands.Cog):
                 c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
                 conn.commit()
                 channel = message.channel
-                await channel.send(f"Thanks for bumping {member.display_name}, have a :cookie:!")
+                #await channel.send(f"Thanks for bumping {member.display_name}, have a :cookie:!")
+                embed = discord.Embed(title=f"Thanks for bumping {member.display_name}!", description="Have a :cookie:!", color=int(config("EMBED_COLOR"), 16))
+                await channel.send(embed=embed)
             '''
             # Don't use this code, it gives cookies for failed bumps
             elif self.check_all_message("until the server can be bumped", message):
@@ -340,7 +343,7 @@ class Cookies(commands.Cog):
         #today = currentDate.strftime('%m/%d/%Y').replace("/0", "/")
         #if today[0] == '0':
         #    today = today[1:]
-        embed.set_footer(text=f"{name} • {config('PREFIX')}help cookies")
+        embed.set_footer(text=f"{config('PREFIX')}help cookies")
         await ctx.send(embed=embed)
 
     @commands.command(pass_context = True , aliases=['baltop'])

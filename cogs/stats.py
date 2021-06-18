@@ -45,7 +45,7 @@ class Stats(commands.Cog):
     
     # Function to recalculate the number of members and "update" the channels
     # as oppose to adding and subtracting of someone joins or leaves, which may
-    # lead to innacuracies 
+    # lead to inaccuracies 
     async def updateMemberCount(self):
         guild = self.client.get_guild(int(config('GUILD_ID')))
         categoryName = "Server Stats"
@@ -92,9 +92,4 @@ def setup(client):
 
 # Returns how many days it has been since the server's opening
 def countsDays():
-    return (date.today() - date(2019,8,23)).days
-
-
-
-
-
+    return (date.today() - date(2019,8,27)).days

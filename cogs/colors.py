@@ -6,11 +6,15 @@ import urllib.request
 from colorthief import ColorThief
 from urllib.request import urlopen
 from index import embedsText
+from decouple import config
 import json
 from svglib.svglib import svg2rlg
 import random
 
 from reportlab.graphics import renderPDF, renderPM
+
+botID = int(config('BOT_ID'))
+colorChannel = int(config('MOD_COLOR_CHANNEL'))
 
 class Colors(commands.Cog):
     def __init__(self, client):
@@ -109,6 +113,15 @@ class Colors(commands.Cog):
 
     @commands.command()
     async def color(self, ctx, color='random'):
+        #f, embed = await self.pickColor(ctx, ctx.message.author)
+        #msg = await ctx.send(file=f, embed=embed)
+        embed = await self.pickColor(ctx, ctx.message.author, color)
+        if type(embed) == discord.embeds.Embed:
+            msg = await ctx.send(embed=embed)
+            await msg.add_reaction('🔁')
+
+    # Inner workings of the color command, placed in a separate function to simplify rerolling
+    async def pickColor(self, ctx, member, color='random'):
         try:
             url = None
             if color[0] == "#" and len(color) == 7:
@@ -122,7 +135,7 @@ class Colors(commands.Cog):
                 B = random.randrange(0,256)
                 url = f'http://www.thecolorapi.com/id?rgb=({R},{G},{B})'
             else:
-                return await ctx.send(f"{ctx.message.author.mention} only accepts RGB or hex. Make sure your RGB value is surrounded by paranthesis with no spaces in between \"(A,B,C)\" and your hex value begins with a #")
+                return await ctx.send(f"{ctx.message.author.mention} only accepts RGB or hex. Make sure your RGB value is surrounded by paranthesis with no spaces in between \"(R,G,B)\" and your hex value begins with a #")
             jsonurl = urlopen(url)
             text = json.loads(jsonurl.read())
             name = text["name"]["value"]
@@ -134,19 +147,63 @@ class Colors(commands.Cog):
             # converts photo into usable format and sends
             f = self.convertsSVG()
 
-            # embeds message and sends
-            embed=embedsText(f'{name}','') 
-            embed.set_image(url="attachment://imageSend.png")
-            embed.set_footer(text=f' {hexVal}')
-            await ctx.send(file=f, embed=embed)
+            bot_msg = await self.client.get_channel(colorChannel).send(content=f"`{member.display_name}` `{str(member)}` `{name}` `{hexVal}`",file=f)
+
+            # Create embed
+            #member = ctx.message.author
+            embed = discord.Embed(title=f'{name}', color=int(hexVal[1:], 16))
+            embed.set_author (name="Color for " + member.display_name,icon_url=member.avatar_url)
+            #embed.set_image(url="attachment://imageSend.png")
+            embed.set_image(url=bot_msg.attachments[0].url)
+            embed.set_footer(text=f'{hexVal} • 🔁 to reroll.')
+            #return [f, embed]
+            return embed
         except urllib.error.HTTPError:
-            return await ctx.send(f"{ctx.message.author.mention} only accepts RGB or hex. Make sure your RGB value is surrounded by paranthesis with no spaces in between \"(A,B,C)\" and your hex value begins with a #")
+            return await ctx.send(f"{ctx.message.author.mention} only accepts RGB or hex. Make sure your RGB value is surrounded by paranthesis with no spaces in between \"(R,G,B)\" and your hex value begins with a #")
 
+    @commands.Cog.listener()
+    async def on_raw_reaction_add(self,ctx):
+        # Color reroll
+        if(ctx.user_id != botID and ctx.emoji.name == "🔁" and ctx.event_type == "REACTION_ADD"):
+            #print("reaction not made by bot")
+            channel = self.client.get_channel(ctx.channel_id)
+            msg = await channel.fetch_message(ctx.message_id)
+            member = ctx.member #self.client.get_user(ctx.user_id)
+            if(msg.author.id == botID and msg.embeds[0] and msg.embeds[0].author.name == "Color for " + member.display_name):
+                #f, embed = await self.pickColor(ctx, member)
+                #await msg.edit(file=f, embed=embed)
+                embed = await self.pickColor(ctx, member, color='random')
+                await msg.edit(embed=embed)
+                await msg.remove_reaction("🔁",member)
+                #print("reaction on message made by bot")
+                #print(msg)
+            pass
 
+        # Scheme reroll
+        if(ctx.user_id != botID and ctx.emoji.name == "🔁" and ctx.event_type == "REACTION_ADD"):
+            #print("reaction not made by bot")
+            channel = self.client.get_channel(ctx.channel_id)
+            msg = await channel.fetch_message(ctx.message_id)
+            member = ctx.member #self.client.get_user(ctx.user_id)
+            if(msg.author.id == botID and msg.embeds[0] and msg.embeds[0].author.name == "Scheme for " + member.display_name):
+                #f, embed = await self.pickColor(ctx, member)
+                #await msg.edit(file=f, embed=embed)
+                embed = await self.pickScheme(ctx, member, color='random')
+                await msg.edit(embed=embed)
+                await msg.remove_reaction("🔁",member)
+                #print("reaction on message made by bot")
+                #print(msg)
+            pass
             
 
     @commands.command()
     async def scheme(self, ctx, color = 'random'):
+        embed = await self.pickScheme(ctx, ctx.message.author, color)
+        if type(embed) == discord.embeds.Embed:
+            msg = await ctx.send(embed=embed)
+            await msg.add_reaction('🔁')
+
+    async def pickScheme(self, ctx, member, color='random'):
         try:
             '''
             url = 'http://www.thecolorapi.com/scheme'
@@ -168,13 +225,13 @@ class Colors(commands.Cog):
                 B = random.randrange(0,256)
                 url = f'http://www.thecolorapi.com/scheme?rgb=({R},{G},{B})'
             else:
-                return await ctx.send(f"{ctx.message.author.mention} only accepts RGB or hex. Make sure your RGB value is surrounded by paranthesis with no spaces in between \"(A,B,C)\" and your hex value begins with a #")
+                return await ctx.send(f"{ctx.message.author.mention} only accepts RGB or hex. Make sure your RGB value is surrounded by paranthesis with no spaces in between \"(R,G,B)\" and your hex value begins with a #")
             
             
             # gets photo of that color in svg
             mode = ['triad','complement','monochrome','quad']
             url = url + f'&mode={mode[random.randrange(0,len(mode))]}&count=4'
-            print(url)
+            #print(url)
             jsonurl = urlopen(url)
             text = json.loads(jsonurl.read())
             colors = []
@@ -191,14 +248,17 @@ class Colors(commands.Cog):
             # converts photo into usable format and sends
             f = self.convertsSVG()
 
+            bot_msg = await self.client.get_channel(colorChannel).send(content=f'`{member.display_name}` `{str(member)}` `{", ".join(colors)}` `{", ".join(hexes)}`',file=f)
+
             # embeds message and sends
-            embed=embedsText(f' {", ".join(colors)}','') 
-            embed.set_image(url="attachment://imageSend.png")
-            embed.set_footer(text=f' {", ".join(hexes)}')
-            await ctx.send(file=f, embed=embed)
+            embed = discord.Embed(title=f' {", ".join(colors)}', color=int(hexes[0][1:], 16))
+            embed.set_author (name="Scheme for " + member.display_name,icon_url=member.avatar_url)
+            embed.set_image(url=bot_msg.attachments[0].url)
+            embed.set_footer(text=f' {", ".join(hexes)} • 🔁 to reroll.')
+            return embed
         except urllib.error.HTTPError:
-            return await ctx.send(f"{ctx.message.author.mention} only accepts RGB or hex. Make sure your RGB value is surrounded by paranthesis with no spaces in between \"(A,B,C)\" and your hex value begins with a #")
-    
+            return await ctx.send(f"{ctx.message.author.mention} only accepts RGB or hex. Make sure your RGB value is surrounded by paranthesis with no spaces in between \"(R,G,B)\" and your hex value begins with a #")
+
         # takes photo url and saves it
     def convertsIMGRecieved(self,url, opener):
         opener.addheader('User-Agent', 'whatever')

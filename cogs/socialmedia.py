@@ -28,7 +28,8 @@ botID = int(config('BOT_ID'))
 smRole = 'Share Me'
 
 
-supported_sm = ["twitter","instagram","deviantart","youtube","personal_website"]
+supported_sm = ["twitter","instagram","deviantart","youtube","personal_website","artstation","twitch","tiktok"]
+supported_platforms_list = "Instagram, Twitter, YouTube, ArtStation, DeviantArt, TikTok, Twitch, and Personal Website (use `personal_website` for platform)"
 
 bot = commands.Bot(command_prefix=config('PREFIX'))
 
@@ -51,7 +52,7 @@ class SocialMedia(commands.Cog):
                             if '.gif' in image.filename:
                                 instaHalal = False
                             url = image.url
-                            embed = discord.Embed(description=message.content,color=0x228B22)
+                            embed = discord.Embed(description=message.content,color=int(config("EMBED_COLOR"), 16))
                             embed.set_author(name=message.author.display_name,icon_url=message.author.avatar_url)
                             embed.add_field(name=f'Source: #{message.channel.name}',value=f'[Jump!]({message.jump_url})')
 
@@ -64,21 +65,36 @@ class SocialMedia(commands.Cog):
                             c.execute("SELECT * from users WHERE user_id=?", (message.author.id,))
                             result = c.fetchone()
                             if result is not None:
-                                if result[1] != None:
-                                    if len(result[1]):
-                                        footerText += f"\nTwitter: {result[1]}"
+
+                                # Escape any markdown characters in usernames
+                                filteredResult = []
+                                for item in result:
+                                    filteredResult.append(cleanMarkdown(item))
+
                                 if result[2] != None:
                                     if len(result[2]):
-                                        footerText += f"\nInstagram: {result[2]}"
+                                        footerText += f"\nInstagram: {filteredResult[2]}"
+                                if result[1] != None:
+                                    if len(result[1]):
+                                        footerText += f"\nTwitter: {filteredResult[1]}"
                                 if result[3] != None:
                                     if len(result[3]):
-                                        footerText += f"\nYouTube: {result[3]}"
+                                        footerText += f"\nYouTube: {filteredResult[3]}"
+                                if result[6] != None:
+                                    if len(result[6]):
+                                        footerText += f"\nArtStation: {filteredResult[6]}"
                                 if result[4] != None:
                                     if len(result[4]):
-                                        footerText += f"\nDeviantArt: {result[4]}"
+                                        footerText += f"\nDeviantArt: {filteredResult[4]}"
+                                if result[8] != None:
+                                    if len(result[8]):
+                                        footerText += f"\nTikTok: {filteredResult[8]}"
+                                if result[7] != None:
+                                    if len(result[7]):
+                                        footerText += f"\nTwitch: {filteredResult[7]}"
                                 if result[5] != None:
                                     if len(result[5]):
-                                        footerText += f"\nPersonal Website: {result[5]}"
+                                        footerText += f"\nPersonal Website: {filteredResult[5]}"
 
                             embed.set_footer(text=footerText)
                             bot_msg = await self.client.get_channel(modChannel).send(embed=embed)
@@ -133,10 +149,13 @@ class SocialMedia(commands.Cog):
                             return await channel.send("This picture has already been posted")
                         
                         size = os.stat(photo).st_size 
-                        while size > 3072000: # compression algorithmn for twitter
+                        while size > 3072000: # compression algorithm for twitter
                             picture = Image.open(photo)
-                            if picture.is_animated:
-                                return await channel.send(f"This gif at {round(size/1000)}kb is bigger than the 3072kb max allowed by twitter and can not be posted. The devs are working on supporting large gifs.")
+                            try:
+                                if picture.is_animated:
+                                    return await channel.send(f"This gif at {round(size/1000)}kb is bigger than the 3072kb max allowed by twitter and can not be posted. The devs are working on supporting large gifs.")
+                            except AttributeError:
+                                pass
                             if picture.mode == "RGBA": 
                                 # trans rights!
                                 background = Image.new('RGB', picture.size, (255, 255, 255))
@@ -309,14 +328,29 @@ class SocialMedia(commands.Cog):
 
     @bot.command()
     async def link(self,ctx, platform="", name=""):
+        # Prevent people from setting their name to "everyone" to prevent people from abusing the bot to ping @everyone
+        if name == "everyone" or name == "@everyone":
+            await ctx.send("You can't set your name to \"everyone\"")
+            return
+
+        if name.lower() == "tlc_discord" or name.lower() == "@tlc_discord":
+            await ctx.send("That's our username, use your own instead")
+            return
+
+        if ctx.message.mentions:
+            await ctx.send("You seem to have pinged someone. Try the same command without the @")
+            return
+
+        if name.startswith('@'):
+            name = name[1:]
+
+        platforms = supported_platforms_list
         if platform == "":
-            platforms = ", ".join(supported_sm)
-            await ctx.send(f"Please specify a platform. Currently supported platforms are `{platforms}`.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
+            await ctx.send(f"Please specify a platform. Currently supported platforms are {platforms}.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
             return
         else:
             if platform.lower() not in supported_sm:
-                platforms = ", ".join(supported_sm)
-                await ctx.send(f"Platform not yet supported. Choose between ``{platforms}``.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
+                await ctx.send(f"Platform not yet supported. Choose between {platforms}.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
                 return
             if name == "":
                 await ctx.send(f"Please state your name on the platform.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
@@ -330,22 +364,27 @@ class SocialMedia(commands.Cog):
             conn = sqlite3.connect('example.db')
             c = conn.cursor()
             val = (author,platform,name)
-            c.execute("INSERT OR IGNORE INTO users(user_id,twitter,instagram,personal_website,youtube,deviantart) VALUES(?,?,?,?,?,?)", (author, '','','','',''))
+            c.execute("INSERT OR IGNORE INTO users(user_id,twitter,instagram,personal_website,youtube,deviantart,artstation,twitch,tiktok) VALUES(?,?,?,?,?,?,?,?,?)", (author, '','','','','','','',''))
             c.execute(f"UPDATE users SET {platform}=? WHERE user_id=?",(name,author))
             conn.commit()
             conn.close()
 
-            await ctx.send(f"Set your {platform} name to {name}.")
+            #await ctx.send(f"Set your {platform} name to {cleanMarkdown(name)}.")
+            if platform == "personal_website":
+                embed = discord.Embed(title=f"Set your personal website to {cleanMarkdown(name)}.", color=int(config("EMBED_COLOR"), 16))
+                await ctx.send(embed=embed)
+            else:
+                embed = discord.Embed(title=f"Set your {platform} name to {cleanMarkdown(name)}.", color=int(config("EMBED_COLOR"), 16))
+                await ctx.send(embed=embed)
 
-    # this doesnt do shit yet
     @bot.command() 
     async def unlink(self,ctx, platform=""):
-        platforms = ", ".join(supported_sm)
+        platforms = supported_platforms_list
         if platform == "":
-            await ctx.send(f"Please specify a platform. Currently supported platforms are `{platforms}`.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
+            await ctx.send(f"Please specify a platform. Currently supported platforms are {platforms}.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
             return
         if platform.lower() not in supported_sm:
-            await ctx.send(f"Only ``{platforms}`` are supported.\nUsage: ``{config('PREFIX')}unlink twitter``")
+            await ctx.send(f"Only {platforms} are supported.\nExample: ``{config('PREFIX')}unlink twitter``")
             return
         author = ctx.message.author.id
         
@@ -354,7 +393,9 @@ class SocialMedia(commands.Cog):
         c.execute(f"UPDATE users SET {platform}=? WHERE user_id=?",("",author))
         conn.commit()
         conn.close()
-        await ctx.send("Removed your " + platform + " data.")
+        #await ctx.send("Removed your " + platform + " data.")
+        embed = discord.Embed(title=f"Removed your {platform} data.", color=int(config("EMBED_COLOR"), 16))
+        await ctx.send(embed=embed)
 
 
     @bot.command(aliases=['sm'])
@@ -366,9 +407,12 @@ class SocialMedia(commands.Cog):
             user = self.client.get_user(int(userid))
         
         # ping argument or name
-        elif user.startswith("<@!"):
-            userid = user[3:-1]
-            user = self.client.get_user(int(userid))
+        #elif user.startswith("<@!"):
+        #    userid = user[3:-1]
+        #    user = self.client.get_user(int(userid))
+        elif ctx.message.mentions:
+            user = ctx.message.mentions[0]
+            userid = user.id
         else:
             user = ctx.guild.get_member_named(user)
             if user != None:
@@ -383,26 +427,42 @@ class SocialMedia(commands.Cog):
         c.execute("SELECT * from users WHERE user_id=?", (userid,))
         result = c.fetchone()
         if result == None:
-            result = ("","","","","","") # just a workaround for now
+            result = ("","","","","","","","","") # just a workaround for now
 
         embed = embedsText(f"{ctx.message.guild.get_member(int(userid)).display_name}'s social media",'')
 
         embed.set_thumbnail(url=user.avatar_url)
-        if result[1] != None:
-            if len(result[1]):
-                embed.add_field(name='<:twitter:746823280874356807> Twitter',value=f"[{result[1]}](http://twitter.com/{result[1][1:]})",inline=False)
+
+        # Escape any markdown characters in usernames
+        filteredResult = []
+        for item in result:
+            filteredResult.append(cleanMarkdown(item))
+
         if result[2] != None:
             if len(result[2]):
-                embed.add_field(name='<:instagram:746822890657153025> Instagram',value=f"[{result[2]}](http://instagram.com/{result[2][1:]})",inline=False)
+                embed.add_field(name='<:instagram:746822890657153025> Instagram',value=f"[{filteredResult[2]}](http://instagram.com/{result[2][1:]})",inline=False)
+        if result[1] != None:
+            if len(result[1]):
+                embed.add_field(name='<:twitter:852398421620424704> Twitter',value=f"[{filteredResult[1]}](http://twitter.com/{result[1][1:]})",inline=False)
         if result[3] != None:
             if len(result[3]):
-                embed.add_field(name='<:youtube:746823398839156837> YouTube',value=f"[Channel]({result[3]})",inline=False)
+                embed.add_field(name='<:youtube:852404377171001354> YouTube',value=f"[Channel]({filteredResult[3]})",inline=False)
+        if result[6] != None:
+            if len(result[6]):
+                embed.add_field(name='<:artstation:852405321824993290> ArtStation',value=f"[{filteredResult[6]}](http://artstation.com/{result[6][1:]})",inline=False)
         if result[4] != None:
             if len(result[4]):
-                embed.add_field(name='<:deviantart:746823381478932571> DeviantArt',value=f"[{result[4]}](https://www.deviantart.com/{result[4][1:]})",inline=False)
+                embed.add_field(name='<:deviantart:852401746495012874> DeviantArt',value=f"[{filteredResult[4]}](https://www.deviantart.com/{result[4][1:]})",inline=False)
+        if result[8] != None:
+            if len(result[8]):
+                embed.add_field(name='<:tiktok:852400600947490826> TikTok',value=f"[{filteredResult[8]}](https://www.tiktok.com/{result[8]})",inline=False)
+        if result[7] != None:
+            if len(result[7]):
+                embed.add_field(name='<:twitch:852402994138185749> Twitch',value=f"[{filteredResult[7]}](https://www.twitch.tv/{result[7][1:]})",inline=False)
         if result[5] != None:
             if len(result[5]):
-                embed.add_field(name='💻 Website',value=f"[{result[5]}]({result[5]})",inline=False)
+                embed.add_field(name='💻 Website',value=f"[{filteredResult[5]}]({result[5]})",inline=False)
+        
 
         if len(embed.fields) == 0:
             embed.description = "This user has no social media linked yet."
@@ -422,7 +482,15 @@ def normalize(platform,name):
             return name
         else:
             return "@" + name
-           
+
+# Escapes markdown characters in a string
+def cleanMarkdown(text):
+    if type(text) == str:
+        text = text.replace('_', "\_")
+        text = text.replace('*', "\*")
+        text = text.replace('~', "\~")
+    return text
+
 # Required for the cog to be read by the bot
 def setup(client):
     client.add_cog(SocialMedia(client))

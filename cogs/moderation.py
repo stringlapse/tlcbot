@@ -20,9 +20,15 @@ class Moderation(commands.Cog):
             await ctx.send("You can't mute yourself")
             return
         role = discord.utils.get(member.guild.roles, name = mute_role)
-        await member.add_roles(role)
-        embed=embedsText('User Muted!', f'**{member}** was muted by **{ctx.message.author}**!')
-        await ctx.send(embed=embed)
+        if role not in member.roles:
+            await member.add_roles(role)
+            embed=embedsText('User Muted!', f'**{member}** was muted by **{ctx.message.author}**!')
+            await ctx.send(embed=embed)
+            await ctx.message.delete()
+        else:
+            #await ctx.send(f'**{member}** is already muted')
+            embed=embedsText(f'**{member}** is already muted', '')
+            await ctx.send(embed=embed)
 
     @commands.command()
     @commands.has_role(admin_role)
@@ -32,8 +38,11 @@ class Moderation(commands.Cog):
             await member.remove_roles(role)
             embed=embedsText('User Unmuted!', f'**{member}** was unmuted by **{ctx.message.author}**!')
             await ctx.send(embed=embed)
+            await ctx.message.delete()
         else:
-            await ctx.send(f'**{member}** is not currently muted')
+            #await ctx.send(f'**{member}** is not currently muted')
+            embed=embedsText(f'**{member}** is not currently muted', '')
+            await ctx.send(embed=embed)
 
     @commands.command()
     @commands.has_role(admin_role)
@@ -43,7 +52,7 @@ class Moderation(commands.Cog):
             embed=embedsText(f'{amount} message cleared!', '')
         else:
             embed=embedsText(f'{amount} messages cleared!', '')
-        await ctx.send(embed=embed)
+        await ctx.send(embed=embed, delete_after=5)
 
 def setup(client):
     client.add_cog(Moderation(client))

@@ -149,7 +149,7 @@ class SocialMedia(commands.Cog):
                             return await channel.send("This picture has already been posted")
                         
                         size = os.stat(photo).st_size 
-                        while size > 3072000: # compression algorithmn for twitter
+                        while size > 3072000: # compression algorithm for twitter
                             picture = Image.open(photo)
                             try:
                                 if picture.is_animated:

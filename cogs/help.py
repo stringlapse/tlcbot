@@ -21,7 +21,6 @@ class Help(commands.Cog):
     # Commands
     @commands.command(aliases=['commands', '?'])
     async def help(self, ctx, page="1"):
-        valid_platforms = "Valid platforms: `twitter`,`instagram`,`deviantart`,`youtube`,`personal_website`"
         # ["command", "simple description", "detailed description"]
         helpContent = [
         ["bingo", "Generates a random art prompt bingo card", ""], # Detailed description left blank as this is handled further down
@@ -29,11 +28,11 @@ class Help(commands.Cog):
         ["colorphoto", "Picks out the most prominent colors from a picture", f"Upload a photo or include a link to get colors from it. You can also specify how many colors to get (3-6) and if you want complimentary colors. (ex. `{config('PREFIX')}colorphoto 5 complimentary https://via.placeholder.com/150`)"],
         ["cookies", "Shows how many cookies you have", f"Cookies are TLC's in-server point system, you can get them by:\n- Bumping the server on Disboard with `!d bump` in {self.client.get_channel(int(config('BOT_COMMAND_CHANNEL'))).mention}\n- Giving detailed and helpful critiques to others\n- Participating in monthly challenges, ongoing events, and `{config('PREFIX')}bingo`\n- Uplifting the community by having pleasant conversations with others\n- Inviting your friends over to TLC <:blobpinkspheart:635533584563961875>\n\n:cookie: Stock up so we can start a rewards program! [Hungry?](https://pastebin.com/dStYKpUb)"],
         ["leaderboard", "Show who has the most cookies", f"See `{config('PREFIX')}help cookies` for more info about cookies"],
-        ["link", "Link your social media accounts", f"Use `{config('PREFIX')}link <platform> <account>` to link your social media accounts (ex. `{config('PREFIX')}link twitter tlc_discord`). \n" + valid_platforms],
+        ["link", "Link your social media accounts", f"Use `{config('PREFIX')}link <platform> <account>` to link your social media accounts (ex. `{config('PREFIX')}link twitter tlc_discord`).\nCurrently supported platforms are Instagram, Twitter, YouTube, ArtStation, DeviantArt, TikTok, Twitch, and Personal Website (use `personal_website` for platform)"],
         ["prompt", "Generates a random art prompt", ""],
         ["scheme", f"Similar to {config('PREFIX')}color but generates a color scheme", f"By default generates a random color scheme but a color to base the scheme on may be specified. Format fpr specifying a color is `{config('PREFIX')}scheme #123456` (hex) or `{config('PREFIX')}scheme (12,34,56)` (rgb)."],
         ["sm", "Lists your or someone else's linked social media accounts", f"Use `{config('PREFIX')}sm @member` to see someone else's linked accounts or just `{config('PREFIX')}sm` to see yours. To set your social media accounts, see `{config('PREFIX')}help link`"],
-        ["unlink", "Unlink your social media accounts", f"Use `{config('PREFIX')}unlink <platform>` to unlink a social media account (ex. `{config('PREFIX')}unlink twitter`).\n" + valid_platforms]
+        ["unlink", "Unlink your social media accounts", f"Use `{config('PREFIX')}unlink <platform>` to unlink a social media account (ex. `{config('PREFIX')}unlink twitter`).\nCurrently supported platforms are Instagram, Twitter, YouTube, ArtStation, DeviantArt, TikTok, Twitch, and Personal Website (use `personal_website` for platform)"]
         ]
 
         length = len(helpContent)

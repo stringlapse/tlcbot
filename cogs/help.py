@@ -27,7 +27,7 @@ class Help(commands.Cog):
         ["bingo", "Generates a random art prompt bingo card", "Draw something that uses the prompts in all 5 squares in any line. Diagonal lines count, TLC is a free space. Don't forget to shout bingo and share your drawing when you're done!"],
         ["color", "Generates a random color", f"Can also be used to display a given color using `{config('PREFIX')}color #123456` (hex) or `{config('PREFIX')}color (12,34,56)` (rgb)."],
         ["colorphoto", "Picks out the most prominent colors from a picture", f"Upload a photo or include a link to get colors from it. You can also specift how many colors to get (3-6) and if you want complimentary colors. (ex. `{config('PREFIX')}colorphoto 5 complimentary https://via.placeholder.com/150`)"],
-        ["cookies", "Shows how many cookies the user has", "Cookies are a valuable resource for TLC, you can get them by:\n - bumping the server with disboard or discord.me\n - giving detailed and helpful critiques to others\n - uplifting the community by having pleasant conversations with others\n\n🍪 Stock up on them so we can start a rewards program!"],
+        ["cookies", "Shows how many cookies you have", f"Cookies are TLC's in-server point system, you can get them by:\n- Bumping the server on Disboard with `!d bump` in {self.client.get_channel(int(config('BOT_COMMAND_CHANNEL'))).mention}\n- Giving detailed and helpful critiques to others\n- Participating in monthly challenges, ongoing events, and `{config('PREFIX')}bingo`\n- Uplifting the community by having pleasant conversations with others\n- Inviting your friends over to TLC <:blobpinkspheart:635533584563961875>\n\n:cookie: Stock up so we can start a rewards program! [Hungry?](https://pastebin.com/dStYKpUb)"],
         ["leaderboard", "Show who has the most cookies", f"See `{config('PREFIX')}help cookies` for more info about cookies"],
         ["link", "Link your social media accounts", f"Use `{config('PREFIX')}link <platform> <account>` to link your social media accounts (ex. `{config('PREFIX')}link twitter tlc_discord`). \n" + valid_platforms],
         ["prompt", "Generates a random art prompt", ""],
@@ -95,10 +95,7 @@ class Help(commands.Cog):
                         await ctx.send("There's no extra help for that command")
                         break
                     extraHelpEmbed = discord.Embed(title=config('PREFIX')+entry[0], color=int(config("EMBED_COLOR"), 16))
-                    if entry[0] == "cookies":
-                        extraHelpEmbed.add_field(name=entry[1], value=entry[2] + " [Hungry?](https://pastebin.com/dStYKpUb)", inline=False)
-                    else:
-                        extraHelpEmbed.add_field(name=entry[1], value=entry[2], inline=False)
+                    extraHelpEmbed.add_field(name=entry[1], value=entry[2], inline=False)
                     await ctx.send(embed=extraHelpEmbed)
                     break
             if not found:

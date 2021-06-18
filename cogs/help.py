@@ -26,7 +26,7 @@ class Help(commands.Cog):
         helpContent = [
         ["bingo", "Generates a random art prompt bingo card", ""], # Detailed description left blank as this is handled further down
         ["color", "Generates a random color", f"Can also be used to display a given color using `{config('PREFIX')}color #123456` (hex) or `{config('PREFIX')}color (12,34,56)` (rgb)."],
-        ["colorphoto", "Picks out the most prominent colors from a picture", f"Upload a photo or include a link to get colors from it. You can also specift how many colors to get (3-6) and if you want complimentary colors. (ex. `{config('PREFIX')}colorphoto 5 complimentary https://via.placeholder.com/150`)"],
+        ["colorphoto", "Picks out the most prominent colors from a picture", f"Upload a photo or include a link to get colors from it. You can also specify how many colors to get (3-6) and if you want complimentary colors. (ex. `{config('PREFIX')}colorphoto 5 complimentary https://via.placeholder.com/150`)"],
         ["cookies", "Shows how many cookies you have", f"Cookies are TLC's in-server point system, you can get them by:\n- Bumping the server on Disboard with `!d bump` in {self.client.get_channel(int(config('BOT_COMMAND_CHANNEL'))).mention}\n- Giving detailed and helpful critiques to others\n- Participating in monthly challenges, ongoing events, and `{config('PREFIX')}bingo`\n- Uplifting the community by having pleasant conversations with others\n- Inviting your friends over to TLC <:blobpinkspheart:635533584563961875>\n\n:cookie: Stock up so we can start a rewards program! [Hungry?](https://pastebin.com/dStYKpUb)"],
         ["leaderboard", "Show who has the most cookies", f"See `{config('PREFIX')}help cookies` for more info about cookies"],
         ["link", "Link your social media accounts", f"Use `{config('PREFIX')}link <platform> <account>` to link your social media accounts (ex. `{config('PREFIX')}link twitter tlc_discord`). \n" + valid_platforms],
@@ -67,7 +67,7 @@ class Help(commands.Cog):
                 embed = discord.Embed(title=f"{config('PREFIX')}bingo",color=int(config("EMBED_COLOR"), 16))
                 embed.add_field(name=":sparkles::sparkles::sparkles:BINGO:sparkles::sparkles::sparkles:",
                 value=f"""-Submit an art based off prompts from a generated (`{config('PREFIX')}bingo`) card for 10 cookies!
-                -Can use generated cards of other folx.
+                -Can use cards generated for other people.
                 -You can “steal” (read: use) the same set of prompts from someone who has already submitted but your art receives 5 cookies instead. **No redraws, pls** <:blobcookie:622891874331394070>!  
                 -Post your art here and caption it “Bingo!” along with the set of prompts you used (remember to cite/reply with someone else’s set of prompts if you did use theirs).
                 

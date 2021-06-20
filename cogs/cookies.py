@@ -182,7 +182,8 @@ class Cookies(commands.Cog):
         embed=embedsText(f'{ctx.message.author.display_name} gave {member.display_name} 5 :cookie:',f'Reason: {reason}')
         cookiemsg = await ctx.send(embed=embed)
         await ctx.message.delete()
-        await self.client.get_channel(cookieLogID).send(f"{ctx.message.author} {cookiemsg.jump_url}", embed=embed) # Send to cookie log
+        logembed = embedsText(f'{ctx.message.author.display_name} gave {member.display_name} 5 :cookie:',f'Reason: {reason}\nGiver: {ctx.message.author}\nReceiver: {str(member)}\n[Jump]({cookiemsg.jump_url})')
+        await self.client.get_channel(cookieLogID).send(embed=logembed) # Send to cookie log
 
     @commands.command()
     @commands.has_role(admin_role)
@@ -203,7 +204,8 @@ class Cookies(commands.Cog):
         embed=embedsText(f'{ctx.message.author.display_name} gave {member.display_name} {amt} :cookie:',f'Reason: {reason}')
         cookiemsg = await ctx.send(embed=embed)
         await ctx.message.delete()
-        await self.client.get_channel(cookieLogID).send(f"{ctx.message.author} {cookiemsg.jump_url}", embed=embed) # Send to cookie log
+        logembed = embedsText(f'{ctx.message.author.display_name} gave {member.display_name} {amt} :cookie:',f'Reason: {reason}\nGiver: {ctx.message.author}\nReceiver: {str(member)}\n[Jump]({cookiemsg.jump_url})')
+        await self.client.get_channel(cookieLogID).send(embed=logembed) # Send to cookie log
 
     # Gives a cookie to the person who invited user 
     @commands.Cog.listener()

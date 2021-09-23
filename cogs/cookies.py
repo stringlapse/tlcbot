@@ -257,6 +257,9 @@ class Cookies(commands.Cog):
             '''
 
     # awards cookie when someone bumped disboard
+    # This is currently broken due to a change that Disboard implemented on September 22nd, 2021
+    # The behavior written here requires the bump embed to ping a user, but that change removed the ping
+    '''
     @commands.Cog.listener()
     async def on_message(self, message):
         if message.author.id == int(config('DISBOARD_ID')):
@@ -279,7 +282,7 @@ class Cookies(commands.Cog):
                 #await channel.send(f"Thanks for bumping {member.display_name}, have a :cookie:!")
                 embed = discord.Embed(title=f"Thanks for bumping {member.display_name}!", description="Have a :cookie:!", color=int(config("EMBED_COLOR"), 16))
                 await channel.send(embed=embed)
-
+    '''
     '''
     # simulates disboard's bump message
     @commands.command()

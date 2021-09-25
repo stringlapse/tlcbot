@@ -13,6 +13,13 @@ class Moderation(commands.Cog):
     def __init__(self, client):
         self.client = client
 
+    # Invite logging: cookies.py looks at what invite new joins used to award cookies,
+    # but that's also a useful function for moderation. Mixed in with the invite cookies
+    # system, the bot sends a message to the mod log when an invite is used. This is helpful
+    # for situations like raids when you want to see what invite people are using so you can
+    # delete it. I would make it a function here that gets called by cookies.py but for
+    # something that I expect to only be one or two lines I don't think it's really worth it.
+
     @commands.command()
     @commands.has_role(admin_role)
     async def mute(self,ctx, member: discord.Member):

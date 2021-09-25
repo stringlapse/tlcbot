@@ -218,6 +218,10 @@ class Cookies(commands.Cog):
             result = c.fetchone()
             if result is not None:
                 if invite.uses > int(result[1]):
+                    # Send invite notice to mod log. Something here doesn't pick up vanity URLs and I don't really care.
+                    embed = discord.Embed(description=f"{invite.inviter.mention} `{str(invite.inviter)}` (id: `{invite.inviter.id}`) invited {member.mention} `{str(member)}` (id:`{member.id}`)\n`{invite.url}` has been used {str(invite.uses)} time(s)", color=int(config("EMBED_COLOR"), 16))
+                    await self.client.get_channel(int(config('MOD_LOG_CHANNEL'))).send(embed=embed)
+                    # Award cookies
                     userID = invite.inviter.id
                     if not (invite.inviter.bot):
                         await self.createBal(None, userID)

@@ -68,7 +68,7 @@ class Stats(commands.Cog):
     
     async def updateDayCount(self):
         guild = self.client.get_guild(int(config('GUILD_ID')))
-        categoryName = "Server Stats"
+        categoryName = "📊 Server Stats 📊"
         category = discord.utils.get(guild.categories, name=categoryName)
 
         if category is None:

@@ -358,20 +358,21 @@ class SocialMedia(commands.Cog):
             if not name or len(name) == 0:
                 await ctx.send(f"Please state your name on the platform.\nExample: `{config('PREFIX')}link twitter TLC_Discord`")
                 return
-            name = normalize(platform,name)
+            name = normalize(platform.lower(),name)
             author = ctx.message.author.id
 
             conn = sqlite3.connect('example.db')
             c = conn.cursor()
-            val = (author,platform,name)
             c.execute("INSERT OR IGNORE INTO users(user_id,twitter,instagram,personal_website,youtube,deviantart,artstation,twitch,tiktok) VALUES(?,?,?,?,?,?,?,?,?)", (author, '','','','','','','',''))
-            c.execute(f"UPDATE users SET {platform}=? WHERE user_id=?",(name,author))
+            c.execute(f"UPDATE users SET {platform.lower()}=? WHERE user_id=?",(name,author)) # Using user input in a SQL query is usually a bad idea but we only get to this point if the input is in our supported_sm list so SQL injection shouldn't be possible
             conn.commit()
             conn.close()
 
-            #await ctx.send(f"Set your {platform} name to {cleanMarkdown(name)}.")
-            if platform == "personal_website":
+            if platform.lower() == "personal_website":
                 embed = discord.Embed(title=f"Set your personal website to {cleanMarkdown(name)}.", color=int(config("EMBED_COLOR"), 16))
+                await ctx.send(embed=embed)
+            elif platform.lower() == "youtube":
+                embed = discord.Embed(title=f"Set your YouTube channel to {cleanMarkdown(name)}.", color=int(config("EMBED_COLOR"), 16))
                 await ctx.send(embed=embed)
             else:
                 embed = discord.Embed(title=f"Set your {platform} name to {cleanMarkdown(name)}.", color=int(config("EMBED_COLOR"), 16))
@@ -390,10 +391,9 @@ class SocialMedia(commands.Cog):
         
         conn = sqlite3.connect('example.db')
         c = conn.cursor()
-        c.execute(f"UPDATE users SET {platform}=? WHERE user_id=?",("",author))
+        c.execute(f"UPDATE users SET {platform.lower()}=? WHERE user_id=?",("",author)) # Using user input in a SQL query is usually a bad idea but we only get to this point if the input is in our supported_sm list so SQL injection shouldn't be possible
         conn.commit()
         conn.close()
-        #await ctx.send("Removed your " + platform + " data.")
         embed = discord.Embed(title=f"Removed your {platform} data.", color=int(config("EMBED_COLOR"), 16))
         await ctx.send(embed=embed)
 

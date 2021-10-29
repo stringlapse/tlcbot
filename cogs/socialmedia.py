@@ -329,7 +329,7 @@ class SocialMedia(commands.Cog):
     @bot.command()
     async def link(self,ctx, platform="", name=""):
         # Prevent people from setting their name to "everyone" to prevent people from abusing the bot to ping @everyone
-        if name == "everyone" or name == "@everyone":
+        if name.lower() == "everyone" or name.lower() == "@everyone":
             await ctx.send("You can't set your name to \"everyone\"")
             return
 

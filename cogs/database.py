@@ -84,8 +84,13 @@ class Database(commands.Cog):
         conn.commit()
         conn.close()
         print("database ready")
-     
-        
+    
+    @commands.command()
+    @commands.has_role(admin_role)
+    async def database(self,ctx):
+        await ctx.send("The database has been DMed to you")
+        await ctx.message.author.send(file=discord.File("example.db"))
+
 # Required for the cog to be read by the bot
 def setup(client):
     client.add_cog(Database(client))

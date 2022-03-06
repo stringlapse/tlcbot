@@ -113,6 +113,7 @@ class Help(commands.Cog):
         ["load", "Loads a cog into the bot", ""],
         ["ping", "Responds pong", "Technically not a mod command but I figured I'd put it here since it can be used to test responsiveness"],
         ["reload", "Unloads and reloads a cog", "Useful for testing or I guess if the bot is acting up? idk just don't use it unless you know what you're doing"],
+        ["removecookies", "Remove cookies from a user", "Works the same as givemultiplecookies but subtracts instead of adds"],
         ["restart", "⚠ Restarts the bot", "This should be safe for any mod to use but please ask someone on the bot team before using it"],
         ["shutdown", "⚠ Shuts the bot down", "Do not use this unless absolutely necessary. The bot will not restart on its own."],
         ["unload", "⚠ Uloads a cog from the bot", "This will disable all commands and functionality the cog provides."]]

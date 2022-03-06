@@ -207,6 +207,31 @@ class Cookies(commands.Cog):
         logembed = embedsText(f'{ctx.message.author.display_name} gave {member.display_name} {amt} :cookie:',f'Reason: {reason}\nGiver: {ctx.message.author}\nReceiver: {str(member)}\n[Jump]({cookiemsg.jump_url})')
         await self.client.get_channel(cookieLogID).send(embed=logembed) # Send to cookie log
 
+    @commands.command()
+    @commands.has_role(admin_role)
+    async def removecookies(self,ctx, member: discord.Member, amt, *args):
+        if not (amt.isnumeric()):
+            return await ctx.send("Invalid argument. Command format: `;removecookies [member] [amount]`\nex: `;givemultiplecookies @someone 7`")
+        conn = sqlite3.connect('example.db')
+        c = conn.cursor()
+        await self.createBal(ctx.channel, member.id)
+        c.execute(f"SELECT user_id, balance FROM econ WHERE user_id = '{member.id}'")
+        memberBal = int(c.fetchone()[1])
+        if int(amt) > memberBal:
+            return await ctx.send("This user's balance is too low to remove that many cookies!")
+        memberBal = memberBal - int(amt)
+        val = (memberBal, member.id)
+        c.execute("UPDATE econ SET balance = ? WHERE user_id = ?", val)
+        conn.commit()
+        reason = "None"
+        if len(args) > 0:
+            reason = " ".join(args)
+        embed=embedsText(f'{ctx.message.author.display_name} removed {amt} :cookie: from {member.display_name}',f'Reason: {reason}')
+        cookiemsg = await ctx.send(embed=embed)
+        await ctx.message.delete()
+        logembed = embedsText(f'{ctx.message.author.display_name} gave {member.display_name} {amt} :cookie:',f'Reason: {reason}\nGiver: {ctx.message.author}\nReceiver: {str(member)}\n[Jump]({cookiemsg.jump_url})')
+        await self.client.get_channel(cookieLogID).send(embed=logembed) # Send to cookie log
+
     # Gives a cookie to the person who invited user 
     @commands.Cog.listener()
     async def on_member_join(self,member):

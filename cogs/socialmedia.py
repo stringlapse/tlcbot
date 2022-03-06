@@ -318,6 +318,9 @@ class SocialMedia(commands.Cog):
         except Exception as e:
             print(e)
             await msg.edit(content="Something went wrong. The error has been sent to our dev team. Notify them for assistance.")
+        except SystemExit:
+            print("Instagram posting failed, catching SystemExit and notifying user")
+            await msg.edit(content="Posting failed. Check if the Instagram account is locked.")
         else:
             await msg.edit(content=f"Posted! Check Instagram to see if everything went well. <https://instagram.com/{config('INSTAGRAM_USERNAME')}>")
             c.execute("UPDATE shared_art SET instagram = ? WHERE bot_message_id = ?", val)
